@@ -339,3 +339,26 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
   .download-pass { bottom: 84px; }
   .interaction-hint { display: none; }
 }
+/* One screen, with controls in their own dock below the physical badge. */
+.badge-controls { position: absolute; z-index: 6; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; width: max-content; }
+.badge-controls .hero-role-control, .badge-controls .download-pass { position: relative; inset: auto; transform: none; flex: 0 0 auto; }
+.badge-controls .hero-role-control { width: 46px; height: 46px; }
+.badge-controls .hero-role-control span { display: none; }
+.badge-controls .download-pass { min-height: 46px; justify-content: center; }
+.home-footer { bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 760px) {
+  .badge-controls { gap: 12px; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+  .badge-controls .hero-role-control { width: 44px; height: 44px; }
+  .badge-controls .download-pass { min-height: 44px; padding: 10px 18px; }
+  .home-footer { gap: 12px; }
+  .home-footer .credits-trigger { font-size: 9px; }
+  .home-footer .contact-link { font-size: 9px; }
+  .interaction-hint { display: none; }
+}
+@media (max-width: 760px) and (max-height: 700px) {
+  .collection-heading { top: 104px; font-size: 18px; }
+  html[lang="en"] .collection-heading { font-size: 16px; line-height: 1.2; }
+}
+@media (max-width: 360px) {
+  html[lang="en"] .collection-heading { max-width: 120px; font-size: 15px; }
+}

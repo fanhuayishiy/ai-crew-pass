@@ -20,7 +20,6 @@ export function copy(locale: Locale) {
   const en = locale === 'en';
   return {
     siteName: en?'Nonhuman Employees':'非人类员工',
-    subtitle: en?'A fan-made crew pass collection for nine AI models':'—— 九位 AI 模型的同人工作牌图鉴',
     pickup: en?'Crew Pass Collection Desk':'工牌领取处',
     catchphrase: en?'Internet folklore':'互联网名场面',
     memeSource: en?'Behind the meme ↗':'梗从哪来 ↗',
@@ -28,7 +27,7 @@ export function copy(locale: Locale) {
     credits: en?'Artwork & credits':'素材与署名',
     close: en?'Close':'关闭',
     previous: en?'Previous character':'上一位员工', next:en?'Next character':'下一位员工',
-    download: en?'Download pass':'下载工牌', downloadBoth:en?'Download both · ZIP':'下载正反面 · ZIP', front:en?'Front · PNG':'正面 · PNG', backImage:en?'Back · PNG':'背面 · PNG', preparing:en?'Preparing…':'正在生成…', downloadHint:en?'Two transparent PNGs, ready to save.':'两张透明背景 PNG，可分别保存或打包下载。', downloadError:en?'Could not prepare the images. Please try again.':'图片生成失败，请重试。',
+    download: en?'Download pass':'下载工牌', downloadBoth:en?'Download both · ZIP':'下载正反面 · ZIP', front:en?'Front · PNG':'正面 · PNG', backImage:en?'Back · PNG':'背面 · PNG', preparing:en?'Preparing…':'正在生成…', downloadHint:en?'Save either PNG or download both as ZIP. On mobile, you can also save the preview image.':'可单独保存透明 PNG 或打包下载；手机也可长按预览图保存。', downloadError:en?'Could not prepare the images. Please try again.':'图片生成失败，请重试。',
     edition: en?'Nonhuman Employees':'非人类员工', official:en?'Website':'官网', gallery:en?'The crew':'员工图鉴',
     choose:en?'Choose a character':'选择角色工作牌', badge:en?'Crew pass':'工作牌', profile:en?'Character profile':'角色资料',
     arrived:en?'is on duty':'已到岗', all:en?'Meet the crew':'查看员工图鉴', chat:en?'Chat with':'聊聊',
