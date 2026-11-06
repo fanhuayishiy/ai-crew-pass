@@ -29,7 +29,7 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
     </details>
     <section class="home-stage" id="screen1">
     <header class="home-masthead">
-      <a class="home-masthead__identity station-brand" href="#top"><span>{ui.siteName}</span></a>
+      <div class="station-heading"><a class="home-masthead__identity station-brand" href="#top"><span>{ui.siteName}</span></a><h1 class="collection-heading">{ui.pickup}</h1></div>
       <nav class="social-links" aria-label={locale === 'en' ? 'Links and language' : '相关链接与语言'}>
         <a class="github-star" href={PROJECT_GITHUB_URL} data-profile-github data-project-star target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" fill="currentColor"/></svg><span>Star on GitHub</span><span aria-hidden="true">↗</span></a>
         <span class="language-switch" aria-label="Language / 语言">
@@ -41,7 +41,7 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
     </header>
 
     <p class="home-watermark" aria-hidden="true"><ShinyText client:load text={character.brand} color={mix(character.color,.80)} shineColor={mix(character.color,.57)} speed={4.5} delay={3.5} shineWidth={22} /></p>
-    <h1 class="collection-heading">{ui.pickup}</h1>
+
 
     
     <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">AI CREW COLLECTION <i>·</i> 09 CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {character.name} {ui.arrived} <span>NO. {character.code}—001</span></div>
@@ -130,7 +130,7 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
                 <p class="badge-back__headline">Stay curious.<br /><span>{character.title[0]}<br />{character.title[1]}</span></p>
                 <ul class="badge-back__roles">
                   {character.features.map(feature => <li>{feature}</li>)}
-                </ul><blockquote class="badge-catchphrase"><span>{memeFor(character.id, locale).label}</span>“{characterCatchphrase(character.id, locale)}”</blockquote><p class="badge-back-credit">{ui.fan}<br />{character.credit}<br />{ui.sourceNote}<br />{ui.noncommercial}</p>
+                </ul><blockquote class="badge-catchphrase"><span>{memeFor(character.id, locale).label}</span>“{characterCatchphrase(character.id, locale)}”</blockquote>
               </div>
             </div>
           </div>
@@ -175,13 +175,13 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
     </section>
 
   <dialog class="download-dialog" data-download-dialog data-preparing={ui.preparing} data-hint={ui.downloadHint} data-error={ui.downloadError} aria-labelledby="download-title">
-    <button type="button" class="credits-close" data-download-close aria-label={ui.close}>×</button>
+    <button type="button" class="credits-close" data-download-close aria-label={ui.close}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
     <p class="download-eyebrow">{character.brand} · {character.code}—001</p><h2 id="download-title">{ui.download}</h2>
     <p class="download-status" data-download-status aria-live="polite">{ui.downloadHint}</p>
     <div class="download-previews">{(['front','back'] as const).map(face => <figure><div class="transparency-grid"><img src={asset(`downloads/${locale}/${character.id}-${face}.png`)} loading="lazy" data-print-preview={face} alt={`${character.brand} · ${face === 'front' ? ui.front : ui.backImage}`} /></div><a data-download-face={face} href={asset(`downloads/${locale}/${character.id}-${face}.png`)} target="_blank" rel="noreferrer" download={`${character.id}-${locale}-${face}.png`}>{face === 'front' ? ui.front : ui.backImage} ↓</a></figure>)}</div>
     <a class="download-both" href={asset(`downloads/${locale}/${character.id}-crew-pass.zip`)} data-download-zip download={`${character.id}-${locale}-crew-pass.zip`}>{ui.downloadBoth} ↓</a>
   </dialog>
-  <dialog class="artwork-note" id="credits" aria-labelledby="credits-title"><button type="button" class="credits-close" data-close-credits aria-label={ui.close}>×</button><h2 id="credits-title">{ui.credits}</h2><p>AI CREW PASS · COMMUNITY FAN ART</p><p>{ui.credit}</p><p>{ui.rights} <a href={ART_SOURCE} target="_blank" rel="noreferrer">{ui.original} ↗</a> · <a href={asset(locale === "en" ? "img/characters/NOTICE.en.md" : "img/characters/NOTICE.md")}>{ui.notice}</a> · {ui.galleryBy} <a href="https://github.com/xu-yaoting/hanging-pass" target="_blank" rel="noreferrer">Hanging Pass</a> · {ui.physicsBy}: <a href="https://github.com/DavidHDev/react-bits" target="_blank" rel="noreferrer">React Bits Lanyard</a> · <a href={GITHUB_URL} target="_blank" rel="noreferrer">fanhuayishiy ↗</a></p></dialog>
+  <dialog class="artwork-note" id="credits" aria-labelledby="credits-title"><button type="button" class="credits-close" data-close-credits aria-label={ui.close}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button><h2 id="credits-title">{ui.credits}</h2><p>AI CREW PASS · COMMUNITY FAN ART</p><p>{ui.credit}</p><p>{ui.rights} <a href={ART_SOURCE} target="_blank" rel="noreferrer">{ui.original} ↗</a> · <a href={asset(locale === "en" ? "img/characters/NOTICE.en.md" : "img/characters/NOTICE.md")}>{ui.notice}</a> · {ui.galleryBy} <a href="https://github.com/xu-yaoting/hanging-pass" target="_blank" rel="noreferrer">Hanging Pass</a> · {ui.physicsBy}: <a href="https://github.com/DavidHDev/react-bits" target="_blank" rel="noreferrer">React Bits Lanyard</a> · <a href={GITHUB_URL} target="_blank" rel="noreferrer">fanhuayishiy ↗</a></p></dialog>
   </main>
 
   <script>

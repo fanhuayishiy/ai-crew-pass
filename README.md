@@ -20,7 +20,9 @@ Node.js 22.12+。GitHub Pages 的子路径由 `GITHUB_REPOSITORY` 自动推导�
 
 修改卡面后，运行中的开发服务可供 `python -X utf8 scripts/export-badge-faces.py` 导出双语卡面，再执行 `python -X utf8 scripts/export-downloads.py` 生成静态下载。
 
-当前验收：`python -X utf8 scripts/verify-downloads.py`、`python -X utf8 scripts/verify-single-screen.py`。需要 Python Playwright、Chromium、Pillow。此前的图鉴、形变和旧自写物理测试保留作历史记录，不适用于当前单屏页面。
+口头禅现按用户提供的九角色对照图设置，卡背移除说明区，署名保留在页面弹窗；品牌与“工牌领取处”合为紧凑标题组合。
+
+当前验收：`python -X utf8 scripts/verify-reference-edits.py`、`python -X utf8 scripts/verify-downloads.py`、`python -X utf8 scripts/verify-single-screen.py`。需要 Python Playwright、Chromium、Pillow。此前的图鉴、形变和旧自写物理测试保留作历史记录，不适用于当前单屏页面。
 
 美术来源与署名：[素材说明](public/img/characters/NOTICE.md)、[English credits](public/img/characters/NOTICE.en.md)。前八位原帖立绘来自 ZipZipPipe；DeepSeek 原角色为上善无形；豆包使用本项目生成的透明动漫 v4，详情见 [生成记录](docs/doubao-anime-v4.md)。
 

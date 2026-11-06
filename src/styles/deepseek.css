@@ -362,3 +362,14 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
 @media (max-width: 360px) {
   html[lang="en"] .collection-heading { max-width: 120px; font-size: 15px; }
 }
+.station-heading { display: flex; flex-direction: column; gap: 12px; }
+html[lang] .station-heading .collection-heading { position: static; inset: auto; max-width: none; margin: 0; padding-left: 11px; border-left: 2px solid var(--theme-brand); color: var(--home-muted); font-size: 12px; font-weight: 400; line-height: 1.4; letter-spacing: .08em; }
+.credits-close { display: grid; place-items: center; padding: 0; line-height: 1; }
+.credits-close svg { display: block; width: 14px; height: 14px; }
+.badge-catchphrase { margin: 20px 0 0; padding-top: 14px; border-top: 1px solid color-mix(in srgb,var(--theme-soft) 18%,transparent); font-size: 12px; line-height: 1.65; }
+.badge-catchphrase span { margin-bottom: 6px; font-size: 7px; letter-spacing: .06em; }
+@media (max-width: 760px) {
+  .station-heading { gap: 9px; }
+  html[lang] .station-heading .collection-heading { font-size: 10px; padding-left: 8px; letter-spacing: .03em; }
+  html[lang="en"] .station-heading .collection-heading { max-width: 120px; font-size: 9px; }
+}
