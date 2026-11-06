@@ -33,6 +33,8 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: '1'
+      - name: Keep deployment output lean
+        run: node scripts/prepare-pages.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
