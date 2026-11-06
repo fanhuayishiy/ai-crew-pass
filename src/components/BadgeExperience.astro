@@ -167,13 +167,19 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
     </section>
 
     <footer class="home-footer">
-      <button type="button" class="more-about-link credits-trigger" data-open-credits>{ui.credits} <span aria-hidden="true">↗</span></button>
+      <div class="community-links"><button type="button" class="community-trigger" data-open-community><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M21 11c0 4.4-4 8-9 8a10 10 0 0 1-4-.8L3 20l1.4-4.1A7.1 7.1 0 0 1 3 11c0-4.4 4-8 9-8s9 3.6 9 8Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>{ui.community}</button><button type="button" class="more-about-link credits-trigger" data-open-credits>{ui.credits} <span aria-hidden="true">↗</span></button></div>
       <a class="contact-link" href={character.chat} target="_blank" rel="noreferrer">{locale === "en" ? `${ui.chat} ${character.brand}` : `和 ${character.brand} ${ui.chat}`} <span aria-hidden="true">↗</span></a>
     <p class="interaction-hint"><span>↔</span> {ui.drag} <i>·</i> {ui.flip}</p>
     </footer>
 
     </section>
 
+  <dialog class="community-dialog" id="community" aria-labelledby="community-title">
+    <button type="button" class="credits-close" data-close-community aria-label={ui.close}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+    <p class="community-eyebrow">FENGHUA AI LAB / WECHAT</p><h2 id="community-title">风花AI实验室</h2><p class="community-intro">{ui.communityIntro}</p>
+    <img class="community-qrcode" src={asset('img/community/fenghua-ai-lab-wechat.jpg')} width="258" height="258" alt={locale === 'en' ? 'WeChat QR code for Fenghua AI Lab' : '风花AI实验室微信公众号二维码'} loading="lazy" />
+    <p class="community-hint">{ui.communityHint}</p><a class="community-save" href={asset('img/community/fenghua-ai-lab-wechat.jpg')} download="fenghua-ai-lab-wechat.jpg" target="_blank" rel="noreferrer">{ui.saveQr} ↓</a>
+  </dialog>
   <dialog class="download-dialog" data-download-dialog data-preparing={ui.preparing} data-hint={ui.downloadHint} data-error={ui.downloadError} aria-labelledby="download-title">
     <button type="button" class="credits-close" data-download-close aria-label={ui.close}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
     <p class="download-eyebrow">{character.brand} · {character.code}—001</p><h2 id="download-title">{ui.download}</h2>

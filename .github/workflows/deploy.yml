@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 22   # Astro 7 要求 Node >= 22.12
@@ -26,7 +27,7 @@ jobs:
         # 刻意不用 npm ci：本仓库不带锁文件。
         # 在 macOS 生成的锁文件不会包含 Linux 专用的可选二进制
         # （rolldown 的 binding-*.wasi/node 包），CI 上 npm ci 会直接崩。
-        run: npm install --no-audit --no-fund
+        run: npm install --no-package-lock --no-audit --no-fund
       - name: Build
         # 项目型 Pages 在子路径下，base 只在 CI 里加
         run: npm run build
