@@ -1,0 +1,15 @@
+{
+  "id": "doubao",
+  "file": "doubao-3d-v3.png",
+  "kind": "generated_fan_art",
+  "source_url": null,
+  "reference": "User supplied character screenshot, 2026-11-06",
+  "author": "本项目 AI 生成同人形象",
+  "generator": "Built-in image_gen",
+  "prompt_record": "docs/doubao-3d-v3.md",
+  "license": "Non-commercial fan adaptation; original brand and character rights remain with their rights holders; not official; not MIT.",
+  "width": 941,
+  "height": 1672,
+  "transparent_background": true,
+  "sha256": "0dadd91c6b2e8e7cc8322cc5bef50deaac922c52b70cc2154749b57eb46f510f"
+}

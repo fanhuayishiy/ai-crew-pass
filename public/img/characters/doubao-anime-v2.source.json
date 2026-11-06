@@ -1,0 +1,17 @@
+{
+  "id": "doubao",
+  "file": "doubao-anime-v2.png",
+  "kind": "generated_fan_art",
+  "source_url": "https://apps.microsoft.com/detail/xp99jw18tlbk06?gl=CN&hl=zh-CN",
+  "style_reference_url": "https://www.bilibili.com/opus/1233069202138464289",
+  "author": "本项目 AI 生成同人设计",
+  "generator": "Built-in image_gen",
+  "identity_reference": "doubao-store.png",
+  "style_reference": "deepseek.png",
+  "prompt_record": "docs/doubao-artwork.md",
+  "license": "Non-commercial fan artwork; original brand and reference character rights remain with their rights holders; not official; not MIT.",
+  "modifications": "Generated original adaptation; CSS display crop only. No blur or feathering.",
+  "width": 941,
+  "height": 1672,
+  "sha256": "094b1a082892a89a8b1ba4a813eb683ba7f671245140637bb526e5deca61d749"
+}

@@ -1,0 +1,291 @@
+---
+import Base from '../layouts/Base.astro';
+import ReactBitsBadge from './ReactBitsBadge.jsx';
+import ShinyText from './react-bits/ShinyText.jsx';
+import { memeFor } from '../data/memes';
+import { makeCards } from '../data/cards.demo';
+import { GITHUB_URL, PROJECT_GITHUB_URL, ART_SOURCE, characterStyle, mix, type Character } from '../data/characters';
+import { copy, localizedCharacter, localizedCharacters, localeCharacterUrl, characterCatchphrase, type Locale } from '../data/i18n';
+interface Props { character: Character; locale?: Locale }
+const { character: originalCharacter, locale = 'zh' } = Astro.props;
+const character = localizedCharacter(originalCharacter, locale);
+const characters = localizedCharacters(locale);
+const ui = copy(locale);
+const characterIndex = characters.findIndex(c => c.id === character.id);
+const previousCharacter = characters[(characterIndex + characters.length - 1) % characters.length];
+const nextCharacter = characters[(characterIndex + 1) % characters.length];
+const CARDS = makeCards(character, locale);
+
+// Card catalog: edit src/data/cards.demo.ts to swap in your own content.
+// The screen-2 cards are the navigation, so the home page needs no text index.
+const coverCard = CARDS.find((card) => card.tier === 'cover')!;
+const contentCards = CARDS.filter((card) => card.tier !== 'cover' && !card.draft);
+// Carousel cards, cover excluded: the badge only flies out and fades, an odd fit among them.
+const rowCards = contentCards;
+const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path}`;
+const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[^。！？]+[。！？]?/g) || [character.motto];
+---
+
+<Base locale={locale} title={`${ui.siteName} · ${character.brand} · ${ui.badge}`} description={`${ui.subtitle}${locale === "en" ? ". " : "。"}${character.summary}`} theme={characterStyle(character)} themeColor={character.color}>
+  <main class="home-experience" id="top" data-character-id={character.id} data-locale={locale}>
+    <div class="morph-plane" data-morph-plane hidden aria-label={ui.gallery}></div>
+
+    <details class="crew-picker" data-crew-picker>
+      <summary aria-label={ui.switchEmployee}><span class="crew-picker__dot" aria-hidden="true"></span><span class="crew-picker__caption">{ui.switchEmployee}</span><b>{character.brand}</b><span class="crew-picker__count">09</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></summary>
+      <nav class="character-switch crew-roster" aria-label={ui.choose}>{characters.map(c => <a href={localeCharacterUrl(c, locale)} aria-current={c.id === character.id ? "page" : undefined} style={`--swatch:${c.color}`}><img src={asset(`img/avatars/${c.id}.webp`)} width="36" height="36" alt="" decoding="async" fetchpriority="low" /><b>{c.brand}</b></a>)}</nav>
+    </details>
+    <section class="home-stage" id="screen1">
+    <header class="home-masthead">
+      <a class="home-masthead__identity station-brand" href="#top"><span>{ui.siteName}</span><span class="brand-caption">{ui.subtitle}</span></a>
+      <nav class="social-links" aria-label={locale === 'en' ? 'Links and language' : '相关链接与语言'}>
+        <a class="github-star" href={PROJECT_GITHUB_URL} data-profile-github data-project-star target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" fill="currentColor"/></svg><span>Star on GitHub</span><span aria-hidden="true">↗</span></a>
+        <span class="language-switch" aria-label="Language / 语言">
+          <a data-language="zh" lang="zh-CN" href={localeCharacterUrl(originalCharacter, 'zh')} aria-current={locale === 'zh' ? 'true' : undefined}>中文</a>
+          <span aria-hidden="true">/</span>
+          <a data-language="en" lang="en" href={localeCharacterUrl(originalCharacter, 'en')} aria-current={locale === 'en' ? 'true' : undefined}>EN</a>
+        </span>
+      </nav>
+    </header>
+
+    <p class="home-watermark" aria-hidden="true"><ShinyText client:load text={character.brand} color={mix(character.color,.80)} shineColor={mix(character.color,.57)} speed={4.5} delay={3.5} shineWidth={22} /></p>
+    <h1 class="collection-heading">{ui.pickup}</h1>
+
+    
+    <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">AI CREW COLLECTION <i>·</i> 09 CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {character.name} {ui.arrived} <span>NO. {character.code}—001</span></div>
+    <div class="react-bits-stage" aria-label={`${character.name} · ${ui.badge}`}>
+      <ReactBitsBadge locale={locale} client:only="react" characterId={character.id} color={character.color} cardColor={character.id === 'deepseek' ? '#e1ebfa' : mix(character.color,.87)} base={import.meta.env.BASE_URL} />
+    </div>
+    <a class="hero-role-control hero-role-control--previous" data-role-previous href={localeCharacterUrl(previousCharacter, locale)} aria-label={`${ui.previous} · ${previousCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{previousCharacter.brand}</span></a>
+    <a class="hero-role-control hero-role-control--next" data-role-next href={localeCharacterUrl(nextCharacter, locale)} aria-label={`${ui.next} · ${nextCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{nextCharacter.brand}</span></a>
+    <button class="download-pass" type="button" data-download-pass><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{ui.download}</button>
+    <section class="badge-scene legacy-badge-scene" aria-hidden="true" aria-label={`${character.name}工作牌`} data-strap-label-text={character.brand.toUpperCase().replace(/[^A-Z]/g, "") || "DOUBAO"} data-strap-color={character.color} data-strap-deep={character.ink} data-strap-light={mix(character.color,.25)}>
+      <div class="badge-lanyard" aria-hidden="true"><span>{character.brand.toUpperCase()}</span></div>
+      <span class="badge-clip" aria-hidden="true"><i></i></span>
+      {/* 3D twisted ribbon (Three.js): same coords as the rig SVG; draws strap + print only */}
+      <canvas class="badge-ribbon3d" data-strap-ribbon3d aria-hidden="true"></canvas>
+      <svg class="badge-rig" data-rig-strap aria-hidden="true">
+        <defs>
+          {/* Strap twill: fine diagonal lines for fabric feel (redrawn per frame on the strap) */}
+          <pattern id="strap-weave" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
+            <path d="M 0 0 L 0 6" stroke="#ffffff16" stroke-width="2"></path>
+            <path d="M 3 0 L 3 6" stroke="#00000014" stroke-width="2"></path>
+          </pattern>
+          {/* All hardware uses one neutral-grey metal gradient; no new hues introduced */}
+          <linearGradient id="rig-metal" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f9fcff"></stop>
+            <stop offset="0.18" stop-color="#c2ccd8"></stop>
+            <stop offset="0.32" stop-color="#f8fbff"></stop>
+            <stop offset="0.47" stop-color="#8997a8"></stop>
+            <stop offset="0.62" stop-color="#d1dae5"></stop>
+            <stop offset="0.78" stop-color="#ffffff"></stop>
+            <stop offset="1" stop-color="#9cabbc"></stop>
+          </linearGradient>
+        </defs>
+
+        {/* Strap body: a filled ribbon (width varies with twist, no constant-width stroke) */}
+        <path data-strap-band d="" fill="var(--theme-brand, #4964a0)" stroke="none"></path>
+        {/* Twist shading: one quad per segment, the more it turns away the darker */}
+        <g data-strap-shade></g>
+        <path data-strap-weave d="" fill="none" stroke="url(#strap-weave)" stroke-width="34" opacity="0"></path>
+        <path data-strap-highlight d="" fill="none" stroke="var(--theme-light, #6886bd)" stroke-width="20"></path>
+        <path data-strap-thread d="" fill="none" stroke="#ffffff25" stroke-width="2"></path>
+
+        {/* Pixel label: one <g> per glyph; lanyard-pass writes transform on the polyline */}
+        <g class="badge-rig__label" data-strap-label></g>
+
+        {/* Clip: one-piece flat metal clip plate (silver, smooth, no rivets/screws or bumps) */}
+        <g data-rig-clip>
+          <rect x="-23" y="-47" width="46" height="34" rx="2.5" fill="url(#rig-metal)" stroke="#f4f7fc" stroke-width="0.7"></rect>
+          <path d="M-20-44H20M-20-42H20M-20-40H20M-20-19H20M-20-17H20" stroke="#ffffff" stroke-opacity="0.18" stroke-width="0.5"></path>
+          {/* Horizontal rectangular slot through the middle of the clip plate */}
+          <rect x="-9.5" y="-33" width="19" height="4.5" rx="1" fill="#00000038"></rect>
+          {/* Soft shadow where the strap enters: strap + clip read as one (fading dark band) */}
+          <rect x="-17" y="-47" width="34" height="7" fill="color-mix(in srgb, var(--theme-ink, #263c71) 18.0%, transparent)"></rect>
+          {/* Small round hole at the clip plate bottom: the O-ring hangs freely here */}
+          <circle cx="0" cy="-12.5" r="2.8" fill="var(--theme-ink, #374c70)" opacity="0.6"></circle>
+          <path d="M -1.6 -13.6 A 2.8 2.8 0 0 1 1.6 -13.6" fill="none" stroke="#ffffff70" stroke-width="0.9"></path>
+        </g>
+      </svg>
+
+      <canvas class="badge-body3d" data-badge-body3d aria-hidden="true"></canvas>
+      <article class="badge-card" data-morph-card data-chapter-index="0" data-card-label={coverCard.label} aria-label={`${coverCard.label} profile card`}>
+        <div class="badge-tilt">
+          <div class="badge-flip">
+            <div class="badge-face badge-face--front" data-badge-face="front">
+              <div class="badge-face__topline"><span class="badge-face__site">{character.brand}</span><span class="badge-pass-type">CREW PASS</span></div>
+
+              <div class:list={["badge-portrait", { "badge-portrait--cutout": character.portraitTransparent }]}>
+                <span class="portrait-orbit" aria-hidden="true"></span>
+                <img src={asset(character.portraitImage || `img/characters/${character.image}`)} alt={`${character.brand} · ${character.name}角色立绘`} width={character.imageWidth} height={character.imageHeight} style={`object-position:${character.portraitPosition || "50% 0%"}`} draggable="false" fetchpriority="high" decoding="sync" /><span class="portrait-label">{character.brand} · {character.name}</span><span class="portrait-edition">CHARACTER EDITION</span>
+              </div>
+
+              <div class="badge-face__identity">
+                <p class="badge-face__name">{character.name}<span>{locale === "zh" ? character.alias : ""}</span></p><p class="badge-role">{character.role}</p>
+              </div>
+
+              <p class="badge-face__desc">{mottoLines.map(line => <span>{line}</span>)}</p>
+
+              <p class="badge-face__motto"><span class="badge-barcode" aria-hidden="true"></span><span><b>CREW PASS · {ui.siteName} · {character.code}—001</b><small>{ui.unofficial}</small></span></p>
+            </div>
+
+            <div class="badge-face badge-face--back" data-badge-face="back" hidden>
+              <div class="badge-face__topline"><span class="badge-face__site">{character.brand}</span><span class="badge-pass-type">CREW PASS</span></div>
+
+              <div class="badge-back__body">
+                <p class="badge-back__headline">Stay curious.<br /><span>{character.title[0]}<br />{character.title[1]}</span></p>
+                <ul class="badge-back__roles">
+                  {character.features.map(feature => <li>{feature}</li>)}
+                </ul><blockquote class="badge-catchphrase"><span>{memeFor(character.id, locale).label}</span>“{characterCatchphrase(character.id, locale)}”</blockquote><p class="badge-back-credit">{ui.fan}<br />{character.credit}<br />{ui.sourceNote}<br />{ui.noncommercial}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <i class="badge-hole" aria-hidden="true"></i>
+      </article>
+
+      <svg class="badge-rig badge-rig--front" aria-hidden="true">
+        {/* Gimbal: post takes grab clip, hooks lower ring; card angle (grab: strap angle) */}
+        <g data-rig-ring>
+          {/* Drop shadow on the card (makes it read as hanging from the hook) */}
+          <ellipse cx="0" cy="5" rx="11" ry="7" fill="color-mix(in srgb, var(--theme-ink, #263c71) 18.0%, transparent)"></ellipse>
+          {/* Soft shadow on the card */}
+          <ellipse cx="0" cy="2.4" rx="10" ry="6" fill="color-mix(in srgb, var(--theme-ink, #263c71) 12.2%, transparent)"></ellipse>
+
+          {/* Punch hole (round): hole first, ring on top — sells "ring through hole" */}
+          <ellipse cx="0" cy="0" rx="5.2" ry="5" fill="var(--theme-ink, #31436c)"></ellipse>
+          <ellipse cx="0" cy="-1.4" rx="5.2" ry="3.2" fill="var(--theme-ink, #263655)" opacity="0.55"></ellipse>
+
+          {/* O-ring: smooth unbroken circle (no gap, no spring), hangs from the clip plate
+              hole and gently through the card punch hole. The unclip turn spins this group. */}
+          <g data-rig-hook>
+            <ellipse cx="0" cy="-3.6" rx="7.2" ry="7.2" fill="none" stroke="url(#rig-metal)" stroke-width="2.6"></ellipse>
+            {/* Cleanly rendered highlight / shade */}
+            <path d="M -5.1 -7.9 A 7.2 7.2 0 0 1 1.4 -10.7" fill="none" stroke="#ffffffd0" stroke-width="1.2" stroke-linecap="round"></path>
+            <path d="M 5.1 0.7 A 7.2 7.2 0 0 1 -1.6 3.6" fill="none" stroke="var(--theme-ink, #2e426a)" stroke-opacity="0.32" stroke-width="1.1" stroke-linecap="round"></path>
+          </g>
+
+          {/* Soft shadow where the ring meets the card face */}
+          <ellipse cx="0.8" cy="1.8" rx="4.8" ry="2.2" fill="color-mix(in srgb, var(--theme-ink, #263c71) 18.8%, transparent)"></ellipse>
+        </g>
+      </svg>
+
+    </section>
+
+    <footer class="home-footer">
+      <a class="more-about-link" href="#screen2">{ui.all} <span aria-hidden="true">↓</span></a>
+      <a class="contact-link" href={character.chat} target="_blank" rel="noreferrer">{locale === "en" ? `${ui.chat} ${character.brand}` : `和 ${character.brand} ${ui.chat}`} <span aria-hidden="true">↗</span></a>
+    <p class="interaction-hint"><span>↔</span> {ui.drag} <i>·</i> {ui.flip}</p>
+    </footer>
+
+    </section>
+
+    <section class="morph-runway" id="runway" aria-hidden="true">
+      <p class="morph-interstitial">DIVE DEEP.</p>
+    </section>
+
+    <section class="chapter-stage" id="screen2" aria-label={ui.gallery}>
+      <p class="chapter-watermark" aria-hidden="true"><ShinyText client:load text="Stay curious." color={mix(character.color,.84)} shineColor={mix(character.color,.65)} speed={5} delay={3} shineWidth={20} /></p>
+
+
+
+      <div class="chapter-grid" data-chapter-grid>
+        {contentCards.map((card) => (
+          <article
+            class="chapter-card"
+            data-morph-card
+            data-chapter-index={card.index}
+            data-card-label={card.label}
+            data-card-title={card.label}
+            data-card-meta={card.tag}
+            data-card-summary={card.back.summary}
+            data-card-cta={card.back.cta}
+            data-card-href={card.href}
+            data-card-bullets={JSON.stringify(card.back.bullets)}
+            style={`--card-accent: ${card.accent}`}
+            aria-label={`${card.label} — ${card.back.summary}`}
+          >
+            <div class="chapter-card__flip">
+              {/* Front: full-card image + title only — kicker, credit, arrow removed on request */}
+              <a class="card-face card-face--front" href={card.href} data-card-link>
+                {card.front.image && (
+                  <>
+                    <img class="card-face__bg" src={asset(card.front.image)} alt={card.front.alt} width="1024" height="1536" loading="lazy" decoding="async" draggable="false" />
+                    <span class="card-face__scrim" aria-hidden="true"></span>
+                  </>
+                )}
+                <h3>{card.label}<span>.</span></h3>
+              </a>
+              <div class="card-face card-face--back">
+                <div class="chapter-card__top"><span>{card.kicker}</span><span>{card.tag}</span></div>
+                <h3>{card.label}<span>.</span></h3>
+                <p class="card-face__summary">{card.back.summary}</p>
+                <ul>{card.back.bullets.map((item) => <li>{item}</li>)}</ul>
+                <blockquote class="card-catchphrase"><span>{memeFor(card.id, locale).label}</span><p>“{card.back.catchphrase}”</p><a href={memeFor(card.id, locale).source} target="_blank" rel="noreferrer">{ui.memeSource}</a></blockquote>
+                <div class="chapter-card__foot">
+                  <span>CREW PASS · {ui.siteName} · {characters.find(c => c.id === card.id)?.code}—001</span>
+                  <a class="card-face__cta" href={card.href}>{card.back.cta} <span aria-hidden="true">→</span></a>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+        <nav class="chapter-controls" data-chapter-controls aria-label={ui.carousel}>
+          <button type="button" data-carousel-previous aria-label={ui.previous}>←</button>
+          <span class="sr-only" data-carousel-label>{contentCards[0].label}</span>
+          <div class="chapter-controls__dots" data-carousel-dots aria-label={ui.choose}>
+            {rowCards.map((card, slide) => (
+              <button type="button" data-carousel-dot={slide} aria-label={`${ui.select} ${card.label}`} aria-current={slide === 0 ? 'true' : 'false'}></button>
+            ))}
+          </div>
+          <span class="archive-count" data-carousel-count>01 / 09</span>
+          <button type="button" data-carousel-next aria-label={ui.next}>→</button>
+          <span class="chapter-panel__hint">{ui.carouselHint}</span>
+        </nav>
+
+      {/* Screen 2 action bar: "More about me" bottom-left, "Get in touch" plus a
+          round back-to-top button bottom-right. The bar is space-between with a
+          fixed gap, so the button can never collide with the pill. */}
+      <div class="chapter-actions">
+        <button type="button" class="more-about-link credits-trigger" data-open-credits>{ui.credits} <span aria-hidden="true">↗</span></button>
+        <a class="contact-link" href={character.chat} target="_blank" rel="noreferrer">{locale === "en" ? `${ui.chat} ${character.brand}` : `和 ${character.brand} ${ui.chat}`} <span aria-hidden="true">↗</span></a>
+      </div>
+      {/* Floating back-to-top button: independent of the action bar, pinned to the
+          viewport's bottom-right corner just above the bar, so it never sits in
+          the panel's text column. */}
+      <button type="button" class="to-top" data-return-top aria-label={ui.back}>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M6 14.5 12 8.5l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+    </section>
+
+    <div class="morph-debug" data-morph-debug hidden aria-live="off"></div>
+  <dialog class="download-dialog" data-download-dialog data-preparing={ui.preparing} data-hint={ui.downloadHint} data-error={ui.downloadError} aria-labelledby="download-title">
+    <button type="button" class="credits-close" data-download-close aria-label={ui.close}>×</button>
+    <p class="download-eyebrow">{character.brand} · {character.code}—001</p><h2 id="download-title">{ui.download}</h2>
+    <p class="download-status" data-download-status aria-live="polite">{ui.downloadHint}</p>
+    <div class="download-previews">{(['front','back'] as const).map(face => <figure><div class="transparency-grid"><img data-print-preview={face} alt={`${character.brand} · ${face === 'front' ? ui.front : ui.backImage}`} /></div><a data-download-face={face} data-source={asset(`img/badges/${locale}/${character.id}-${face}.png`)} download={`${character.id}-${locale}-${face}.png`} aria-disabled="true">{face === 'front' ? ui.front : ui.backImage} ↓</a></figure>)}</div>
+    <a class="download-both" data-download-zip download={`${character.id}-${locale}-crew-pass.zip`} aria-disabled="true">{ui.downloadBoth} ↓</a>
+  </dialog>
+  <dialog class="artwork-note" id="credits" aria-labelledby="credits-title"><button type="button" class="credits-close" data-close-credits aria-label={ui.close}>×</button><h2 id="credits-title">{ui.credits}</h2><p>AI CREW PASS · COMMUNITY FAN ART</p><p>{ui.credit}</p><p>{ui.rights} <a href={ART_SOURCE} target="_blank" rel="noreferrer">{ui.original} ↗</a> · <a href={asset(locale === "en" ? "img/characters/NOTICE.en.md" : "img/characters/NOTICE.md")}>{ui.notice}</a> · {ui.galleryBy} <a href="https://github.com/xu-yaoting/hanging-pass" target="_blank" rel="noreferrer">Hanging Pass</a> · {ui.physicsBy}: <a href="https://github.com/DavidHDev/react-bits" target="_blank" rel="noreferrer">React Bits Lanyard</a> · <a href={GITHUB_URL} target="_blank" rel="noreferrer">fanhuayishiy ↗</a></p></dialog>
+  </main>
+
+  <script>
+    import { initLanyardMorph } from '../scripts/lanyard-morph';
+
+    import { initPageEnhancements } from '../scripts/page-enhancements';
+    initPageEnhancements();
+    import { initBadgeDownload } from '../scripts/badge-download';
+    initBadgeDownload();
+    const morph = initLanyardMorph();
+    // The gallery retains its scroll layout; hero physics belong solely to React Bits.
+    const stage = document.querySelector<HTMLElement>('.home-stage');
+    const measure = () => morph?.update({
+      width: window.innerWidth, height: stage?.clientHeight || window.innerHeight,
+      centerX: window.innerWidth / 2, centerY: (stage?.clientHeight || window.innerHeight) / 2,
+      angle: 0, velocityX: 0, velocityY: 0,
+    });
+    measure();
+    window.addEventListener('resize', measure);
+  </script>
+</Base>

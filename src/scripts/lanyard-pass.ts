@@ -1,14 +1,16 @@
 import { GLYPH_H, GLYPH_W, glyphRows, layoutLabel } from './strap-glyphs';
 import { centerlinePath, ribbonBandPath, ribbonOutline, ribbonQuads, sampleRibbon, twistEnvelope } from './strap-ribbon';
 import { createRibbon3D, type Ribbon3D } from './strap-ribbon3d';
+import { createBadgeBody3D, type BadgeBody3D } from './badge-body3d';
 import { createSim } from './lanyard-physics';
 import type { LanyardMorphController } from './lanyard-morph';
+import { CatmullRomCurve3, Vector3 } from 'three';
 
 type Face = 'front' | 'back';
 type Sim = ReturnType<typeof createSim>;
 type Point2D = { x: number; y: number };
 
-const TARGET_PERIOD = 1.86;
+const TARGET_PERIOD = 2.45;
 const BASE_ROPE_RATIO = 0.62;
 // The strap tail must reach inside the clip plate (it used to stop 42px short of the clip,
 // leaving the cut end outside it, which read as "not attached")
@@ -46,29 +48,15 @@ export function initLanyardPass(morph: LanyardMorphController): void {
   let sceneRect = scene.getBoundingClientRect();
   let pin: Point2D = { x: 0, y: 0 };
   let baseRopeLength = 0;
-  // Elastic cord: dragging can stretch the rope (up to CORD_STRETCH), and on release an
-  // underdamped spring pulls it back to rest length, giving the "pull down -> springs back
-  // up" bounce (ζ≈0.35, so it oscillates a few times before settling).
-  const CORD_STRETCH = 0.28;
-  const ROPE_SPRING = 150;
-  const ROPE_DAMPING = 12;    // 8.5 → 12: settles the drop-and-bounce faster
+  // The band stretches only beyond its full reach. Lifting keeps the rest length
+  // unchanged so the lightweight strap can hang slack above the held badge.
+  const CORD_STRETCH = 0.10;
+  const ROPE_SPRING = 100;
+  const ROPE_DAMPING = 18;
   let ropeLength = 0;
   let ropeVelocity = 0;
-  // Entrance (conservative preset): pre-stretch the cord a little so it drops and bounces
-  // back on its own, then add a lateral impulse to sway left and right, decaying to rest in
-  // about 4s. These three numbers are meant to be tweaked directly.
-  // dx/dy = push distance (it sways back naturally); ropeStretch = cord pre-stretch
-  // (drop and bounce)
-  // angle = start swing angle (rad), ~0.03 rad ≈ 20px (total pendulum length 665px);
-  // ropeStretch = cord pre-stretch
-  // Mimics "a person grabs it once and lets go": pulled down (cord stretches) → bounces
-  // back → one flick, then a few left-right swings.
-  // Gotcha (learned the hard way): too strong an impulse exceeds what the PBD solver can
-  // correct in a single step -- the rope gets stretched and the card looks "detached" from
-  // the strap. So this uses a "clearly visible but not violent" magnitude:
-  //   ropeStretch 0.08 ≈ 30px vertical; angle 0.025 + omega 0.1 ≈ 60–70px lateral
-  // 25% tighter than the preset described above, for a subtler entrance
-  const ENTRANCE = { ropeStretch: 0.075, angle: 0.035, omega: 0.14 };
+  // Release from rest to one side: gravity produces the entrance swing.
+  const ENTRANCE = { ropeStretch: 0.018, angle: 0.13, omega: 0 };
   // Layout jitter within 1.2s of the entrance triggers measure(), which rebuilds the sim
   // and wipes the impulse -- so a rebuild inside this window re-fires it once, and never
   // replays it after that.
@@ -81,12 +69,15 @@ export function initLanyardPass(morph: LanyardMorphController): void {
   let flipAngle = 0;
   let flipVelocity = 0;
   let flipTarget = 0;
-  let tiltX = 0;
-  let tiltY = 0;
+  const REST_PITCH = 1.5;
+  const REST_YAW = -3;
+  let hoverTiltX = 0;
+  let hoverTiltY = 0;
+  let tiltX = reduced ? 0 : REST_PITCH;
+  let tiltY = reduced ? 0 : REST_YAW;
   let lastTime = 0;
   let raf = 0;
   let resizeRaf = 0;
-  let wakeTime = 0;
   let stableFrames = 0;
   let lastAngle = 0;
   let dragTarget: Point2D | null = null;
@@ -101,7 +92,7 @@ export function initLanyardPass(morph: LanyardMorphController): void {
   const shadeQuads: SVGPathElement[] = [];
   for (let i = 0; i < RIBBON_STEPS; i++) {
     const quad = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    quad.setAttribute('fill', '#26382b');
+    quad.setAttribute('fill', '#263c71');
     quad.setAttribute('opacity', '0');
     strapShade?.appendChild(quad);
     shadeQuads.push(quad);
@@ -117,7 +108,22 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     }
   }
 
-  const LABEL_TEXT = 'HELLO';
+  const LABEL_TEXT = scene.dataset.strapLabelText || 'DEEPSEEK';
+  const strapColor = scene.dataset.strapColor || '#4964a0';
+  const strapDeep = scene.dataset.strapDeep || '#29365b';
+  const strapLight = scene.dataset.strapLight || '#6886bd';
+  const badgeName = scene.getAttribute('aria-label') || '角色工作牌';
+  const strapCurve = new CatmullRomCurve3([], false, 'centripetal');
+  const bodyCanvas = scene.querySelector<HTMLCanvasElement>('[data-badge-body3d]');
+  let body3d: BadgeBody3D | null = null;
+  if (bodyCanvas) {
+    try {
+      body3d = createBadgeBody3D(bodyCanvas, strapColor);
+      scene.classList.add('has-body3d');
+    } catch {
+      bodyCanvas.hidden = true;
+    }
+  }
   const LABEL_PIXEL = 1.5;
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const labelGlyphs: SVGGElement[] = [];
@@ -166,10 +172,8 @@ export function initLanyardPass(morph: LanyardMorphController): void {
       Math.asin(clamp(horizontalReach / totalReach, 0, 1)),
       Math.acos(clamp(verticalReach / totalReach, -1, 1)),
     );
-    // The light strap keeps the clip nearly fixed. The final clip-to-card
-    // constraint shortens the solver's effective pendulum radius further;
-    // 0.7 matches the requested 1.86s swing in the rendered page.
-    const effectivePendulumLength = cordLength * 0.7;
+    // A heavy badge swings about the upper anchor: use the full pendulum length.
+    const effectivePendulumLength = baseRopeLength + cordLength;
     sim = createSim({
       ropeLength: baseRopeLength,
       cordLength,
@@ -179,11 +183,13 @@ export function initLanyardPass(morph: LanyardMorphController): void {
       // Double the substeps: a long chain needs more of them, otherwise big impulses
       // outrun what the constraints can fix (rope stretches / card flung out)
       fixedDt: 1 / 120,
-      frictionPerFrame: 0.9915,   // 0.99 → 0.988: sway decays faster and settles
-      chainInvMass: 0.06,
-      bendStiffness: 0.45,        // 0.3 → 0.45: stiffer strap, no mush while dragging
+      maxSubSteps: 8,
+      iterations: 40,
+      frictionPerFrame: 0.985,
+      chainInvMass: 80,
+      bendStiffness: 0.025,
       maxAngle: maxVisibleAngle,
-      returnStrength: 12,
+      returnStrength: 0,
     });
     lastAngle = 0;
     dragTarget = null;
@@ -198,7 +204,8 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     // the UVs cover), not baseRopeLength + cordLength
     let ropeArc = 0;
     for (let i = 1; i < pts.length; i++) ropeArc += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
-    ribbon3d?.setViewport(sceneRect.width, sceneRect.height, Math.max(120, ropeArc), { front: 'HELLO', back: '2025' }, Math.max(60, visibleRope));
+    ribbon3d?.setViewport(sceneRect.width, sceneRect.height, Math.max(120, ropeArc), { front: LABEL_TEXT, back: '0001' }, Math.max(60, visibleRope));
+    body3d?.setViewport(sceneRect.width, sceneRect.height, cardW, cardH, holeOffset);
     ropeLength = baseRopeLength;
     ropeVelocity = 0;
     if (performance.now() < entranceRetryUntil) fireEntrance(entranceScale);
@@ -223,19 +230,24 @@ export function initLanyardPass(morph: LanyardMorphController): void {
   function render(): void {
     const state = sim.state();
     const points = state.points;
-    const lastLink = points[points.length - 3];
     const clipPoint = state.clip;
-    let path = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
-    let lastDrawn = points[0];
-    for (let i = 1; i < points.length - 2; i++) {
-      if (Math.hypot(points[i].x - clipPoint.x, points[i].y - clipPoint.y) <= STRAP_TAIL) break;
-      path += ` L ${points[i].x.toFixed(2)} ${points[i].y.toFixed(2)}`;
-      lastDrawn = points[i];
+    // Sample a smooth band through the physical joints, like the reference.
+    // Trim by distance from the tail, not by proximity to the clip: a slack loop
+    // can pass near the clip halfway along its length and must not disappear.
+    strapCurve.points = points.slice(0, -1).map(point => new Vector3(point.x, point.y, 0));
+    const smooth = strapCurve.getPoints(72);
+    let cut = smooth.length - 1;
+    let reserve = STRAP_TAIL;
+    while (cut > 1) {
+      const segment = smooth[cut].distanceTo(smooth[cut - 1]);
+      if (segment >= reserve) break;
+      reserve -= segment;
+      cut--;
     }
-    const endX = clipPoint.x - lastDrawn.x;
-    const endY = clipPoint.y - lastDrawn.y;
-    const endLength = Math.hypot(endX, endY) || 1;
-    path += ` L ${(clipPoint.x - endX / endLength * STRAP_TAIL).toFixed(2)} ${(clipPoint.y - endY / endLength * STRAP_TAIL).toFixed(2)}`;
+    const lastDrawn = smooth[cut - 1];
+    const end = smooth[cut].clone().lerp(lastDrawn, reserve / Math.max(1e-6, smooth[cut].distanceTo(lastDrawn)));
+    const drawn = [...smooth.slice(0, cut), end];
+    let path = drawn.map((point, i) => `${i ? 'L' : 'M'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
     // First parse the d we just wrote back into a polyline (ribbon, pixel label and clip
     // rotation all read this one copy, so they share a single source)
     const polyline: { x: number; y: number }[] = [];
@@ -257,7 +269,7 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     const ribbon = sampleRibbon(polyline, twist, RIBBON_STEPS, 6, clipY);
     const halfWidth = 17;
     strapBand.setAttribute('d', ribbonOutline(ribbon, halfWidth));
-    const quads = ribbonQuads(ribbon, halfWidth);
+    const quads = ribbonQuads(ribbon, halfWidth, strapColor, strapDeep);
     const avgFacing = ribbon.reduce((sum, r) => sum + r.facing, 0) / Math.max(1, ribbon.length);
     for (let i = 0; i < shadeQuads.length; i++) {
       const quad = quads[i];
@@ -271,7 +283,7 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     // The highlight must also be a "ribbon that narrows with the twist": a fixed-width
     // stroke turns into a floating separate bar once it edges past the view
     strapHighlight.setAttribute('d', ribbonBandPath(ribbon, halfWidth * 0.58));
-    strapHighlight.setAttribute('fill', '#718570');
+    strapHighlight.setAttribute('fill', strapLight);
     strapHighlight.setAttribute('stroke', 'none');
     strapHighlight.setAttribute('opacity', '1');
     strapThread.setAttribute('d', line);
@@ -347,6 +359,8 @@ export function initLanyardPass(morph: LanyardMorphController): void {
       badge.style.transform = `translate3d(${(state.com.x - cardW / 2).toFixed(4)}px, ${(state.com.y - cardH / 2).toFixed(4)}px, 0) rotate(${rotation.toFixed(4)}deg)`;
       tilt.style.transform = `rotateX(${tiltX.toFixed(3)}deg) rotateY(${tiltY.toFixed(3)}deg)`;
     }
+    badge.style.setProperty('--laminate-angle', `${(118 + rotation * 0.45 + tiltY * 0.7).toFixed(2)}deg`);
+    body3d?.update(state.com.x, state.com.y, rotation, tiltX, tiltY, flipAngle, morph.getProgress() <= 0.001);
     flip.style.transform = `rotateY(${flipAngle.toFixed(3)}deg)`;
     morph.update({
       width: sceneRect.width,
@@ -366,6 +380,14 @@ export function initLanyardPass(morph: LanyardMorphController): void {
       cardW,
       cardH,
       angle: state.angleDeg,
+      speed: state.maxSpeed,
+      dragging: state.dragging,
+      rope: Object.freeze({
+        length: ropeLength,
+        restLength: baseRopeLength,
+        arc: points.slice(1, -1).reduce((sum, point, i) => sum + Math.hypot(point.x - points[i].x, point.y - points[i].y), 0),
+        chord: Math.hypot(clipPoint.x - pin.x, clipPoint.y - pin.y),
+      }),
       ...morph.getDebugState(),
     });
   }
@@ -378,7 +400,7 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     if (!reduced) {
       if (dragTarget) {
         const reach = Math.hypot(dragTarget.x - pin.x, dragTarget.y - pin.y);
-        ropeLength = clamp(reach - cordLength, baseRopeLength * 0.35, baseRopeLength * (1 + CORD_STRETCH));
+        ropeLength = clamp(reach - cordLength, baseRopeLength, baseRopeLength * (1 + CORD_STRETCH));
         ropeVelocity = 0;
       } else {
         // After release: the damped spring pulls the cord back to rest length -- this step
@@ -393,8 +415,8 @@ export function initLanyardPass(morph: LanyardMorphController): void {
       // Shrink the 3D tilt caps: at the old ±30°/±42° a big swing made the card look
       // "flung off/detached"; now ±9°/±12° -- still "the card is swaying", but never
       // visually severed.
-      const targetX = clamp(state.velocity.y * 0.008, -9, 9);
-      const targetY = clamp(-state.velocity.x * 0.012, -12, 12);
+      const targetX = REST_PITCH + hoverTiltX + clamp(state.velocity.y * 0.008, -9, 9);
+      const targetY = REST_YAW + hoverTiltY + clamp(-state.velocity.x * 0.012, -12, 12);
       const factor = 1 - Math.exp(-dt * 7);
       tiltX += (targetX - tiltX) * factor;
       tiltY += (targetY - tiltY) * factor;
@@ -414,17 +436,17 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     render();
 
     const angle = sim.state().angleDeg;
-    const settled = pointer.id === -1 && Math.abs(angle) < 0.15 &&
+    const settled = pointer.id === -1 && sim.state().maxSpeed < 4 && Math.abs(angle) < 0.15 &&
       Math.abs(angle - lastAngle) < 0.015 && Math.abs(flipTarget - flipAngle) < 0.05 &&
-      Math.abs(tiltX) < 0.15 && Math.abs(tiltY) < 0.15;
+      Math.abs(tiltX - (reduced ? 0 : REST_PITCH + hoverTiltX)) < 0.15 &&
+      Math.abs(tiltY - (reduced ? 0 : REST_YAW + hoverTiltY)) < 0.15;
     stableFrames = settled ? stableFrames + 1 : 0;
     lastAngle = angle;
-    if (pointer.id !== -1 || (stableFrames < 30 && time - wakeTime < 7000)) raf = requestAnimationFrame(frame);
+    if (pointer.id !== -1 || stableFrames < 40) raf = requestAnimationFrame(frame);
     else lastTime = 0;
   }
 
   function wake(): void {
-    wakeTime = performance.now();
     stableFrames = 0;
     if (!raf && !document.hidden) raf = requestAnimationFrame(frame);
   }
@@ -436,7 +458,7 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     flipTarget = face === 'front' ? 0 : 180;
     front.setAttribute('aria-hidden', String(face !== 'front'));
     back.setAttribute('aria-hidden', String(face !== 'back'));
-    badge.setAttribute('aria-label', `Demo profile card, ${face} side. Press Enter or Space to flip.`);
+    badge.setAttribute('aria-label', `${badgeName}，${face === 'front' ? '正面' : '背面'}。按回车或空格翻面。`);
     if (reduced) { flipAngle = flipTarget; render(); }
     else wake();
   }
@@ -476,7 +498,7 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     // its final target once so the card still follows the gesture.
     if (!reduced && dragTarget && pointer.moved >= 6) {
       const reach = Math.hypot(dragTarget.x - pin.x, dragTarget.y - pin.y);
-      ropeLength = clamp(reach - cordLength, baseRopeLength * 0.35, baseRopeLength * (1 + CORD_STRETCH));
+      ropeLength = clamp(reach - cordLength, baseRopeLength, baseRopeLength * (1 + CORD_STRETCH));
       ropeVelocity = 0;
       sim.setRopeLength(ropeLength);
       sim.step(1 / 60);
@@ -508,6 +530,9 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     cardW: number;
     cardH: number;
     angle: number;
+    speed: number;
+    dragging: boolean;
+    rope: Readonly<{ length: number; restLength: number; arc: number; chord: number }>;
   }>;
   Object.defineProperty(window, '__lanyard', {
     configurable: true,
@@ -520,7 +545,7 @@ export function initLanyardPass(morph: LanyardMorphController): void {
   back.setAttribute('aria-hidden', 'true');
   badge.setAttribute('role', 'button');
   badge.setAttribute('tabindex', '0');
-  badge.setAttribute('aria-label', 'Demo profile card, front side. Press Enter or Space to flip.');
+  badge.setAttribute('aria-label', `${badgeName}，正面。按回车或空格翻面。`);
   scene.classList.add('badge-scene--interactive');
   scene.classList.toggle('badge-scene--reduced', reduced);
   render();
@@ -563,6 +588,18 @@ export function initLanyardPass(morph: LanyardMorphController): void {
   badge.addEventListener('pointerup', (event) => endPointer(event, false));
   badge.addEventListener('pointercancel', (event) => endPointer(event, true));
   badge.addEventListener('dragstart', (event) => event.preventDefault());
+  badge.addEventListener('pointermove', (event) => {
+    if (reduced || pointer.id !== -1 || event.pointerType === 'touch' || morph.getProgress() > 0.001) return;
+    const rect = badge.getBoundingClientRect();
+    hoverTiltX = clamp((event.clientY - rect.top) / rect.height - 0.5, -0.5, 0.5) * -9;
+    hoverTiltY = clamp((event.clientX - rect.left) / rect.width - 0.5, -0.5, 0.5) * 16;
+    wake();
+  });
+  badge.addEventListener('pointerleave', () => {
+    hoverTiltX = 0;
+    hoverTiltY = 0;
+    if (!reduced) wake();
+  });
   motionPreference.addEventListener('change', (event) => {
     reduced = event.matches;
     scene.classList.toggle('badge-scene--reduced', reduced);
@@ -574,8 +611,8 @@ export function initLanyardPass(morph: LanyardMorphController): void {
     }
     measure();
     flipAngle = flipTarget;
-    tiltX = 0;
-    tiltY = 0;
+    tiltX = reduced ? 0 : REST_PITCH;
+    tiltY = reduced ? 0 : REST_YAW;
     render();
   });
   window.addEventListener('resize', () => {

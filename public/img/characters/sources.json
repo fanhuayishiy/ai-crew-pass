@@ -1,0 +1,113 @@
+[
+  {
+    "id": "deepseek",
+    "file": "deepseek.png",
+    "source_url": "https://www.bilibili.com/opus/1233069202138464289",
+    "download_url": "https://i0.hdslb.com/bfs/new_dyn/1d6f202c991dbfb75b57fd68732d75e84168597.png",
+    "author": "上善无形 / ZipZipPipe",
+    "license": "See creator sharing statement; non-commercial fan use, retain attribution. DeepSeek: CC BY-NC-SA 4.0.",
+    "modifications": "Original downloaded bytes; CSS display crop only.",
+    "width": 1152,
+    "height": 2048,
+    "sha256": "94d58f15c93896d726be1c140de70cc06f3e33cd779bfdf3fe49355b30cce565"
+  },
+  {
+    "id": "gpt",
+    "file": "gpt.jpg",
+    "source_url": "https://www.bilibili.com/opus/1233069202138464289",
+    "download_url": "https://i0.hdslb.com/bfs/new_dyn/6e1c4e1bf7889d4da8455316b616c24b4168597.jpg",
+    "author": "ZipZipPipe",
+    "license": "See creator sharing statement; non-commercial fan use, retain attribution. DeepSeek: CC BY-NC-SA 4.0.",
+    "modifications": "Original downloaded bytes; CSS display crop only.",
+    "width": 3072,
+    "height": 5504,
+    "sha256": "b588317b634a6f987b48148504963f7df750e245efdcaba2488b04511c39cd4b"
+  },
+  {
+    "id": "glm",
+    "file": "glm.png",
+    "source_url": "https://www.bilibili.com/opus/1233069202138464289",
+    "download_url": "https://i0.hdslb.com/bfs/new_dyn/bd4e1c7e49fbb563549dc805c39cfb4c4168597.png",
+    "author": "ZipZipPipe",
+    "license": "See creator sharing statement; non-commercial fan use, retain attribution. DeepSeek: CC BY-NC-SA 4.0.",
+    "modifications": "Original downloaded bytes; CSS display crop only.",
+    "width": 1152,
+    "height": 2048,
+    "sha256": "38a53dbfa1d851dd3c33212a2da09573f1f26508b5a09064476d775add9f1a8b"
+  },
+  {
+    "id": "qwen",
+    "file": "qwen.jpg",
+    "source_url": "https://www.bilibili.com/opus/1233069202138464289",
+    "download_url": "https://i0.hdslb.com/bfs/new_dyn/6c76a9b82a5885d5d08e4669833f06bf4168597.jpg",
+    "author": "ZipZipPipe",
+    "license": "See creator sharing statement; non-commercial fan use, retain attribution. DeepSeek: CC BY-NC-SA 4.0.",
+    "modifications": "Original downloaded bytes; CSS display crop only.",
+    "width": 3072,
+    "height": 5504,
+    "sha256": "ef613401931a57d81a4de6aa9149acfea9de57d92e6b3f895b456cb2e6bde4ba"
+  },
+  {
+    "id": "gemini",
+    "file": "gemini.jpg",
+    "source_url": "https://www.bilibili.com/opus/1233069202138464289",
+    "download_url": "https://i0.hdslb.com/bfs/new_dyn/52eda1bac50135bd7aeae392c30cd6b24168597.jpg",
+    "author": "ZipZipPipe",
+    "license": "See creator sharing statement; non-commercial fan use, retain attribution. DeepSeek: CC BY-NC-SA 4.0.",
+    "modifications": "Original downloaded bytes; CSS display crop only.",
+    "width": 3072,
+    "height": 5504,
+    "sha256": "1dc86d13132d97ecf3c368b250676a014eb7496703704138b3ecbfe30d0acf25"
+  },
+  {
+    "id": "claude",
+    "file": "claude.jpg",
+    "source_url": "https://www.bilibili.com/opus/1233069202138464289",
+    "download_url": "https://i0.hdslb.com/bfs/new_dyn/6736ad7d38500b04446144110a4451644168597.jpg",
+    "author": "ZipZipPipe",
+    "license": "See creator sharing statement; non-commercial fan use, retain attribution. DeepSeek: CC BY-NC-SA 4.0.",
+    "modifications": "Original downloaded bytes; CSS display crop only.",
+    "width": 3072,
+    "height": 5504,
+    "sha256": "bec975c5feb5bb316bf80c25b562ddc7d477ed788616389ae8a9762d8fdd7c36"
+  },
+  {
+    "id": "kimi",
+    "file": "kimi.png",
+    "source_url": "https://www.bilibili.com/opus/1233069202138464289",
+    "download_url": "https://i0.hdslb.com/bfs/new_dyn/1f099083c8f81427754a9306733239164168597.png",
+    "author": "ZipZipPipe",
+    "license": "See creator sharing statement; non-commercial fan use, retain attribution. DeepSeek: CC BY-NC-SA 4.0.",
+    "modifications": "Original downloaded bytes; CSS display crop only.",
+    "width": 1152,
+    "height": 2048,
+    "sha256": "f6718d162fce6aa5f67bdd6059ee06e9b45f5b29e26828f1f317c516694a74c0"
+  },
+  {
+    "id": "grok",
+    "file": "grok.jpg",
+    "source_url": "https://www.bilibili.com/opus/1233069202138464289",
+    "download_url": "https://i0.hdslb.com/bfs/new_dyn/b812d87ec38b8b13a6a6ef148b3aef3b4168597.jpg",
+    "author": "ZipZipPipe",
+    "license": "See creator sharing statement; non-commercial fan use, retain attribution. DeepSeek: CC BY-NC-SA 4.0.",
+    "modifications": "Original downloaded bytes; CSS display crop only.",
+    "width": 3072,
+    "height": 5504,
+    "sha256": "730d6ea99cb5cda25035aaf75d8815a01761a660b1ecba156b9cc6b3c48df66c"
+  },
+  {
+    "id": "doubao",
+    "file": "doubao-anime-v4.png",
+    "kind": "generated_fan_art",
+    "source_url": null,
+    "reference": "User screenshot via doubao-3d-v3.png; existing DeepSeek illustration for anime art direction",
+    "author": "本项目 AI 生成同人形象",
+    "generator": "Built-in image_gen",
+    "prompt_record": "docs/doubao-anime-v4.md",
+    "license": "Non-commercial fan adaptation; original brand and reference character rights remain with their rights holders; not official; not MIT.",
+    "width": 941,
+    "height": 1672,
+    "transparent_background": true,
+    "sha256": "dd2e6eeb690d38d692fc2f1a56bd7b98883862ed2282d9a3f6929e7bec317778"
+  }
+]

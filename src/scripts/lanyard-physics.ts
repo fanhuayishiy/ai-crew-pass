@@ -32,6 +32,7 @@ export interface SimState {
   angleDeg: number;
   velocity: { x: number; y: number };
   dragging: boolean;
+  maxSpeed: number;
 }
 
 const DEFAULTS: SimOptions = {
@@ -41,12 +42,12 @@ const DEFAULTS: SimOptions = {
   pinX: 0,
   pinY: -220,
   gravity: 6482,
-  frictionPerFrame: 0.976,
-  chainInvMass: 0.06,
-  bendStiffness: 0.3,
-  iterations: 24,
-  fixedDt: 1 / 60,
-  maxSubSteps: 5,
+  frictionPerFrame: 0.985,
+  chainInvMass: 80,
+  bendStiffness: 0.025,
+  iterations: 40,
+  fixedDt: 1 / 120,
+  maxSubSteps: 8,
   maxAngle: 88 * Math.PI / 180,
   returnStrength: 0,
 };
@@ -66,10 +67,11 @@ export function createSim(options: Partial<SimOptions>) {
   const com: Point = { x: cfg.pinX, y, ox: cfg.pinX, oy: y, pinned: false, w: 1 };
   pts.push(com);
 
-  function constrain(a: Point, b: Point, length: number, strength = 1): void {
+  function constrain(a: Point, b: Point, length: number, strength = 1, tensionOnly = false): void {
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     const distance = Math.hypot(dx, dy) || 1e-4;
+    if (tensionOnly && distance <= length) return;
     const correction = ((length - distance) / distance) * strength;
     const mx = dx * correction;
     const my = dy * correction;
@@ -97,19 +99,16 @@ export function createSim(options: Partial<SimOptions>) {
       if (!drag.active) point.x += (cfg.pinX - point.x) * cfg.returnStrength * dt * dt;
     }
     if (drag.active) {
-      // The drag target must stay inside the clip -> card cord span: snapping it onto the
-      // pointer makes |card - clip| far exceed cordLength, so the solver pulls back while
-      // the renderer follows along -> the rope looks detached from the card.
-      const clip = pts[cfg.segments - 1];
-      const pointerDX = drag.x - clip.x;
-      const pointerDY = drag.y - clip.y;
-      const pointerDist = Math.hypot(pointerDX, pointerDY) || 1;
-      const limit = Math.max(1, cfg.cordLength);
-      const k = pointerDist > limit ? limit / pointerDist : 1;
-      com.x = clip.x + pointerDX * k;
-      com.y = clip.y + pointerDY * k;
-      com.ox = com.x - drag.vx * dt * k;
-      com.oy = com.y - drag.vy * dt * k;
+      // The pointer is a kinematic attachment. Move the lightweight strap to it,
+      // instead of letting the strap pull the held badge away from the cursor.
+      // A stationary hold must also consume stale throwing velocity.
+      const heldDamping = Math.exp(-12 * dt);
+      drag.vx *= heldDamping;
+      drag.vy *= heldDamping;
+      com.x = drag.x;
+      com.y = drag.y;
+      com.ox = com.x - drag.vx * dt;
+      com.oy = com.y - drag.vy * dt;
     }
   }
 
@@ -124,7 +123,10 @@ export function createSim(options: Partial<SimOptions>) {
         com.ox = com.x - drag.vx * cfg.fixedDt;
         com.oy = com.y - drag.vy * cfg.fixedDt;
       }
-      for (let i = 0; i < cfg.segments - 1; i++) constrain(pts[i], pts[i + 1], length);
+      // A woven strap transmits tension but cannot push the badge away when slack.
+      // Sweep both ways so a fast drag cannot leave a stretched tail behind.
+      for (let i = 0; i < cfg.segments - 1; i++) constrain(pts[i], pts[i + 1], length, 1, true);
+      for (let i = cfg.segments - 2; i >= 0; i--) constrain(pts[i], pts[i + 1], length, 1, true);
       if (cfg.bendStiffness > 0) {
         for (let i = 1; i < cfg.segments - 1; i++) {
           constrain(pts[i - 1], pts[i + 1], length * 2, cfg.bendStiffness);
@@ -159,6 +161,7 @@ export function createSim(options: Partial<SimOptions>) {
 
   function grab(px: number, py: number): void {
     drag.active = true;
+    com.pinned = true;
     drag.x = com.x;
     drag.y = com.y;
     drag.vx = 0;
@@ -172,14 +175,14 @@ export function createSim(options: Partial<SimOptions>) {
     const x = px - drag.offsetX;
     const y = py - drag.offsetY;
     if (dt > 0) {
-      drag.vx = Math.max(-800, Math.min(800, drag.vx * 0.4 + ((x - drag.x) / dt) * 0.6));
-      drag.vy = Math.max(-800, Math.min(800, drag.vy * 0.4 + ((y - drag.y) / dt) * 0.6));
+      drag.vx = Math.max(-1400, Math.min(1400, drag.vx * 0.4 + ((x - drag.x) / dt) * 0.6));
+      drag.vy = Math.max(-1400, Math.min(1400, drag.vy * 0.4 + ((y - drag.y) / dt) * 0.6));
     }
     drag.x = x;
     drag.y = y;
   }
 
-  function release(): void { drag.active = false; }
+  function release(): void { drag.active = false; com.pinned = false; }
 
   function setRopeLength(length: number): void {
     if (length > 1) cfg.ropeLength = length;
@@ -196,6 +199,7 @@ export function createSim(options: Partial<SimOptions>) {
       angleDeg: Math.atan2(dx, dy) * 180 / Math.PI,
       velocity: { x: (com.x - com.ox) / cfg.fixedDt, y: (com.y - com.oy) / cfg.fixedDt },
       dragging: drag.active,
+      maxSpeed: Math.max(...pts.map(p => Math.hypot(p.x - p.ox, p.y - p.oy))) / cfg.fixedDt,
     };
   }
 

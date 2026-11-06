@@ -2,10 +2,10 @@
 :root {
   color-scheme: light;
   --bg: #ffffff;
-  --home-paper: #f5f6f2;
-  --home-ink: #26312b;
-  --home-muted: #66716a;
-  --badge-sage: #a4ad9f;
+  --home-paper: var(--theme-paper, #edf3fb);
+  --home-ink: var(--theme-ink, #29365b);
+  --home-muted: var(--theme-muted, #697d9d);
+  --badge-sage: var(--theme-card, #e1ebfa);
   --badge-width: clamp(244px, 21vw, 292px);
   --badge-height: calc(var(--badge-width) * 1.51);
   --morph-chrome: 1;
@@ -14,7 +14,7 @@
   --text: #0a0a0a;
   --text-mid: #5f5f5c;
   --text-muted: #a1a19c;
-  --border: #e2e1dc;
+  --border: var(--theme-line, #cedcf0);
   --particle: #0a0a0a;
   --floor: #f6f6f5;
   --max-width: 1324px;
@@ -92,7 +92,7 @@ button { font: inherit; }
   width: max-content;
   margin: 0;
   transform: translate(-50%, -50%);
-  color: #e8ebe5;
+  color: var(--theme-soft, #dce7f7);
   font-size: clamp(136px, 18vw, 300px);
   font-weight: 650;
   line-height: .8;
@@ -102,7 +102,7 @@ button { font: inherit; }
   user-select: none;
 }
 .social-links { display: flex; align-items: center; gap: 23px; }
-.social-links a { color: var(--home-ink); font-size: 12px; font-weight: 500; text-decoration: underline; text-decoration-color: #bec8bc; text-underline-offset: 4px; white-space: nowrap; }
+.social-links a { color: var(--home-ink); font-size: 12px; font-weight: 500; text-decoration: underline; text-decoration-color: var(--theme-line, #b9ccea); text-underline-offset: 4px; white-space: nowrap; }
 .social-links a:hover { color: var(--home-muted); }
 .social-links a span { display: inline-block; transition: transform 160ms ease; }
 .social-links a:hover span, .social-links a:focus-visible span { transform: translate(2px, -2px); }
@@ -118,10 +118,10 @@ button { font: inherit; }
   height: calc(50% - var(--badge-height) / 2 - 8px);
   justify-content: center;
   transform: translateX(-50%);
-  background: repeating-linear-gradient(90deg, #627564 0 4px, #718570 4px 7px, #627564 7px 10px);
+  background: repeating-linear-gradient(90deg, var(--theme-brand, #4964a0) 0 4px, var(--theme-light, #6886bd) 4px 7px, var(--theme-brand, #4964a0) 7px 10px);
   box-shadow: inset 2px 0 #ffffff25, inset -2px 0 #18291a25;
 }
-.badge-lanyard span { padding-top: 48px; color: #e9ede6; font-family: var(--font-mono); font-size: 7px; letter-spacing: .14em; writing-mode: vertical-rl; }
+.badge-lanyard span { padding-top: 48px; color: var(--theme-paper, #edf4ff); font-family: var(--font-mono); font-size: 7px; letter-spacing: .14em; writing-mode: vertical-rl; }
 .badge-clip {
   position: absolute;
   z-index: 3;
@@ -139,11 +139,11 @@ button { font: inherit; }
 .badge-rig { display: none; position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .badge-rig--front { z-index: 3; }
 /* Pixel label: a block glyph font (a pile of 1×1 rects inside .badge-rig__glyph) */
-.badge-rig__glyph rect { fill: #e6eae3; }
+.badge-rig__glyph rect { fill: var(--theme-paper, #edf4ff); }
 /* 3D ribbon canvas: same layer, same coordinates as the rig SVG */
 .badge-ribbon3d { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 /* Card punch: one long horizontal slot, faint inner shadow — no metal ring (reads as a rivet) */
-.badge-hole { width: 11px; height: 10.5px; border-radius: 50%; box-shadow: inset 0 1.2px 1.6px #26382b66; }
+.badge-hole { width: 11px; height: 10.5px; border-radius: 50%; box-shadow: inset 0 1.2px 1.6px color-mix(in srgb, var(--theme-ink, #263c71) 40.0%, transparent); }
 .badge-card {
   position: absolute;
   top: 50%;
@@ -152,10 +152,10 @@ button { font: inherit; }
   height: var(--badge-height);
   transform: translate(-50%, -50%);
   overflow: hidden;
-  border: 1px solid #6f807336;
+  border: 1px solid #6b85b036;
   border-radius: 12px;
   background: var(--badge-sage);
-  box-shadow: 0 28px 54px #26382b29, 0 6px 16px #26382b15, inset 0 1px #ffffff70;
+  box-shadow: 0 28px 54px color-mix(in srgb, var(--theme-ink, #263c71) 16.1%, transparent), 0 6px 16px color-mix(in srgb, var(--theme-ink, #263c71) 8.2%, transparent), inset 0 1px #ffffff70;
 }
 .badge-hole {
   position: absolute;
@@ -167,7 +167,7 @@ button { font: inherit; }
   transform: translateX(-50%);
   border: 0;
   border-radius: 50%;
-  background: #4f5b52;
+  background: var(--theme-ink, #31436c);
   pointer-events: none;
 }
 .badge-tilt, .badge-flip { width: 100%; height: 100%; }
@@ -225,7 +225,7 @@ button { font: inherit; }
   white-space: nowrap;
   text-transform: uppercase;
 }
-.badge-face--back { background: #b8c2b4; }
+.badge-face--back { background: var(--theme-card, #e1ebfa); }
 .badge-back__body { margin-block: auto; }
 .badge-back__headline { margin: 0; font-size: clamp(30px, 2.9vw, 36px); font-weight: 650; line-height: 1.06; letter-spacing: -.055em; }
 .badge-back__roles { display: grid; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
@@ -271,15 +271,15 @@ button { font: inherit; }
   inset: 0;
   height: auto;
   overflow: hidden;
-  border: 1px solid #6f807336;
+  border: 1px solid #6b85b036;
   border-radius: 12px;
   background: var(--badge-sage);
-  box-shadow: 0 28px 54px #26382b29, 0 6px 16px #26382b15, inset 0 1px #ffffff70;
+  box-shadow: 0 28px 54px color-mix(in srgb, var(--theme-ink, #263c71) 16.1%, transparent), 0 6px 16px color-mix(in srgb, var(--theme-ink, #263c71) 8.2%, transparent), inset 0 1px #ffffff70;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 .badge-scene--interactive .badge-face--front { transform: translateZ(1px); }
-.badge-scene--interactive .badge-face--back { background: #b8c2b4; transform: rotateY(180deg) translateZ(1px); }
+.badge-scene--interactive .badge-face--back { background: var(--theme-card, #e1ebfa); transform: rotateY(180deg) translateZ(1px); }
 .morph-plane[hidden] { display: none; }
 .morph-plane { position: fixed; z-index: 8; inset: 0; overflow: hidden; perspective: 1400px; pointer-events: none; }
 .morph-plane .badge-scene { z-index: 1; }
@@ -309,7 +309,7 @@ button { font: inherit; }
   /* After switching to "left stage + right panel" the watermark shrank to the stage (about 62vw),
      behind the cards; the 1333px type can no longer fit the 911px stage, pressing the panel. */
   transform: translateY(-50%);
-  color: #e8ebe5;
+  color: var(--theme-soft, #dce7f7);
   font-size: clamp(88px, 12vw, 176px);
   font-weight: 650;
   line-height: .8;
@@ -375,7 +375,7 @@ button { font: inherit; }
    Never put position:relative on --front — it beats absolute and collapses to content height. */
 .card-face__bg { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; }
 /* A very faint paper tint top and bottom → the kicker and signature stay legible on the image */
-.card-face__scrim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, color-mix(in srgb, #f7f9f5 78%, transparent) 0%, color-mix(in srgb, #f7f9f5 24%, transparent) 22%, transparent 42%, transparent 62%, color-mix(in srgb, #f7f9f5 72%, transparent) 100%); }
+.card-face__scrim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, color-mix(in srgb, var(--theme-paper, #edf3fb) 78%, transparent) 0%, color-mix(in srgb, var(--theme-paper, #edf3fb) 24%, transparent) 22%, transparent 42%, transparent 62%, color-mix(in srgb, var(--theme-paper, #edf3fb) 72%, transparent) 100%); }
 /* Front keeps only the title: one line (nowrap), size tracks card width (cqw), so 6 cards match.
    8cqw is back-solved from the longest "Engineering Plastics." (21 characters), just one line. */
 .card-face--front > h3 {
@@ -386,7 +386,7 @@ button { font: inherit; }
   line-height: 1;
   letter-spacing: -.05em;
   white-space: nowrap;
-  text-shadow: 0 1px 14px color-mix(in srgb, #f7f9f5 72%, transparent);
+  text-shadow: 0 1px 14px color-mix(in srgb, var(--theme-paper, #edf3fb) 72%, transparent);
 }
 
 
@@ -459,13 +459,13 @@ button { font: inherit; }
    land in exactly the same place on both screens. */
 .chapter-actions { position: fixed; z-index: 9; right: max(42px, calc((100vw - var(--max-width)) / 2)); bottom: 26px; left: max(42px, calc((100vw - var(--max-width)) / 2)); display: flex; align-items: flex-end; justify-content: space-between; gap: 25px; opacity: var(--morph-panel); pointer-events: none; }
 .chapter-actions a, .chapter-actions button { pointer-events: auto; }
-.chapter-actions .contact-link { border-color: #cbd2ca; background: #ffffffcc; }
+.chapter-actions .contact-link { border-color: var(--theme-line, #becfec); background: #ffffffcc; }
 /* Round back-to-top button: same row as "Get in touch"; the flex gap keeps them apart. */
 /* Floating back-to-top: pinned to the viewport's bottom-right corner, above the
    action bar (bottom 96px = the 26px inset + the pill + the gap), so it clears
    both "Get in touch" and the panel's text column. */
-.to-top { position: fixed; right: 28px; bottom: 96px; z-index: 9; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: #fff; color: var(--home-ink); box-shadow: 0 6px 18px #26312b1f; cursor: pointer; opacity: var(--morph-panel); transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
-.to-top:hover { transform: translateY(-2px); border-color: var(--text-muted); box-shadow: 0 10px 24px #26312b2b; }
+.to-top { position: fixed; right: 28px; bottom: 96px; z-index: 9; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: #fff; color: var(--home-ink); box-shadow: 0 6px 18px color-mix(in srgb, var(--theme-ink, #29365b) 12.2%, transparent); cursor: pointer; opacity: var(--morph-panel); transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+.to-top:hover { transform: translateY(-2px); border-color: var(--text-muted); box-shadow: 0 10px 24px color-mix(in srgb, var(--theme-ink, #29365b) 16.9%, transparent); }
 .to-top:active { transform: translateY(0); }
 .morph-debug { position: fixed; z-index: 20; top: 12px; right: 12px; max-width: 280px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--home-paper); color: var(--home-ink); font-family: var(--font-mono); font-size: 10px; line-height: 1.5; white-space: pre; pointer-events: none; }
 .morph-debug[hidden] { display: none; }
@@ -480,13 +480,13 @@ button { font: inherit; }
   justify-content: space-between;
   gap: 25px;
 }
-.more-about-link { color: var(--home-ink); font-size: 13px; font-weight: 500; text-decoration: underline; text-decoration-color: #bec8bc; text-underline-offset: 4px; white-space: nowrap; }
+.more-about-link { color: var(--home-ink); font-size: 13px; font-weight: 500; text-decoration: underline; text-decoration-color: var(--theme-line, #b9ccea); text-underline-offset: 4px; white-space: nowrap; }
 .more-about-link:hover { color: var(--home-muted); }
 .home-footer .contact-link { justify-self: end; color: var(--home-ink); }
 .contact-link { display: inline-block; padding: 7px 16px; border: 1px solid var(--border); border-radius: 999px; background: color-mix(in srgb, var(--bg) 72%, transparent); color: var(--text); font-size: 14px; font-weight: 500; line-height: 1.5; transition: border-color 160ms ease, background-color 160ms ease; }
 .contact-link:hover { border-color: var(--text-muted); }
-.home-footer .contact-link { border-color: #cbd2ca; background: #ffffff98; }
-.home-footer .contact-link:hover { border-color: #778b76; }
+.home-footer .contact-link { border-color: var(--theme-line, #becfec); background: #ffffff98; }
+.home-footer .contact-link:hover { border-color: var(--theme-brand, #4964a0); }
 .kicker { margin: 0 0 12px; color: var(--text-muted); font-size: var(--font-size-label); line-height: 1.45; }
 
 @media (max-width: 760px) {

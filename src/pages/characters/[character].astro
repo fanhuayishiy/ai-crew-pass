@@ -1,0 +1,11 @@
+---
+import BadgeExperience from '../../components/BadgeExperience.astro';
+import { CHARACTERS } from '../../data/characters';
+export function getStaticPaths() {
+  return CHARACTERS.filter(c => c.id !== 'deepseek').map(character => ({
+    params: { character: character.id }, props: { character },
+  }));
+}
+const { character } = Astro.props;
+---
+<BadgeExperience character={character} />

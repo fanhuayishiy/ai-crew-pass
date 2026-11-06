@@ -89,8 +89,8 @@ export function ribbonOutline(samples: RibbonSample[], halfWidth: number): strin
 export function ribbonQuads(
   samples: RibbonSample[],
   halfWidth: number,
-  frontColor = '#627564',
-  backColor = '#4c5d50',
+  frontColor = '#4964a0',
+  backColor = '#344779',
 ): { d: string; fill: string; flippedSide: boolean }[] {
   const hex = (c: string): number[] => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
   const f = hex(frontColor);

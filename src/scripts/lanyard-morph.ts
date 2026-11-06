@@ -46,9 +46,8 @@ function buildCardParams(count: number): CardParams[] {
 }
 
 const COVER = {
-  // Left stage + right panel: horizontal anchor for the active card (fraction of the
-  // viewport width); the right 360px is given to the info panel
-  anchorRatio: 0.32,
+  // Full-width archive: the active card is centered in the viewport
+  anchorRatio: 0.5,
   spacing: 238,
   // Spacing = real card width × this ratio. This site's card is clamp(244px, 21vw, 292px),
   // so a hard-coded spacing ends up narrower than the card on wide screens (neighbours
@@ -62,7 +61,7 @@ const COVER = {
   scaleStep: 0.085,
   // Only the active card + 1 on each side stay clearly visible; the 2nd fades to almost
   // nothing (otherwise it reaches under the right panel)
-  fadeStep: 0.95,
+  fadeStep: 0.28,
   // No vertical offset and no "lift" on the active card (liftZ pushes it down under
   // perspective; the whole row was 9px off)
   yStep: 0,
@@ -195,8 +194,7 @@ export function initLanyardMorph(): LanyardMorphController | null {
       plane.appendChild(cardElement);
       cards.push({ element: cardElement, tilt, index });
 
-      // Content cards no longer flip: the description and the jump-in link live permanently
-      // in the right panel (one whole state machine fewer)
+      // Focusing a card brings it into the center; clicking reveals its dossier.
       cardElement.addEventListener('focusin', () => {
         if (canInteract()) setTarget(index - 1);
       });
@@ -224,11 +222,10 @@ export function initLanyardMorph(): LanyardMorphController | null {
     const controls = document.querySelector<HTMLElement>('[data-chapter-controls]');
     const cardHeight = cardSizes.get(0)?.height ?? 0;
     if (!cardHeight) return;
-    // The controls moved into the right panel, so the reference is now "header bottom →
-    // layout bottom" (leaving 64px of breathing room)
+    // Reserve the band between the archive heading and centered carousel controls.
     const narrow = window.innerWidth <= 760;
-    const top = header ? header.offsetTop + header.offsetHeight + 10 : 0;
-    const bottom = chapterStage.clientHeight - 64;
+    const top = header ? header.offsetTop + header.offsetHeight + 10 : (narrow ? 64 : 100);
+    const bottom = controls ? controls.offsetTop - 20 : chapterStage.clientHeight - 110;
     const band = Math.max(220, bottom - top);
     rowScale = clamp((band - 28) / cardHeight, 0.5, 1);
     rowCenterY = top + band / 2;
@@ -239,12 +236,7 @@ export function initLanyardMorph(): LanyardMorphController | null {
     // position, to avoid offsetParent differences)
     morphRange = Math.round(chapterStage.getBoundingClientRect().top + window.scrollY);
     if (morphRange < 200) morphRange = Math.round(window.innerHeight + runway.offsetHeight);
-    if (narrow) {
-      // Narrow screens: the panel is pinned to the bottom, so shift the card row up and scale
-      // it down slightly to keep them from overlapping
-      rowScale = Math.min(rowScale, 0.92);
-      rowCenterY = chapterStage.clientHeight * 0.36;
-    }
+    if (narrow) rowScale = Math.min(rowScale, 0.96);
   }
 
   measureRowFit();
@@ -258,6 +250,7 @@ export function initLanyardMorph(): LanyardMorphController | null {
 
   const rigLayer = scene.querySelector<SVGElement>('.badge-rig:not(.badge-rig--front)');
   const rigFrontLayer = scene.querySelector<SVGElement>('.badge-rig--front');
+  const bodyCanvas = scene.querySelector<HTMLCanvasElement>('[data-badge-body3d]');
 
   let snapshot: BadgeSnapshot | null = null;
   let progress = 0;
@@ -276,54 +269,6 @@ export function initLanyardMorph(): LanyardMorphController | null {
   const rigHook = scene?.querySelector<SVGGElement>('[data-rig-hook]');
   const ribbonCanvas = scene?.querySelector<HTMLCanvasElement>('[data-strap-ribbon3d]');
   let currentLabel = '';
-  // Right info panel: fields are read from the card DOM's data-* (single source of truth =
-  // src/data/cards.ts)
-  const panelBody = document.querySelector<HTMLElement>('[data-panel-body]');
-  const panelTitle = document.querySelector<HTMLElement>('[data-panel-title]');
-  const panelMeta = document.querySelector<HTMLElement>('[data-panel-meta]');
-  const panelSummary = document.querySelector<HTMLElement>('[data-panel-summary]');
-  const panelList = document.querySelector<HTMLElement>('[data-panel-list]');
-  const panelCta = document.querySelector<HTMLAnchorElement>('[data-panel-cta]');
-  const panelCtaText = document.querySelector<HTMLElement>('[data-panel-cta-text]');
-  let panelIndex = -1;
-  let panelSwap = 0;
-
-  function updatePanel(slide: number): void {
-    if (slide === panelIndex || !panelBody) return;
-    panelIndex = slide;
-    const el = cards.find((card) => card.index === slide + 1)?.element;
-    if (!el) return;
-    const apply = (): void => {
-      if (panelTitle) {
-        panelTitle.textContent = el.dataset.cardTitle ?? '';
-        const dot = document.createElement('span');
-        dot.textContent = '.';
-        panelTitle.appendChild(dot);
-      }
-      if (panelMeta) panelMeta.textContent = el.dataset.cardMeta ?? '';
-      if (panelSummary) panelSummary.textContent = el.dataset.cardSummary ?? '';
-      if (panelList) {
-        panelList.textContent = '';
-        let bullets: unknown = [];
-        try { bullets = JSON.parse(el.dataset.cardBullets ?? '[]'); } catch { bullets = []; }
-        for (const bullet of Array.isArray(bullets) ? bullets : []) {
-          const li = document.createElement('li');
-          li.textContent = String(bullet);
-          panelList.appendChild(li);
-        }
-      }
-      if (panelCta && el.dataset.cardHref) panelCta.href = el.dataset.cardHref;
-      if (panelCtaText) panelCtaText.textContent = el.dataset.cardCta ?? '';
-    };
-    // Cross-fade: fade out first, then swap the text (the DOM only changes on switch, no
-    // per-frame writes)
-    panelBody.classList.add('is-switching');
-    window.clearTimeout(panelSwap);
-    panelSwap = window.setTimeout(() => {
-      apply();
-      panelBody.classList.remove('is-switching');
-    }, 140);
-  }
   let currentActiveIndex = -1;
   let lastFrameTime = 0;
   let frameWork = 0;
@@ -387,6 +332,9 @@ export function initLanyardMorph(): LanyardMorphController | null {
     // "identity → chapter" cross-fade is no longer needed
     plane.classList.toggle('morph-plane--carousel', panelProgress > 0.85);
     scene.classList.toggle('is-morph-locked', progress > 0.04);
+    // Scroll can resume after physics has gone idle, so visibility belongs to the
+    // morph loop as well; otherwise the last rendered solid body remains behind.
+    if (bodyCanvas) bodyCanvas.hidden = progress > 0.001 || !scene.classList.contains('has-body3d');
     if (previousProgress > 0.04 && progress <= 0.04) physicsResumeHandler();
     // Flip the badge back to its front as soon as scrolling starts: otherwise it flies
     // through the transition showing its back (the motto), duplicating HELLO. on the same
@@ -449,9 +397,14 @@ export function initLanyardMorph(): LanyardMorphController | null {
       return;
     }
     if (!canInteract()) return;
-    // Content card: click = snap to centre (no more flipping; description and link live in
-    // the right panel)
-    setTarget(index - 1);
+    // A side card comes into focus first; clicking the centred card reveals its back.
+    // Keep the navigation CTA on that back reachable by pointer and keyboard.
+    if (isCentered(index - 1)) {
+      drift.pause = true;
+      setFlip(flipIndex === index ? null : index);
+    } else {
+      setTarget(index - 1);
+    }
   }
 
   function draw(): void {
@@ -536,7 +489,6 @@ export function initLanyardMorph(): LanyardMorphController | null {
         label.textContent = activeLabel;
         count.textContent = `${String(activeSlide + 1).padStart(2, '0')} / ${String(slideCount).padStart(2, '0')}`;
       }
-      updatePanel(activeSlide);
       if (currentActiveIndex !== activeSlide) {
         currentActiveIndex = activeSlide;
         dots.forEach((dot) => dot.setAttribute('aria-current', String(Number(dot.dataset.carouselDot) === activeSlide)));
@@ -725,10 +677,24 @@ export function initLanyardMorph(): LanyardMorphController | null {
     toggleFlip(cardElement ? Number(cardElement.dataset.chapterIndex) : 0);
   });
 
+  let lastWheelTurn = 0;
+  let wheelDistance = 0;
   plane.addEventListener('wheel', (event) => {
-    if (panelProgress < 0.85 || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+    if (panelProgress < 0.85 || event.ctrlKey) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.chapter-card')) return;
+    const back = target.closest<HTMLElement>('.card-face--back');
+    if (back && back.scrollHeight > back.clientHeight + 1 && Math.abs(event.deltaY) > Math.abs(event.deltaX)) return;
     event.preventDefault();
-    setTarget(Math.round(carTarget) + (event.deltaX > 0 ? 1 : -1));
+    const now = performance.now();
+    if (now - lastWheelTurn < 240) return;
+    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (Math.sign(wheelDistance) !== Math.sign(delta)) wheelDistance = 0;
+    wheelDistance += delta * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1);
+    if (Math.abs(wheelDistance) < 40) return;
+    setTarget(Math.round(carTarget) + (wheelDistance > 0 ? 1 : -1));
+    wheelDistance = 0;
+    lastWheelTurn = now;
   }, { passive: false });
 
   document.addEventListener('keydown', (event) => {

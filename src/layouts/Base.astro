@@ -1,12 +1,16 @@
 ---
 import '../styles/tokens.css';
+import '../styles/deepseek.css';
 
 interface Props {
   title: string;
   description: string;
+  theme?: string;
+  themeColor?: string;
+  locale?: 'zh' | 'en';
 }
 
-const { title, description } = Astro.props;
+const { title, description, theme, themeColor = '#4964a0', locale = 'zh' } = Astro.props;
 
 // Self-hosted Geist. Absolute paths via BASE_URL keep sub-path deploys (GitHub Pages) working;
 // injected with is:inline + set:html: Vite leaves this CSS alone, so there is no
@@ -29,7 +33,7 @@ const fontCss = urls
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale === 'en' ? 'en' : 'zh-CN'} style={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -38,10 +42,10 @@ const fontCss = urls
         <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={locale === 'en' ? 'en_US' : 'zh_CN'} />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/svg+xml" href={`${fontBase}favicon.svg`} />
+    <meta name="theme-color" content={themeColor} />
       <style is:inline set:html={fontCss}></style>
   </head>
   <body>

@@ -85,7 +85,7 @@ function paintSevenSegment(
   };
   ctx.fillStyle = 'rgba(244,247,241,0.08)';
   for (const bar of Object.values(bars)) ctx.fillRect(bar[0], bar[1], bar[2], bar[3]);
-  ctx.fillStyle = '#f4f7f1';
+  ctx.fillStyle = '#f3f7ff';
   for (const key of on) {
     const bar = bars[key];
     if (bar) ctx.fillRect(bar[0], bar[1], bar[2], bar[3]);
@@ -118,11 +118,15 @@ function paintTexture(
 
   // Base + baked horizontal shading (dark edges, bright mid → fabric roundness, no lighting)
   const base = ctx.createLinearGradient(0, 0, 0, h);
-  base.addColorStop(0, '#4f5f52');
-  base.addColorStop(0.28, '#66796b');
-  base.addColorStop(0.5, '#6e8173');
-  base.addColorStop(0.72, '#66796b');
-  base.addColorStop(1, '#4f5f52');
+  const theme = document.documentElement.style;
+  const edge = theme.getPropertyValue('--theme-deep') || '#304576';
+  const body = theme.getPropertyValue('--theme-brand') || '#4b68a6';
+  const light = theme.getPropertyValue('--theme-light') || '#5d7bb6';
+  base.addColorStop(0, edge);
+  base.addColorStop(0.28, body);
+  base.addColorStop(0.5, light);
+  base.addColorStop(0.72, body);
+  base.addColorStop(1, edge);
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, w, h);
 
@@ -175,7 +179,7 @@ function paintTexture(
   const step = runLength + GAP_CSS * TEX_SCALE;
   const baseV = h / 2 - (cellsAcross * pixel) / 2;    // centered across the cord
 
-  ctx.fillStyle = '#f4f7f1';
+  ctx.fillStyle = '#f3f7ff';
   // Print-area right edge: margin at the clip-plate end (else the last run reads as a cut word)
   const printEnd = Math.max(64, w - CLIP_RESERVE_CSS * TEX_SCALE);
   // Lay out **backwards from the clip-plate end** (fixed phase): the visible span always shows
@@ -206,7 +210,7 @@ function paintTexture(
         for (const [col, row] of cells) {
           ctx.fillRect(u0 + col * pixel - pixel * 0.18, baseV + row * pixel - pixel * 0.18, pixel * 1.36, pixel * 1.36);
         }
-        ctx.fillStyle = '#f4f7f1';
+        ctx.fillStyle = '#f3f7ff';
         for (const [col, row] of cells) {
           ctx.fillRect(u0 + col * pixel, baseV + row * pixel, pixel, pixel);
         }

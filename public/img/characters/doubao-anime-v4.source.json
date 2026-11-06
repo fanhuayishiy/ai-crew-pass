@@ -1,0 +1,15 @@
+{
+  "id": "doubao",
+  "file": "doubao-anime-v4.png",
+  "kind": "generated_fan_art",
+  "source_url": null,
+  "reference": "User screenshot via doubao-3d-v3.png; existing DeepSeek illustration for anime art direction",
+  "author": "本项目 AI 生成同人形象",
+  "generator": "Built-in image_gen",
+  "prompt_record": "docs/doubao-anime-v4.md",
+  "license": "Non-commercial fan adaptation; original brand and reference character rights remain with their rights holders; not official; not MIT.",
+  "width": 941,
+  "height": 1672,
+  "transparent_background": true,
+  "sha256": "dd2e6eeb690d38d692fc2f1a56bd7b98883862ed2282d9a3f6929e7bec317778"
+}

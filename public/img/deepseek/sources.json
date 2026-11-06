@@ -1,0 +1,190 @@
+[
+  {
+    "path": "assets/zipzippipe/deepseek/normal-zipzippipe-pixiv-148186519-p00.jpg",
+    "bytes": 1825859,
+    "sha256": "73264faff3511347b1b9668d5d937cbb3f2402f8bb03cc158fc8a81bfc2d077c",
+    "id": "zipzippipe-pixiv-148186519-p00",
+    "character_id": "deepseek",
+    "collection": "zipzippipe",
+    "title": "初始设计正常比例立绘",
+    "kind": "normal",
+    "creators": [
+      "上善无形（角色原型）",
+      "ZipZipPipe（女仆二次设计）"
+    ],
+    "width": 1152,
+    "height": 2048,
+    "source_url": "https://www.pixiv.net/artworks/148186519",
+    "retrieved_url": "https://raw.githubusercontent.com/shuaizenge/ai-girls/71defe761164407514c1db9bac582d74eab4cdac/characters/deepseek/adult/zipzippipe-pixiv-148186519-p00.jpg",
+    "supplier": "shuaizenge/ai-girls",
+    "supplier_tree_sha": "71defe761164407514c1db9bac582d74eab4cdac",
+    "upstream_path": "characters/deepseek/adult/zipzippipe-pixiv-148186519-p00.jpg",
+    "license": {
+      "status": "author_declared",
+      "identifier": "CC-BY-NC-SA-4.0",
+      "evidence_url": "https://www.bilibili.com/video/BV1tE9XBbErS/",
+      "note": "上善无形原角色 → ZipZipPipe 女仆二次设计；社区补充图的具体绘制者仍未核实。"
+    },
+    "modifications": "原文件字节保留；仅调整本仓库路径。",
+    "source_timestamp_seconds": null,
+    "preview": "assets/previews/deepseek.jpg",
+    "preview_receipt": {
+      "path": "assets/previews/deepseek.jpg",
+      "bytes": 36868,
+      "sha256": "abf8fff518e49f26f06166b238e4b21d3015ff57452b1d531c66dfd90d212a9a",
+      "retrieved_url": "https://raw.githubusercontent.com/shuaizenge/ai-girls/71defe761164407514c1db9bac582d74eab4cdac/previews/deepseek-adult-zipzippipe-pixiv-148186519-p00.jpg",
+      "modifications": "上游生成的缩小预览，保留其字节。"
+    },
+    "local_file": "whale-girl.jpg"
+  },
+  {
+    "path": "assets/zipzippipe/deepseek/video-frame-zipzippipe-BV1tE9XBbErS-05s.png",
+    "bytes": 712701,
+    "sha256": "cbcd4b58b2115b8dbc7ece8271026841928be7ac594705693357ade8e8baacef",
+    "id": "zipzippipe-BV1tE9XBbErS-05s",
+    "character_id": "deepseek",
+    "collection": "zipzippipe",
+    "title": "作者原版Q版展示截帧",
+    "kind": "video-frame",
+    "creators": [
+      "上善无形（角色原型）",
+      "ZipZipPipe（女仆二次设计）"
+    ],
+    "width": 720,
+    "height": 1280,
+    "source_url": "https://www.bilibili.com/video/BV1tE9XBbErS/",
+    "retrieved_url": "https://raw.githubusercontent.com/shuaizenge/ai-girls/71defe761164407514c1db9bac582d74eab4cdac/characters/deepseek/chibi/zipzippipe-BV1tE9XBbErS-05s.png",
+    "supplier": "shuaizenge/ai-girls",
+    "supplier_tree_sha": "71defe761164407514c1db9bac582d74eab4cdac",
+    "upstream_path": "characters/deepseek/chibi/zipzippipe-BV1tE9XBbErS-05s.png",
+    "license": {
+      "status": "author_declared",
+      "identifier": "CC-BY-NC-SA-4.0",
+      "evidence_url": "https://www.bilibili.com/video/BV1tE9XBbErS/",
+      "note": "上善无形原角色 → ZipZipPipe 女仆二次设计；社区补充图的具体绘制者仍未核实。"
+    },
+    "modifications": "原文件字节保留；仅调整本仓库路径。截帧由上游制作，非原始Q版立绘。",
+    "source_timestamp_seconds": 5,
+    "local_file": "whale-chibi.png"
+  },
+  {
+    "path": "assets/jadpp/maid-left.webp",
+    "bytes": 286224,
+    "sha256": "af7bfd2e18505fc9d6f94cefd9febc92b31c1b2b66c756982d91fc7b93fb184c",
+    "id": "jadpp-maid-left",
+    "character_id": "deepseek",
+    "collection": "jadpp",
+    "title": "maid-left.webp",
+    "kind": "normal-alternate",
+    "creators": [
+      "上善无形（原角色）",
+      "ZipZipPipe（女仆二次设计）",
+      "Small-tailqwq / dsh-deep-whale（上游素材）",
+      "JAdpp（整理或表情改编）"
+    ],
+    "source_url": "https://github.com/JAdpp/dsh-whale-galgame/blob/046b848f244450e6e636335766276bf3343fe84b/NOTICE.md",
+    "retrieved_url": "https://raw.githubusercontent.com/JAdpp/dsh-whale-galgame/046b848f244450e6e636335766276bf3343fe84b/assets/default/maid-left.webp",
+    "supplier": "JAdpp/dsh-whale-galgame",
+    "supplier_tree_sha": "046b848f244450e6e636335766276bf3343fe84b",
+    "upstream_path": "assets/default/maid-left.webp",
+    "upstream_git_blob_sha": "2e916e33fdb4f92f0772fca330f2f530f987be2d",
+    "license": {
+      "status": "maintainer_declared",
+      "identifier": "CC-BY-NC-SA-4.0",
+      "evidence_url": "https://github.com/JAdpp/dsh-whale-galgame/blob/046b848f244450e6e636335766276bf3343fe84b/LICENSE.md",
+      "note": "维护者持有相应权利的范围内授权；不转授第三方品牌或上游角色权利。"
+    },
+    "modifications": "原文件字节保留；仅调整本仓库路径。",
+    "local_file": "maid.webp"
+  },
+  {
+    "path": "assets/jadpp/whale-serious.webp",
+    "bytes": 283052,
+    "sha256": "2974cc4a814f6b1f95d907d22f62d9e0094dd7e538b6145e7c8a1dbb6154de34",
+    "id": "jadpp-whale-serious",
+    "character_id": "deepseek",
+    "collection": "jadpp",
+    "title": "whale-serious.webp",
+    "kind": "expression",
+    "creators": [
+      "上善无形（原角色）",
+      "ZipZipPipe（女仆二次设计）",
+      "Small-tailqwq / dsh-deep-whale（上游素材）",
+      "JAdpp（整理或表情改编）"
+    ],
+    "source_url": "https://github.com/JAdpp/dsh-whale-galgame/blob/046b848f244450e6e636335766276bf3343fe84b/NOTICE.md",
+    "retrieved_url": "https://raw.githubusercontent.com/JAdpp/dsh-whale-galgame/046b848f244450e6e636335766276bf3343fe84b/assets/default/whale-serious.webp",
+    "supplier": "JAdpp/dsh-whale-galgame",
+    "supplier_tree_sha": "046b848f244450e6e636335766276bf3343fe84b",
+    "upstream_path": "assets/default/whale-serious.webp",
+    "upstream_git_blob_sha": "cccbc410f0231b6a607717fa6f8a036984e00aa5",
+    "license": {
+      "status": "maintainer_declared",
+      "identifier": "CC-BY-NC-SA-4.0",
+      "evidence_url": "https://github.com/JAdpp/dsh-whale-galgame/blob/046b848f244450e6e636335766276bf3343fe84b/LICENSE.md",
+      "note": "维护者持有相应权利的范围内授权；不转授第三方品牌或上游角色权利。"
+    },
+    "modifications": "原文件字节保留；仅调整本仓库路径。",
+    "local_file": "whale-serious.webp"
+  },
+  {
+    "path": "assets/jadpp/whale-starry.webp",
+    "bytes": 319384,
+    "sha256": "65a3bd1eb9ad4f8cb357af4825311f84e91be4f7f57deb5357fb79116bcad774",
+    "id": "jadpp-whale-starry",
+    "character_id": "deepseek",
+    "collection": "jadpp",
+    "title": "whale-starry.webp",
+    "kind": "expression",
+    "creators": [
+      "上善无形（原角色）",
+      "ZipZipPipe（女仆二次设计）",
+      "Small-tailqwq / dsh-deep-whale（上游素材）",
+      "JAdpp（整理或表情改编）"
+    ],
+    "source_url": "https://github.com/JAdpp/dsh-whale-galgame/blob/046b848f244450e6e636335766276bf3343fe84b/NOTICE.md",
+    "retrieved_url": "https://raw.githubusercontent.com/JAdpp/dsh-whale-galgame/046b848f244450e6e636335766276bf3343fe84b/assets/default/whale-starry.webp",
+    "supplier": "JAdpp/dsh-whale-galgame",
+    "supplier_tree_sha": "046b848f244450e6e636335766276bf3343fe84b",
+    "upstream_path": "assets/default/whale-starry.webp",
+    "upstream_git_blob_sha": "df6151823f67233316cf4ab94f1bd7e35a5c88c0",
+    "license": {
+      "status": "maintainer_declared",
+      "identifier": "CC-BY-NC-SA-4.0",
+      "evidence_url": "https://github.com/JAdpp/dsh-whale-galgame/blob/046b848f244450e6e636335766276bf3343fe84b/LICENSE.md",
+      "note": "维护者持有相应权利的范围内授权；不转授第三方品牌或上游角色权利。"
+    },
+    "modifications": "原文件字节保留；仅调整本仓库路径。",
+    "local_file": "whale-starry.webp"
+  },
+  {
+    "path": "assets/jadpp/whale-cheerful.webp",
+    "bytes": 314854,
+    "sha256": "117ed691623da550075056963764cee7a4cd14318d5ab87ce63d11926b83aa4b",
+    "id": "jadpp-whale-cheerful",
+    "character_id": "deepseek",
+    "collection": "jadpp",
+    "title": "whale-cheerful.webp",
+    "kind": "expression",
+    "creators": [
+      "上善无形（原角色）",
+      "ZipZipPipe（女仆二次设计）",
+      "Small-tailqwq / dsh-deep-whale（上游素材）",
+      "JAdpp（整理或表情改编）"
+    ],
+    "source_url": "https://github.com/JAdpp/dsh-whale-galgame/blob/046b848f244450e6e636335766276bf3343fe84b/NOTICE.md",
+    "retrieved_url": "https://raw.githubusercontent.com/JAdpp/dsh-whale-galgame/046b848f244450e6e636335766276bf3343fe84b/assets/default/whale-cheerful.webp",
+    "supplier": "JAdpp/dsh-whale-galgame",
+    "supplier_tree_sha": "046b848f244450e6e636335766276bf3343fe84b",
+    "upstream_path": "assets/default/whale-cheerful.webp",
+    "upstream_git_blob_sha": "a951e76677d55e8ac378962df35dbec52286b5ee",
+    "license": {
+      "status": "maintainer_declared",
+      "identifier": "CC-BY-NC-SA-4.0",
+      "evidence_url": "https://github.com/JAdpp/dsh-whale-galgame/blob/046b848f244450e6e636335766276bf3343fe84b/LICENSE.md",
+      "note": "维护者持有相应权利的范围内授权；不转授第三方品牌或上游角色权利。"
+    },
+    "modifications": "原文件字节保留；仅调整本仓库路径。",
+    "local_file": "whale-cheerful.webp"
+  }
+]

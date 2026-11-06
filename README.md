@@ -1,3 +1,52 @@
+# 非人类员工 · Nonhuman Employees
+
+最新交互：移除“人事档案室”标题和官网导航；突出 Star on GitHub；主工牌左右按钮循环切换九位角色，并保留语言。下载工牌可预览及分别保存 1200 × 1688 的正反面透明背景 PNG，也可一次下载 ZIP；圆角外侧和挂孔透明，卡面印刷保留。下载全程在浏览器本地生成。
+
+员工菜单改用专用 WebP 头像（九张共约 26 KB）并去掉大面积 backdrop blur。Star 项目地址预留为 `https://github.com/fanhuayishiy/ai-crew-pass`；当前仅本地 Git 管理，没有向该远程仓库推送。个人署名仍链接到用户主页。
+
+下载验收：`python -X utf8 scripts/verify-downloads.py`，检查实际浏览器下载、ZIP CRC、两张 PNG 的尺寸与透明像素、单张下载一致性，以及中英文左右切换和手机按钮。
+
+当前版本：图鉴采用更大的居中卡片；页面最底部直接落在人事档案室，署名通过底部弹窗查看。背景字使用 React Bits ShinyText 的低对比扫光；员工选择收为带头像的菜单。口头禅改用有出处的网络梗与明确标注的吐槽改写，详见 [梗来源与视觉说明](docs/internet-memes.md)。
+
+新增验收：`python -X utf8 scripts/verify-polish.py`，检查实际文字动效、减少动态效果、员工菜单与页底落位。
+
+基于 [xu-yaoting/hanging-pass](https://github.com/xu-yaoting/hanging-pass) 改造的九角色同人工牌项目。保留物理吊绳、拖拽摇摆、点击翻面、滚动卡片轮播，增加独立角色页面、九宫格角色切换和随角色变化的整页配色。
+
+角色包括 DeepSeek 鲸鱼娘、GPT 白龙娘、GLM 阔耳狐娘、千问、Gemini、Claude、Kimi、Grok 和豆包。前八位使用 [ZipZipPipe 原帖](https://www.bilibili.com/opus/1233069202138464289) 中的原尺寸立绘；豆包 v4 保留用户参考图的棕色短发、红围巾、黑西装短裙与长靴，改为与其余角色统一的透明底动漫立绘，牌面裁切与人物、姓名栏位置采用共用布局。图片和完整提示词见 [豆包动漫 v4](docs/doubao-anime-v4.md)。
+
+卡面保留清爽的浅色、大幅立绘、圆形细线。九位角色的正反面由共用卡面导出为高清贴图。
+
+右上角支持中文 / EN 切换。中文入口 `/`，英文入口 `/en/`，角色页和图鉴跳转保留所选语言；页面文案、角色资料、SEO 标题和工牌正反面均有英文版本。翻译集中在 `src/data/i18n.ts`，36 张双语贴图位于 `public/img/badges/zh/` 和 `public/img/badges/en/`。贴图按卡身比例导出，印刷铺满卡面；挂绳重复品牌字样，图鉴标题以小号背景字放在右上角。
+
+首页直接接入 [React Bits 官方 Lanyard](https://github.com/DavidHDev/react-bits/blob/main/src/content/Components/Lanyard/Lanyard.jsx)，源码保存在 src/components/react-bits/，不修改其物理实现。React 包装组件只传入角色贴图、挂绳配色、尺寸等公开参数，旧 initLanyardPass 已停用。图鉴移除右侧资料栏，采用居中的全宽卡片轮播，支持鼠标拖动、滚轮、方向键和左右按钮；介绍与同人设定口头禅收进卡片背面。站名为“非人类员工”，首页标识为“工牌领取处”，图鉴分区为“人事档案室”。图鉴沿用 Hanging Pass 的轮播基础；首页组件随页面滚出，不再将实时吊牌姿态接入旧图鉴形变。
+
+卡面更新后启动开发服务，执行 python -X utf8 scripts/export-badge-faces.py 重新导出贴图。交互验收执行 python -X utf8 scripts/verify-react-bits.py，旧重力测试只针对已停用实现，不作为当前效果的验收依据。
+
+项目主页 GitHub 链接指向 [fanhuayishiy](https://github.com/fanhuayishiy)。本地工作分支为 `codex/ai-crew-pass`，原作者仓库保留为 `upstream`，尚未创建或推送新的 GitHub 远程仓库。
+
+```powershell
+npm install --no-package-lock
+npm run dev -- --host 127.0.0.1
+npm run build
+```
+
+Node.js 22.12+。启动脚本兼容 Windows。
+
+- 角色、颜色、署名与官网链接：`src/data/characters.ts`。
+- 工牌共用视图：`src/components/BadgeExperience.astro`。
+- 首页 `/` 为 DeepSeek；其余角色在 `/characters/gpt/`、`/characters/doubao/` 等路径。
+- 视觉样式：`src/styles/deepseek.css`；主题变量由角色数据生成。
+- 图鉴卡片：`src/data/cards.demo.ts`；每张卡片背面可打开对应角色的工作牌。
+- 浏览器验收：启动服务后运行 `python -X utf8 scripts/verify-react-bits.py`（需安装 Python Playwright、Pillow 及 Chromium）。旧 `verify-ui.py` 和 `verify-gravity.py` 仅针对已停用的自写物理实现。
+- 双语验收：`python -X utf8 scripts/verify-locales.py`，覆盖 18 条路由、语言保留、36 张贴图比例和文字边界、图鉴跳转及窄屏。
+- GitHub Pages 部署路径从 `GITHUB_REPOSITORY` 自动推导，不再固定为原作者的 `hanging-pass`。
+
+**原 Hanging Pass 代码沿用 MIT；React Bits 组件采用 MIT + Commons Clause，完整许可见 src/components/react-bits/LICENSE.md；美术按各自来源声明使用。** 本项目仅作非商用同人展示。署名、使用说明与来源记录见 [角色素材说明](public/img/characters/NOTICE.md) 和 [逐文件来源记录](public/img/characters/sources.json)。页面也保留署名。本项目不是各 AI 品牌的官方工作牌。
+
+以下保留原项目历史说明，其中无 React、自写物理与实时滚动形变的描述不适用于当前首页。
+
+---
+
 <h1 align="center">Hanging Pass</h1>
 
 <p align="center">A hand-built lanyard &amp; badge interaction for the web —<br />
