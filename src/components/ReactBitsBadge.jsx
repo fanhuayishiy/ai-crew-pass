@@ -40,8 +40,8 @@ export default function ReactBitsBadge({ characterId, color, cardColor, base, lo
   const path = `${base.replace(/\/$/, '')}/img/badges/${locale}/${characterId}`;
   const fallback = <StaticBadge base={base} characterId={characterId} locale={locale} />;
   return <div ref={host} style={{width:'100%',height:'100%'}}>{unavailable ? fallback : <BadgeBoundary fallback={fallback}><Lanyard
-    frontImage={`${path}-front.png`}
-    backImage={`${path}-back.png`}
+    frontImage={`${path}-front.webp`}
+    backImage={`${path}-back.webp`}
     strapImage={`${base.replace(/\/$/, '')}/img/badges/${characterId}-strap.svg`}
     strapColor={color}
     cardColor={cardColor}

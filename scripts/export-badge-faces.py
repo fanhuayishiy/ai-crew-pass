@@ -1,5 +1,7 @@
 """Export the existing card artwork as front/back textures for React Bits Lanyard."""
 from pathlib import Path
+import subprocess
+import sys
 from playwright.sync_api import sync_playwright
 
 root=Path(__file__).resolve().parents[1]
@@ -48,3 +50,4 @@ with sync_playwright() as p:
             (out/f'{id}-strap.svg').write_text(svg,encoding='utf-8')
             print(locale,id,flush=True)
     browser.close()
+subprocess.run([sys.executable,str(root/'scripts/export-web-textures.py')],check=True)

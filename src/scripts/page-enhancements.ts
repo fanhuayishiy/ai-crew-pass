@@ -1,4 +1,39 @@
 export function initPageEnhancements(): void {
+  const connection = (navigator as Navigator & { connection?: {saveData?: boolean;effectiveType?: string} }).connection;
+  const canWarm = !connection?.saveData && !['slow-2g','2g'].includes(connection?.effectiveType || '');
+  const warmed = new Set<string>();
+  const warm = (link: HTMLElement) => {
+    if (!canWarm || document.hidden) return;
+    const base = link.dataset.textureBase;
+    if (!base) return;
+    for (const face of ['front','back']) {
+      const url = `${base}-${face}.webp`;
+      if (warmed.has(url)) continue;
+      warmed.add(url);
+      fetch(url, {cache:'force-cache',mode:'cors',credentials:'same-origin'})
+        .then(response => { if (!response.ok) throw new Error('Prefetch failed'); return response.arrayBuffer(); })
+        .catch(() => warmed.delete(url));
+    }
+  };
+  document.querySelectorAll<HTMLElement>('[data-texture-base]').forEach(link => {
+    link.addEventListener('pointerenter', () => warm(link), {passive:true});
+    link.addEventListener('focus', () => warm(link));
+    link.addEventListener('touchstart', () => warm(link), {passive:true});
+  });
+  // Only warm adjacent roles after the current face is already painted.
+  const stage = document.querySelector('.react-bits-stage');
+  if (stage && canWarm) {
+    const afterFront = () => {
+      if (!stage.querySelector('[data-front-ready="true"]')) return;
+      observer.disconnect();
+      const schedule = window.requestIdleCallback || ((callback: () => void) => window.setTimeout(callback,300));
+      schedule(() => document.querySelectorAll<HTMLElement>('[data-role-previous],[data-role-next]').forEach(warm));
+    };
+    const observer = new MutationObserver(afterFront);
+    observer.observe(stage,{subtree:true,attributes:true,attributeFilter:['data-front-ready']});
+    afterFront();
+    window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
+  }
   const community = document.querySelector<HTMLDialogElement>('#community');
   document.querySelector('[data-open-community]')?.addEventListener('click', () => community?.showModal());
   document.querySelector('[data-close-community]')?.addEventListener('click', () => community?.close());

@@ -20,6 +20,7 @@
 
 - 九位 AI 同事：DeepSeek、ChatGPT、GLM、Qwen、Gemini、Claude、Kimi、Grok、豆包。
 - React Bits 官方 Lanyard 的 3D 挂绳、拖拽回摆与翻面；同色系 ShinyText 背景扫光。
+- 正面贴图在 HTML 阶段高优先级预加载，正反面与挂绳独立显示；展示纹理采用同分辨率 WebP（背面无损），PNG 下载保留原画质。当前正面显示后空闲预取相邻角色，悬停或触摸菜单时预取目标角色；省流量模式及 2G 网络跳过预取。
 - 中英文切换、头像员工菜单、左右角色切换，适配手机触屏与矮屏。
 - 下载透明背景正反面 PNG，或一次下载 ZIP；下载为静态文件，不依赖浏览器实时绘图。
 - WebGL 不可用时提供可翻面的静态预览；关闭脚本后仍可下载工牌。
@@ -59,6 +60,7 @@ python -X utf8 scripts/verify-single-screen.py
 python -X utf8 scripts/verify-downloads.py
 python -X utf8 scripts/verify-reference-edits.py
 python -X utf8 scripts/verify-optimizations.py
+python -X utf8 scripts/verify-texture-loading.py
 ```
 
 此前图鉴与旧自写物理测试保留作历史记录，不适用于当前单屏版本。

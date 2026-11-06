@@ -968,16 +968,21 @@ const Lanyard = ({
       const imageKey = `${s.frontImage}|${s.backImage}|${s.strapImage}`;
       if (imageKey !== applied.imageKey) {
         const token = ++imageToken;
-        Promise.all([
-          loadImage(imageCache, s.frontImage),
-          loadImage(imageCache, s.backImage),
-          loadImage(imageCache, s.strapImage)
-        ]).then(([front, back, strap]) => {
+        container.dataset.frontReady = 'loading';
+        loadImage(imageCache, s.frontImage).then(front => {
           if (!alive || token !== imageToken) return;
           images.front = front;
-          images.back = back;
-          images.strap = strap;
           paintFaces();
+          container.dataset.frontReady = front ? 'true' : 'error';
+        });
+        loadImage(imageCache, s.backImage).then(back => {
+          if (!alive || token !== imageToken) return;
+          images.back = back;
+          paintFaces();
+        });
+        loadImage(imageCache, s.strapImage).then(strap => {
+          if (!alive || token !== imageToken) return;
+          images.strap = strap;
           repaintStrap();
         });
       }

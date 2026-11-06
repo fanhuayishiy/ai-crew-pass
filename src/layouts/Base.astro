@@ -8,9 +8,10 @@ interface Props {
   theme?: string;
   themeColor?: string;
   locale?: 'zh' | 'en';
+  frontTexture?: string;
 }
 
-const { title, description, theme, themeColor = '#4964a0', locale = 'zh' } = Astro.props;
+const { title, description, theme, themeColor = '#4964a0', locale = 'zh', frontTexture } = Astro.props;
 
 // Self-hosted Geist. Absolute paths via BASE_URL keep sub-path deploys (GitHub Pages) working;
 // injected with is:inline + set:html: Vite leaves this CSS alone, so there is no
@@ -42,6 +43,7 @@ const fontCss = urls
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {frontTexture && <link rel="preload" as="image" href={frontTexture} crossorigin="anonymous" fetchpriority="high" />}
         <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

@@ -19,13 +19,13 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
 const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[^。！？]+[。！？]?/g) || [character.motto];
 ---
 
-<Base locale={locale} title={`${ui.siteName} · ${character.brand} · ${ui.badge}`} description={character.summary} theme={characterStyle(character)} themeColor={character.color}>
+<Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={`${ui.siteName} · ${character.brand} · ${ui.badge}`} description={character.summary} theme={characterStyle(character)} themeColor={character.color}>
   <main class="home-experience" id="top" data-character-id={character.id} data-locale={locale}>
 
 
     <details class="crew-picker" data-crew-picker>
       <summary aria-label={ui.switchEmployee}><span class="crew-picker__dot" aria-hidden="true"></span><span class="crew-picker__caption">{ui.switchEmployee}</span><b>{character.brand}</b><span class="crew-picker__count">09</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></summary>
-      <nav class="character-switch crew-roster" aria-label={ui.choose}>{characters.map(c => <a href={localeCharacterUrl(c, locale)} aria-current={c.id === character.id ? "page" : undefined} style={`--swatch:${c.color}`}><img src={asset(`img/avatars/${c.id}.webp`)} width="36" height="36" alt="" decoding="async" fetchpriority="low" /><b>{c.brand}</b></a>)}</nav>
+      <nav class="character-switch crew-roster" aria-label={ui.choose}>{characters.map(c => <a href={localeCharacterUrl(c, locale)} data-texture-base={asset(`img/badges/${locale}/${c.id}`)} aria-current={c.id === character.id ? "page" : undefined} style={`--swatch:${c.color}`}><img src={asset(`img/avatars/${c.id}.webp`)} width="36" height="36" alt="" decoding="async" fetchpriority="low" /><b>{c.brand}</b></a>)}</nav>
     </details>
     <section class="home-stage" id="screen1">
     <header class="home-masthead">
@@ -49,9 +49,9 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
       <ReactBitsBadge locale={locale} client:only="react" characterId={character.id} color={character.color} cardColor={character.id === 'deepseek' ? '#e1ebfa' : mix(character.color,.87)} base={import.meta.env.BASE_URL} />
     </div>
     <nav class="badge-controls" aria-label={ui.choose}>
-    <a class="hero-role-control hero-role-control--previous" data-role-previous href={localeCharacterUrl(previousCharacter, locale)} aria-label={`${ui.previous} · ${previousCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{previousCharacter.brand}</span></a>
+    <a class="hero-role-control hero-role-control--previous" data-role-previous data-texture-base={asset(`img/badges/${locale}/${previousCharacter.id}`)} href={localeCharacterUrl(previousCharacter, locale)} aria-label={`${ui.previous} · ${previousCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{previousCharacter.brand}</span></a>
     <a class="download-pass" href={asset(`downloads/${locale}/${character.id}-crew-pass.zip`)} download={`${character.id}-${locale}-crew-pass.zip`} data-download-pass><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{ui.download}</a>
-    <a class="hero-role-control hero-role-control--next" data-role-next href={localeCharacterUrl(nextCharacter, locale)} aria-label={`${ui.next} · ${nextCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{nextCharacter.brand}</span></a>
+    <a class="hero-role-control hero-role-control--next" data-role-next data-texture-base={asset(`img/badges/${locale}/${nextCharacter.id}`)} href={localeCharacterUrl(nextCharacter, locale)} aria-label={`${ui.next} · ${nextCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{nextCharacter.brand}</span></a>
     </nav>
     <section class="badge-scene legacy-badge-scene" aria-hidden="true" aria-label={`${character.name}工作牌`} data-strap-label-text={character.brand.toUpperCase().replace(/[^A-Z]/g, "") || "DOUBAO"} data-strap-color={character.color} data-strap-deep={character.ink} data-strap-light={mix(character.color,.25)}>
       <div class="badge-lanyard" aria-hidden="true"><span>{character.brand.toUpperCase()}</span></div>
