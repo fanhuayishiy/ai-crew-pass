@@ -373,3 +373,14 @@ html[lang] .station-heading .collection-heading { position: static; inset: auto;
   html[lang] .station-heading .collection-heading { font-size: 10px; padding-left: 8px; letter-spacing: .03em; }
   html[lang="en"] .station-heading .collection-heading { max-width: 120px; font-size: 9px; }
 }
+/* Preserve the visible 30px circle while providing a 44px touch target. */
+.credits-close { top: 5px; right: 9px; width: 44px; height: 44px; background: transparent; isolation: isolate; }
+.credits-close::before { content: ''; position: absolute; z-index: -1; inset: 7px; border-radius: 50%; background: var(--theme-card); }
+.badge-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+.badge-fallback > img { height: 49svh; max-width: 70vw; object-fit: contain; filter: drop-shadow(0 12px 20px #29365b20); }
+.badge-fallback > button { min-height: 44px; padding: 8px 18px; border: 1px solid var(--theme-line); border-radius: 999px; color: var(--home-ink); background: var(--theme-paper); cursor: pointer; font-size: 12px; }
+.badge-fallback > p { max-width: 75vw; margin: 0; color: var(--home-muted); text-align: center; font-size: 10px; }
+@media (max-width: 760px) {
+  .badge-fallback { transform: translateY(-20px); }
+  .badge-fallback > img { height: 40svh; }
+}

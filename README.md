@@ -2,6 +2,8 @@
 
 九位 AI 模型的非官方同人工牌领取页，支持中文 / English。当前只保留单屏“工牌领取处”；员工图鉴、第二屏过渡区和品牌副题已移除。
 
+加载优化：原始大尺寸立绘仅在显式导出卡面时读取，正常访问不再加载隐藏模板的原图。关闭按钮保留原有圆形外观，触控范围为 44px；WebGL 无法初始化时提供可翻面、可下载的静态工牌。专项验收：`python -X utf8 scripts/verify-optimizations.py`。
+
 - 直接使用 React Bits 官方 Lanyard，提供拖拽、回摆、点击翻面；背景使用官方 ShinyText。上游源码及完整许可保存在 `src/components/react-bits/`。
 - 通过头像菜单或下方切换按钮选择九位角色，保留当前语言。箭头与下载入口集中到独立操作栏，矮屏手机使用较小卡片。
 - 正反面透明背景 PNG 与 ZIP 是同源静态文件，位于 `public/downloads/{zh,en}/`。手机无需实时绘制图片或创建 Blob URL，JavaScript 未加载时主下载链接仍可下载 ZIP。

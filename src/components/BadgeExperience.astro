@@ -111,7 +111,7 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
 
               <div class:list={["badge-portrait", { "badge-portrait--cutout": character.portraitTransparent }]}>
                 <span class="portrait-orbit" aria-hidden="true"></span>
-                <img src={asset(character.portraitImage || `img/characters/${character.image}`)} alt={`${character.brand} · ${character.name}角色立绘`} width={character.imageWidth} height={character.imageHeight} style={`object-position:${character.portraitPosition || "50% 0%"}`} draggable="false" fetchpriority="high" decoding="sync" /><span class="portrait-label">{character.brand} · {character.name}</span><span class="portrait-edition">CHARACTER EDITION</span>
+                <img data-print-src={asset(character.portraitImage || `img/characters/${character.image}`)} alt={`${character.brand} · ${character.name}角色立绘`} width={character.imageWidth} height={character.imageHeight} style={`object-position:${character.portraitPosition || "50% 0%"}`} draggable="false" /><span class="portrait-label">{character.brand} · {character.name}</span><span class="portrait-edition">CHARACTER EDITION</span>
               </div>
 
               <div class="badge-face__identity">
