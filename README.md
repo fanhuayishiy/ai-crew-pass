@@ -1,5 +1,7 @@
 # 非人类员工 · Nonhuman Employees
 
+[简体中文](README.md) · [English](README.en.md)
+
 给九位 AI 同事，发一张可以晃的工牌。
 
 [在线领取工牌](https://badge.fhysy.com/) · [English demo](https://badge.fhysy.com/en/) · [许可证与素材说明](#许可与致谢)
@@ -27,12 +29,6 @@
 
 卡面台词为用户指定的同人玩梗内容，不是产品能力说明。所有角色均为非官方同人形象。
 
-## English
-
-**Nonhuman Employees** is a bilingual fan-made crew pass playground for nine AI characters. Drag the lanyard, let it swing, flip the card, and download transparent front/back PNGs or a ZIP. Mobile touch controls and a static fallback are included.
-
-Built and shared by **风花AI实验室 / Fenghua AI Lab**. Follow the WeChat public account using the QR code above for AI projects, practical tools and build notes.
-
 ## 本地运行
 
 Node.js **22.12+**。
@@ -49,7 +45,7 @@ npm run build
 - 中英文文案：`src/data/i18n.ts`；口头禅：`src/data/memes.ts`。
 - 共用页面：`src/components/BadgeExperience.astro`。
 - 修改卡面后，开发服务运行时执行 `python -X utf8 scripts/export-badge-faces.py`，再执行 `python -X utf8 scripts/export-downloads.py` 更新下载。
-- `main` 分支推送自动运行 GitHub Actions，构建并发布 GitHub Pages。`GITHUB_REPOSITORY` 自动决定子路径。
+- `main` 分支推送自动运行 GitHub Actions，构建并发布 GitHub Pages。生产构建优先使用 `public/CNAME` 中的自定义域名和根路径；没有该文件时，使用 `GITHUB_REPOSITORY` 决定 GitHub Pages 子路径。
 
 ## 验证
 
