@@ -23,7 +23,8 @@ const RING_RADIUS = 0.095;
 const RING_TUBE = 0.0135;
 const EYELET_RADIUS = 0.036;
 const CLAMP_BODY = 0.15;
-const FACE_WIDTH = 1024;
+// Match the 324px card exported at 4x; avoid another resize of small lettering.
+const FACE_WIDTH = 1296;
 
 const FINISHES = {
   glossy: { roughness: 0.42, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06, foil: 0, anisotropy: 0 },
@@ -818,7 +819,7 @@ const Lanyard = ({
     const frontMaterial = new THREE.MeshPhysicalMaterial({
       map: frontTexture,
       normalMap: grain,
-      normalScale: new THREE.Vector2(0.06, 0.06)
+      normalScale: new THREE.Vector2(0.015, 0.015)
     });
     const backMaterial = new THREE.MeshPhysicalMaterial({
       map: backTexture,
@@ -879,6 +880,8 @@ const Lanyard = ({
     let placed = false;
     let hovering = false;
     let press = null;
+    let arrivalAnnounced = false;
+    let arrivalFalling = false;
     let imageToken = 0;
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
@@ -1147,6 +1150,15 @@ const Lanyard = ({
         placeHanging(sim, layout, false);
       }
       render();
+      // Announce the first visible drop when the strap approaches full extension.
+      // Audio stays outside the simulation and never changes its motion.
+      const extension = (sim.anchor.y - sim.nodes[JOINTS].y) / (sim.rest * JOINTS);
+      if (extension > .7 && body.velocity.y < -.5) arrivalFalling = true;
+      if (!arrivalAnnounced && container.dataset.frontReady === 'true' && !sim.grab &&
+          (reducedMotion || !settingsRef.current.intro || (arrivalFalling && extension > .9 && body.velocity.y >= -.15))) {
+        arrivalAnnounced = true;
+        canvas.dispatchEvent(new CustomEvent('badge-arrive', { bubbles: true, detail: { extension, velocity: body.velocity.y } }));
+      }
       const resting = sim.calm > 1.2 && !sim.grab && current.breeze === 0;
       if (visible && !resting) raf = requestAnimationFrame(tick);
     };

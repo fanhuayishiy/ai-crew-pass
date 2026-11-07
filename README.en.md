@@ -26,7 +26,7 @@ Scan with WeChat, or save the QR code and open it in WeChat to follow.
 - Chinese and English interfaces, an avatar character menu, previous/next controls, and layouts for mobile touchscreens and short viewports.
 - Transparent front/back PNG downloads, individually or as a ZIP. Downloads are static files and do not depend on live browser rendering.
 - A flippable static preview when WebGL is unavailable. Crew pass downloads remain available with JavaScript disabled.
-- Subtle flip and release sounds, enabled at low volume by default after the first interaction. A mute toggle remembers your preference. No background music or audio file downloads.
+- Recorded foley for flips, metal contacts on release, and character switching (Freesound, CC0), enabled by default after the first interaction. A mute toggle remembers your preference. Samples are hosted locally with the project; no background music. See [audio credits](public/audio/badge/NOTICE.md).
 
 Card catchphrases are selected fan jokes, not claims about product capabilities. All character portrayals are unofficial fan creations.
 
@@ -47,6 +47,10 @@ npm run build
 - Shared page: `src/components/BadgeExperience.astro`.
 - After changing card faces, keep the development server running and run `python -X utf8 scripts/export-badge-faces.py`, followed by `python -X utf8 scripts/export-downloads.py` to update downloads.
 - Pushing to `main` runs GitHub Actions to build and deploy to GitHub Pages. Production builds use the custom domain in `public/CNAME` and the root path when that file exists; otherwise, `GITHUB_REPOSITORY` determines the GitHub Pages subpath.
+
+## Visit counter
+
+The footer displays site-wide page views (PV) via [Busuanzi](https://busuanzi.ibruce.info/), loaded only on `badge.fhysy.com`. Local development and preview hosts do not send counter requests. Refreshes and character/language navigation count as page views, not unique visitors. Visits before integration are not backfilled. The counter stays hidden if the third-party service is blocked or unavailable; the site and downloads remain usable.
 
 ## Verification
 

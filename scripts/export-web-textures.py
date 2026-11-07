@@ -9,7 +9,7 @@ for locale in ['zh','en']:
         target=source.with_suffix('.webp')
         with Image.open(source) as image:
             # Flat back-side typography compresses best losslessly.
-            image.save(target,'WEBP',quality=94,method=6,lossless=source.stem.endswith('-back'))
+            image.save(target,'WEBP',quality=96,method=6,lossless=source.stem.endswith('-back'))
         before+=source.stat().st_size
         after+=target.stat().st_size
 print(f'Display textures: {before:,} -> {after:,} bytes ({(1-after/before)*100:.1f}% smaller); dimensions unchanged')

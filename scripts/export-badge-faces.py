@@ -10,7 +10,7 @@ out.mkdir(exist_ok=True,parents=True)
 ids=['deepseek','gpt','glm','qwen','gemini','claude','kimi','grok','doubao']
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)
-    page=browser.new_page(viewport={'width':1440,'height':960},device_scale_factor=3,reduced_motion='reduce',java_script_enabled=False)
+    page=browser.new_page(viewport={'width':1440,'height':960},device_scale_factor=4,reduced_motion='reduce',java_script_enabled=False)
     for locale in ['zh','en']:
         target=out/locale
         target.mkdir(exist_ok=True)

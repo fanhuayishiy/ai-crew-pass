@@ -26,7 +26,7 @@
 - 中英文切换、头像员工菜单、左右角色切换，适配手机触屏与矮屏。
 - 下载透明背景正反面 PNG，或一次下载 ZIP；下载为静态文件，不依赖浏览器实时绘图。
 - WebGL 不可用时提供可翻面的静态预览；关闭脚本后仍可下载工牌。
-- 轻量翻面与松手碰扣音效，默认低音量开启；右上角可静音并记住偏好，首次交互后启用声音，无背景音乐或音频文件加载。
+- 翻面、松手金属声与角色切换使用实录拟音素材（Freesound，CC0），默认开启；右上角可静音并记住偏好，首次交互后启用声音。音频随项目本地托管，无背景音乐，详见[音效说明](public/audio/badge/NOTICE.md)。
 
 卡面台词为用户指定的同人玩梗内容，不是产品能力说明。所有角色均为非官方同人形象。
 
@@ -47,6 +47,10 @@ npm run build
 - 共用页面：`src/components/BadgeExperience.astro`。
 - 修改卡面后，开发服务运行时执行 `python -X utf8 scripts/export-badge-faces.py`，再执行 `python -X utf8 scripts/export-downloads.py` 更新下载。
 - `main` 分支推送自动运行 GitHub Actions，构建并发布 GitHub Pages。生产构建优先使用 `public/CNAME` 中的自定义域名和根路径；没有该文件时，使用 `GITHUB_REPOSITORY` 决定 GitHub Pages 子路径。
+
+## 访问量统计
+
+页脚使用[不蒜子](https://busuanzi.ibruce.info/)显示全站总浏览量（PV），仅在 `badge.fhysy.com` 下加载，不统计本地开发或预览地址。刷新、切换角色和语言都会增加页面浏览量，不等同于独立访客数，也不会补算接入前的历史访问。第三方服务被拦截或加载失败时，统计项隐藏，页面和下载正常使用。
 
 ## 验证
 

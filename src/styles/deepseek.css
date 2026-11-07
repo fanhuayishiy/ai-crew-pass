@@ -238,6 +238,14 @@ html[lang="en"] .station-brand { font-size: 25px; letter-spacing: -.04em; }
 .chapter-card .chapter-card__foot { margin-top: auto; padding-top: 12px; }
 .chapter-card__foot > span { max-width: 48%; font-size: 6px; line-height: 1.6; }
 .badge-face__motto small { font-size: 6px; letter-spacing: .02em; }
+/* Card text is viewed at roughly 250–320 CSS px: keep reading text distinct
+   from the intentionally tiny decorative edition marks. */
+html[lang] .badge-face--front .badge-role { color: color-mix(in srgb,var(--home-ink) 86%,var(--theme-card)); font-size: 10px; font-weight: 550; letter-spacing: .025em; }
+html[lang] .badge-face--front .badge-face__desc { color: color-mix(in srgb,var(--home-ink) 90%,var(--theme-card)); font-size: 11px; font-weight: 500; line-height: 1.65; letter-spacing: .015em; margin-top: 8px; }
+.badge-face--front .badge-face__name > span { color: color-mix(in srgb,var(--home-ink) 80%,var(--theme-card)); font-size: 10px; font-weight: 500; }
+.badge-face--front .badge-pass-type { color: color-mix(in srgb,var(--home-ink) 78%,var(--theme-card)); font-size: 8px; letter-spacing: .12em; }
+.badge-face--front .badge-face__motto { color: color-mix(in srgb,var(--home-ink) 85%,var(--theme-card)); }
+.badge-face--front .badge-face__motto b, .badge-face--front .badge-face__motto small { font-size: 7px; font-weight: 500; letter-spacing: .015em; }
 .badge-catchphrase { margin: 12px 0 0; font-size: 9px; line-height: 1.7; color: var(--theme-soft); }
 .badge-catchphrase span { display: block; color: var(--theme-muted); font-size: 6px; }
 .badge-catchphrase + .badge-back-credit { margin-top: 12px; }
@@ -325,6 +333,13 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
 .transparency-grid img { display: block; width: 100%; aspect-ratio: 1200/1688; object-fit: contain; }
 .download-previews a { display: inline-block; margin-top: 12px; padding: 6px 10px; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
 .download-both { display: block; margin-top: 24px; padding: 12px; border-radius: 999px; background: var(--theme-ink); color: #fff; text-align: center; font-size: 12px; }
+.download-support { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--theme-line); }
+.download-support strong { font-size: 12px; font-weight: 500; }
+.download-support p { max-width: 300px; margin: 5px 0 0; font-size: 11px; line-height: 1.7; color: var(--home-muted); }
+.download-support a { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 13px; border: 1px solid var(--theme-line); border-radius: 999px; font-size: 11px; color: var(--home-ink); }
+.download-support a:hover { background: color-mix(in srgb,var(--theme-brand) 9%,transparent); }
+.download-support a:focus-visible { outline: 2px solid var(--theme-brand); outline-offset: 3px; }
+@media (max-width: 480px) { .download-support { align-items: flex-start; flex-direction: column; gap: 12px; } }
 .download-dialog a[aria-disabled="true"] { pointer-events: none; opacity: .4; }
 @media (max-width: 760px) {
   .social-links > .github-star { display: inline-flex; padding: 8px 10px; gap: 5px; font-size: 9px; }
@@ -389,6 +404,8 @@ html[lang] .station-heading .collection-heading { position: static; inset: auto;
 .community-links { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .community-trigger { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: var(--home-ink); cursor: pointer; font-size: 11px; }
 .community-links .credits-trigger { color: var(--home-muted); font-size: 9px; }
+.site-visits { color: var(--home-muted); font-size: 9px; line-height: 1.2; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.site-visits[hidden] { display: none; }
 .community-dialog { width: min(420px,calc(100vw - 32px)); max-height: 90svh; padding: 32px; border: 1px solid var(--theme-line); border-radius: 20px; background: var(--theme-paper); color: var(--home-ink); text-align: center; overflow-y: auto; box-shadow: 0 20px 100px #29365b30; }
 .community-dialog::backdrop { background: #17233e55; }
 .community-eyebrow { margin: 0 0 12px; color: var(--home-muted); font: 8px var(--font-mono); letter-spacing: .12em; }
