@@ -54,6 +54,14 @@ export function initPageEnhancements(): void {
   // Open the first visit only after the current print has been painted.
   const stage = document.querySelector('.react-bits-stage');
   if (stage) {
+    const backStatus = stage.querySelector<HTMLElement>('[data-badge-back-status]');
+    stage.addEventListener('badge-back-status', event => {
+      if (!backStatus) return;
+      const status = (event as CustomEvent<string>).detail;
+      const en = document.documentElement.lang === 'en';
+      backStatus.hidden = status === 'ready';
+      backStatus.textContent = status === 'error' ? (en ? 'Back failed to load. Tap the pass to retry.' : '背面加载失败，点击工牌重试') : (en ? 'Loading the back…' : '正在加载工牌背面…');
+    });
     const loading = document.querySelector<HTMLElement>('[data-crew-loading]');
     const showFailure = () => {
       if (!document.documentElement.classList.contains('crew-first-loading')) return;

@@ -216,6 +216,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--theme-brand, #4
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .react-bits-stage { position: absolute; inset: 0; z-index: 3; }
 .react-bits-stage > astro-island { display: block; width: 100%; height: 100%; }
+.badge-back-status { position: absolute; z-index: 4; left: 50%; bottom: 23%; transform: translateX(-50%); max-width: 85vw; padding: 9px 14px; border: 1px solid var(--theme-line); border-radius: 999px; background: var(--theme-paper); color: var(--theme-ink); box-shadow: 0 4px 14px #29365b1a; font-size: 11px; white-space: nowrap; pointer-events: none; }
+.badge-back-status[hidden] { display: none; }
 .badge-loading-preview { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
 .badge-loading-preview img { height: 49svh; width: auto; max-width: 70vw; object-fit: contain; border-radius: 14px; box-shadow: 0 12px 24px #29365b14; }
 .react-bits-stage:has(.lanyard[data-front-ready="true"], .badge-fallback) .badge-loading-preview { display: none; }

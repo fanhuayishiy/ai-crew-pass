@@ -80,6 +80,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
     <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">AI CREW COLLECTION <i>·</i> 09 CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {character.name} {ui.arrived} <span>NO. {character.code}—001</span></div>
     <div class="react-bits-stage" aria-label={`${character.name} · ${ui.badge}`}>
       <div class="badge-loading-preview" aria-hidden="true"><img src={asset(`img/badges/${locale}/${character.id}-front.webp`)} crossorigin="anonymous" alt="" decoding="async" fetchpriority="high" width="1296" height="1824" /></div>
+      <p class="badge-back-status" data-badge-back-status role="status" aria-live="polite" hidden></p>
       <ReactBitsBadge locale={locale} client:only="react" characterId={character.id} color={character.color} cardColor={character.id === 'deepseek' ? '#e1ebfa' : mix(character.color,.87)} base={import.meta.env.BASE_URL} />
     </div>
     <nav class="badge-controls" aria-label={ui.choose}>
@@ -87,56 +88,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
     <a class="download-pass" href={asset(`downloads/${locale}/${character.id}-crew-pass.zip`)} download={`${character.id}-${locale}-crew-pass.zip`} data-download-pass><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{ui.download}</a>
     <a class="hero-role-control hero-role-control--next" data-role-next data-texture-base={asset(`img/badges/${locale}/${nextCharacter.id}`)} href={localeCharacterUrl(nextCharacter, locale)} aria-label={`${ui.next} · ${nextCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{nextCharacter.brand}</span></a>
     </nav>
-    <section class="badge-scene legacy-badge-scene" aria-hidden="true" aria-label={`${character.name}工作牌`} data-strap-label-text={character.brand.toUpperCase().replace(/[^A-Z]/g, "") || "DOUBAO"} data-strap-color={character.color} data-strap-deep={character.ink} data-strap-light={mix(character.color,.25)}>
-      <div class="badge-lanyard" aria-hidden="true"><span>{character.brand.toUpperCase()}</span></div>
-      <span class="badge-clip" aria-hidden="true"><i></i></span>
-      {/* 3D twisted ribbon (Three.js): same coords as the rig SVG; draws strap + print only */}
-      <canvas class="badge-ribbon3d" data-strap-ribbon3d aria-hidden="true"></canvas>
-      <svg class="badge-rig" data-rig-strap aria-hidden="true">
-        <defs>
-          {/* Strap twill: fine diagonal lines for fabric feel (redrawn per frame on the strap) */}
-          <pattern id="strap-weave" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
-            <path d="M 0 0 L 0 6" stroke="#ffffff16" stroke-width="2"></path>
-            <path d="M 3 0 L 3 6" stroke="#00000014" stroke-width="2"></path>
-          </pattern>
-          {/* All hardware uses one neutral-grey metal gradient; no new hues introduced */}
-          <linearGradient id="rig-metal" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#f9fcff"></stop>
-            <stop offset="0.18" stop-color="#c2ccd8"></stop>
-            <stop offset="0.32" stop-color="#f8fbff"></stop>
-            <stop offset="0.47" stop-color="#8997a8"></stop>
-            <stop offset="0.62" stop-color="#d1dae5"></stop>
-            <stop offset="0.78" stop-color="#ffffff"></stop>
-            <stop offset="1" stop-color="#9cabbc"></stop>
-          </linearGradient>
-        </defs>
-
-        {/* Strap body: a filled ribbon (width varies with twist, no constant-width stroke) */}
-        <path data-strap-band d="" fill="var(--theme-brand, #4964a0)" stroke="none"></path>
-        {/* Twist shading: one quad per segment, the more it turns away the darker */}
-        <g data-strap-shade></g>
-        <path data-strap-weave d="" fill="none" stroke="url(#strap-weave)" stroke-width="34" opacity="0"></path>
-        <path data-strap-highlight d="" fill="none" stroke="var(--theme-light, #6886bd)" stroke-width="20"></path>
-        <path data-strap-thread d="" fill="none" stroke="#ffffff25" stroke-width="2"></path>
-
-        {/* Pixel label: one <g> per glyph; lanyard-pass writes transform on the polyline */}
-        <g class="badge-rig__label" data-strap-label></g>
-
-        {/* Clip: one-piece flat metal clip plate (silver, smooth, no rivets/screws or bumps) */}
-        <g data-rig-clip>
-          <rect x="-23" y="-47" width="46" height="34" rx="2.5" fill="url(#rig-metal)" stroke="#f4f7fc" stroke-width="0.7"></rect>
-          <path d="M-20-44H20M-20-42H20M-20-40H20M-20-19H20M-20-17H20" stroke="#ffffff" stroke-opacity="0.18" stroke-width="0.5"></path>
-          {/* Horizontal rectangular slot through the middle of the clip plate */}
-          <rect x="-9.5" y="-33" width="19" height="4.5" rx="1" fill="#00000038"></rect>
-          {/* Soft shadow where the strap enters: strap + clip read as one (fading dark band) */}
-          <rect x="-17" y="-47" width="34" height="7" fill="color-mix(in srgb, var(--theme-ink, #263c71) 18.0%, transparent)"></rect>
-          {/* Small round hole at the clip plate bottom: the O-ring hangs freely here */}
-          <circle cx="0" cy="-12.5" r="2.8" fill="var(--theme-ink, #374c70)" opacity="0.6"></circle>
-          <path d="M -1.6 -13.6 A 2.8 2.8 0 0 1 1.6 -13.6" fill="none" stroke="#ffffff70" stroke-width="0.9"></path>
-        </g>
-      </svg>
-
-      <canvas class="badge-body3d" data-badge-body3d aria-hidden="true"></canvas>
+    {import.meta.env.DEV && <section class="badge-scene legacy-badge-scene" aria-hidden="true" aria-label={`${character.name}工作牌`} data-strap-label-text={character.brand.toUpperCase().replace(/[^A-Z]/g, "") || "DOUBAO"} data-strap-color={character.color} data-strap-deep={character.ink} data-strap-light={mix(character.color,.25)}>
       <article class="badge-card" data-morph-card data-chapter-index="0" data-card-label={coverCard.label} aria-label={`${coverCard.label} profile card`}>
         <div class="badge-tilt">
           <div class="badge-flip">
@@ -179,33 +131,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
         <i class="badge-hole" aria-hidden="true"></i>
       </article>
 
-      <svg class="badge-rig badge-rig--front" aria-hidden="true">
-        {/* Gimbal: post takes grab clip, hooks lower ring; card angle (grab: strap angle) */}
-        <g data-rig-ring>
-          {/* Drop shadow on the card (makes it read as hanging from the hook) */}
-          <ellipse cx="0" cy="5" rx="11" ry="7" fill="color-mix(in srgb, var(--theme-ink, #263c71) 18.0%, transparent)"></ellipse>
-          {/* Soft shadow on the card */}
-          <ellipse cx="0" cy="2.4" rx="10" ry="6" fill="color-mix(in srgb, var(--theme-ink, #263c71) 12.2%, transparent)"></ellipse>
-
-          {/* Punch hole (round): hole first, ring on top — sells "ring through hole" */}
-          <ellipse cx="0" cy="0" rx="5.2" ry="5" fill="var(--theme-ink, #31436c)"></ellipse>
-          <ellipse cx="0" cy="-1.4" rx="5.2" ry="3.2" fill="var(--theme-ink, #263655)" opacity="0.55"></ellipse>
-
-          {/* O-ring: smooth unbroken circle (no gap, no spring), hangs from the clip plate
-              hole and gently through the card punch hole. The unclip turn spins this group. */}
-          <g data-rig-hook>
-            <ellipse cx="0" cy="-3.6" rx="7.2" ry="7.2" fill="none" stroke="url(#rig-metal)" stroke-width="2.6"></ellipse>
-            {/* Cleanly rendered highlight / shade */}
-            <path d="M -5.1 -7.9 A 7.2 7.2 0 0 1 1.4 -10.7" fill="none" stroke="#ffffffd0" stroke-width="1.2" stroke-linecap="round"></path>
-            <path d="M 5.1 0.7 A 7.2 7.2 0 0 1 -1.6 3.6" fill="none" stroke="var(--theme-ink, #2e426a)" stroke-opacity="0.32" stroke-width="1.1" stroke-linecap="round"></path>
-          </g>
-
-          {/* Soft shadow where the ring meets the card face */}
-          <ellipse cx="0.8" cy="1.8" rx="4.8" ry="2.2" fill="color-mix(in srgb, var(--theme-ink, #263c71) 18.8%, transparent)"></ellipse>
-        </g>
-      </svg>
-
-    </section>
+    </section>}
 
     <footer class="home-footer">
       <div class="community-links"><button type="button" class="community-trigger" data-open-community><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M21 11c0 4.4-4 8-9 8a10 10 0 0 1-4-.8L3 20l1.4-4.1A7.1 7.1 0 0 1 3 11c0-4.4 4-8 9-8s9 3.6 9 8Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>{ui.community}</button><button type="button" class="more-about-link credits-trigger" data-open-credits>{ui.credits} <span aria-hidden="true">↗</span></button><span class="site-visits" data-visit-counter hidden title={ui.viewsHint}><span id="busuanzi_container_site_pv" style="display:none">{ui.totalViews} <span id="busuanzi_value_site_pv"></span></span></span></div>

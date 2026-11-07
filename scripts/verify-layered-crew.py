@@ -22,9 +22,11 @@ with sync_playwright() as p:
             route=('/en' if locale=='en' else '')+('/' if role=='deepseek' else f'/characters/{role}/')
             page.goto(base+route,wait_until='domcontentloaded')
             page.locator('.lanyard[data-front-ready="true"]').wait_for(timeout=20000)
-            assert page.locator('.badge-face--ocean').count()==1,(role,'missing layered front')
-            assert page.locator('.badge-face--ocean-back').count()==1,(role,'missing layered back')
-            assert page.locator('.badge-card img[src]').count()==0,(role,'raw art loaded')
+            if page.locator('.badge-card').count():
+                # The export-only source template exists in dev, never in the published page.
+                assert page.locator('.badge-face--ocean').count()==1,(role,'missing layered front')
+                assert page.locator('.badge-face--ocean-back').count()==1,(role,'missing layered back')
+                assert page.locator('.badge-card img[src]').count()==0,(role,'raw art loaded')
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
             original_requests=page.evaluate('''()=>performance.getEntriesByType('resource').filter(e=>/\\/img\\/(characters|deepseek|gpt|glm|qwen|gemini|claude|kimi|grok|doubao)\\//.test(e.name)).map(e=>e.name)''')
             assert not original_requests,original_requests

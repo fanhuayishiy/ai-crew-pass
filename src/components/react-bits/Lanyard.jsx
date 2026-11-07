@@ -888,6 +888,8 @@ const Lanyard = ({
     let arrivalAnnounced = false;
     let arrivalFalling = false;
     let imageToken = 0;
+    let pendingFlip = null;
+    let requestBack = () => {};
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
     const paintFaces = () => {
@@ -905,7 +907,7 @@ const Lanyard = ({
         backTexture.dispose();
       }
       paintFace(frontCanvas, images.front, color, s.imageFit);
-      paintFace(backCanvas, images.back || images.front, color, s.imageFit);
+      paintFace(backCanvas, images.back, color, s.imageFit);
       frontTexture.needsUpdate = true;
       backTexture.needsUpdate = true;
       start();
@@ -978,17 +980,29 @@ const Lanyard = ({
       if (imageKey !== applied.imageKey) {
         const token = ++imageToken;
         container.dataset.frontReady = 'loading';
+        const loadBack = () => {
+          container.dataset.backReady = 'loading';
+          return loadImage(imageCache, s.backImage).then(back => {
+            if (!alive || token !== imageToken) return;
+            images.back = back;
+            container.dataset.backReady = back ? 'true' : 'error';
+            if (!back) imageCache.delete(s.backImage);
+            paintFaces();
+            if (pendingFlip) {
+              canvas.dispatchEvent(new CustomEvent('badge-back-status', { bubbles: true, detail: back ? 'ready' : 'error' }));
+              if (back) flip(pendingFlip);
+              pendingFlip = null;
+            }
+          });
+        };
+        requestBack = loadBack;
         loadImage(imageCache, s.frontImage).then(front => {
           if (!alive || token !== imageToken) return;
           images.front = front;
           paintFaces();
           container.dataset.frontReady = front ? 'true' : 'error';
           // Give the visible print the full image bandwidth before requesting its reverse.
-          loadImage(imageCache, s.backImage).then(back => {
-            if (!alive || token !== imageToken) return;
-            images.back = back;
-            paintFaces();
-          });
+          loadBack();
         });
         loadImage(imageCache, s.strapImage).then(strap => {
           if (!alive || token !== imageToken) return;
@@ -1227,6 +1241,12 @@ const Lanyard = ({
     };
 
     const flip = point => {
+      if (!images.back) {
+        pendingFlip = point.clone();
+        canvas.dispatchEvent(new CustomEvent('badge-back-status', { bubbles: true, detail: 'loading' }));
+        if (container.dataset.backReady === 'error') requestBack();
+        return;
+      }
       const body = sim.body;
       const up = scratch.a.set(0, 1, 0).applyQuaternion(body.quaternion);
       let direction = sim.turn > 0 ? -1 : 1;

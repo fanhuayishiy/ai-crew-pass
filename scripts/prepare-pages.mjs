@@ -16,7 +16,7 @@ function inspect(directory) {
     else {
       const webPath = rel.split(sep).join('/');
       const originalArt = /^img\/(characters|deepseek|gpt|glm|qwen|gemini|claude|kimi|grok|doubao)\/.+\.(png|jpe?g|webp)$/i.test(webPath);
-      const archivedPrint = /^img\/badges\/[^/]+\.png$/i.test(webPath);
+      const archivedPrint = /^img\/badges\/(?:[^/]+\/)?[^/]+\.png$/i.test(webPath);
       if (originalArt || archivedPrint) candidates.push({ path, bytes: statSync(path).size });
     }
   }
