@@ -11,7 +11,7 @@ for locale in ['zh','en']:
             # Keep native resolution for fine type; bounded high-quality compression
             # avoids carrying generated background noise in a lossless texture.
             temporary=target.with_suffix('.tmp.webp')
-            image.save(temporary,'WEBP',quality=94,method=6)
+            image.save(temporary,'WEBP',quality=90 if source.stem.endswith('-back') else 92,method=6)
             temporary.replace(target)
         before+=source.stat().st_size
         after+=target.stat().st_size

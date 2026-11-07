@@ -27,7 +27,8 @@ async def main():
         gate.set()
         await page.wait_for_function('window.testFlip===1', timeout=12000)
         assert await page.locator('.lanyard').get_attribute('data-back-ready') == 'true'
-        assert await status.is_hidden()
+        assert '背面已就绪' in await status.inner_text()
+        await status.wait_for(state='hidden', timeout=3000)
         assert not errors, errors
         await page.close()
         page = await browser.new_page(viewport={'width':390,'height':844}, is_mobile=True, has_touch=True, reduced_motion='reduce')

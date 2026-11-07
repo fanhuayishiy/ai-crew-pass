@@ -55,12 +55,29 @@ export function initPageEnhancements(): void {
   const stage = document.querySelector('.react-bits-stage');
   if (stage) {
     const backStatus = stage.querySelector<HTMLElement>('[data-badge-back-status]');
+    let statusTimer = 0;
+    let statusVisibleAt = 0;
     stage.addEventListener('badge-back-status', event => {
       if (!backStatus) return;
       const status = (event as CustomEvent<string>).detail;
       const en = document.documentElement.lang === 'en';
-      backStatus.hidden = status === 'ready';
-      backStatus.textContent = status === 'error' ? (en ? 'Back failed to load. Tap the pass to retry.' : '背面加载失败，点击工牌重试') : (en ? 'Loading the back…' : '正在加载工牌背面…');
+      clearTimeout(statusTimer);
+      if (status === 'ready') {
+        if (!backStatus.hidden) {
+          backStatus.textContent = en ? 'Back ready' : '背面已就绪';
+          statusTimer = window.setTimeout(() => { backStatus.hidden = true; }, Math.max(500, 800 - (performance.now() - statusVisibleAt)));
+        }
+      } else if (status === 'error') {
+        backStatus.hidden = false;
+        backStatus.textContent = en ? 'Back failed to load. Tap the pass to retry.' : '背面加载失败，点击工牌重试';
+      } else {
+        backStatus.hidden = true;
+        statusTimer = window.setTimeout(() => {
+          backStatus.textContent = en ? 'Loading the back…' : '正在加载工牌背面…';
+          backStatus.hidden = false;
+          statusVisibleAt = performance.now();
+        }, 180);
+      }
     });
     const loading = document.querySelector<HTMLElement>('[data-crew-loading]');
     const showFailure = () => {
@@ -79,13 +96,24 @@ export function initPageEnhancements(): void {
     const queueOthers = async () => {
       if (!canWarm) return;
       const current = document.querySelector<HTMLElement>('.home-experience')?.dataset.characterId;
-      const links = [...document.querySelectorAll<HTMLElement>('[data-role-next],[data-role-previous],.crew-roster [data-texture-base]')];
+      const links = [
+        ...document.querySelectorAll<HTMLElement>('[data-role-next]'),
+        ...document.querySelectorAll<HTMLElement>('[data-role-previous]'),
+        ...document.querySelectorAll<HTMLElement>('.crew-roster [data-texture-base]'),
+      ];
       const unique = links.filter((link, index) => {
         const base = link.dataset.textureBase;
         return base && !base.endsWith('/' + current) && links.findIndex(item => item.dataset.textureBase === base) === index;
       });
-      // First prime each front, starting with adjacent roles, then their backs.
-      for (const face of ['front','back']) for (const link of unique) {
+      // Warm both sides of the next and previous roles first, then the rest.
+      const adjacent = unique.filter(link => link.hasAttribute('data-role-next') || link.hasAttribute('data-role-previous'));
+      const remaining = unique.filter(link => !adjacent.includes(link));
+      const queue = [
+        ...adjacent.flatMap(link => [{link, face:'front'}, {link, face:'back'}]),
+        ...remaining.map(link => ({link, face:'front'})),
+        ...remaining.map(link => ({link, face:'back'})),
+      ];
+      for (const {link, face} of queue) {
         if (document.hidden) await new Promise<void>(resolve => {
           const resume = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', resume); resolve(); } };
           document.addEventListener('visibilitychange', resume);
