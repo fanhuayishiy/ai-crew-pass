@@ -2,7 +2,7 @@
 
 给九位 AI 同事，发一张可以晃的工牌。
 
-[在线领取工牌](https://fanhuayishiy.github.io/ai-crew-pass/) · [English demo](https://fanhuayishiy.github.io/ai-crew-pass/en/) · [许可证与素材说明](#许可与致谢)
+[在线领取工牌](https://badge.fhysy.com/) · [English demo](https://badge.fhysy.com/en/) · [许可证与素材说明](#许可与致谢)
 
 ![项目预览](public/social/cover.png)
 

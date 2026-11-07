@@ -29,7 +29,7 @@ jobs:
         # （rolldown 的 binding-*.wasi/node 包），CI 上 npm ci 会直接崩。
         run: npm install --no-package-lock --no-audit --no-fund
       - name: Build
-        # 项目型 Pages 在子路径下，base 只在 CI 里加
+        # CI 按 public/CNAME 构建自定义域名；无 CNAME 时使用项目子路径
         run: npm run build
         env:
           GITHUB_PAGES: '1'
