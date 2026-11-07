@@ -7,11 +7,11 @@ export function initPageEnhancements(): void {
   const connection = (navigator as Navigator & { connection?: {saveData?: boolean;effectiveType?: string} }).connection;
   const canWarm = !connection?.saveData && !['slow-2g','2g'].includes(connection?.effectiveType || '');
   const warmed = new Set<string>();
-  const warm = (link: HTMLElement) => {
+  const warm = (link: HTMLElement, faces: string[] = ['front','back']) => {
     if (!canWarm || document.hidden) return;
     const base = link.dataset.textureBase;
     if (!base) return;
-    for (const face of ['front','back']) {
+    for (const face of faces) {
       const url = `${base}-${face}.webp`;
       if (warmed.has(url)) continue;
       warmed.add(url);
@@ -32,7 +32,8 @@ export function initPageEnhancements(): void {
       if (!stage.querySelector('[data-front-ready="true"]')) return;
       observer.disconnect();
       const schedule = window.requestIdleCallback || ((callback: () => void) => window.setTimeout(callback,300));
-      schedule(() => document.querySelectorAll<HTMLElement>('[data-role-previous],[data-role-next]').forEach(warm));
+      // Warm only neighboring fronts; reverse faces wait for deliberate hover/focus.
+      schedule(() => document.querySelectorAll<HTMLElement>('[data-role-previous],[data-role-next]').forEach(link => warm(link, ['front'])));
     };
     const observer = new MutationObserver(afterFront);
     observer.observe(stage,{subtree:true,attributes:true,attributeFilter:['data-front-ready']});

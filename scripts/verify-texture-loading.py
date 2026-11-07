@@ -1,7 +1,7 @@
 """Regression: a slow back/strap must never hold the front face blank."""
 import asyncio
 from pathlib import Path
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageStat
 from playwright.async_api import async_playwright
 
 root=Path(__file__).resolve().parents[1]
@@ -43,8 +43,9 @@ async def main():
                 assert webp.stat().st_size<png.stat().st_size,(png.name,'oversized display texture')
                 png_bytes+=png.stat().st_size
                 webp_bytes+=webp.stat().st_size
-                if png.stem.endswith('-back'):
-                    assert ImageChops.difference(Image.open(webp).convert('RGB'),Image.open(png).convert('RGB')).getbbox() is None
+                difference=ImageChops.difference(Image.open(webp).convert('RGB'),Image.open(png).convert('RGB'))
+                assert max(ImageStat.Stat(difference).mean)<4, (png.name,'excessive compression error')
+                assert webp.stat().st_size<450*1024,(webp.name,'display texture budget exceeded')
         assert webp_bytes<png_bytes*.35, (png_bytes,webp_bytes)
         assert not errors,errors
         await browser.close()

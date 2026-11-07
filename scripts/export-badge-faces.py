@@ -19,9 +19,10 @@ with sync_playwright() as p:
             page.goto('http://127.0.0.1:4321'+('/en' if locale=='en' else '')+path,wait_until='networkidle')
             page.evaluate('document.fonts.ready')
             page.evaluate('''async () => {
-                const image = document.querySelector('.badge-portrait img');
-                image.src = image.dataset.printSrc;
-                await image.decode();
+                await Promise.all([...document.querySelectorAll('.badge-card img[data-print-src]')].map(async image => {
+                    image.src = image.dataset.printSrc;
+                    await image.decode();
+                }));
             }''')
             page.wait_for_timeout(200)
             page.evaluate('''() => {

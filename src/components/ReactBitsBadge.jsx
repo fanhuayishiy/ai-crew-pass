@@ -3,9 +3,9 @@ import { Component, useEffect, useRef, useState } from 'react';
 
 function StaticBadge({ base, characterId, locale }) {
   const [back, setBack] = useState(false);
-  const path = `${base.replace(/\/$/, '')}/downloads/${locale}/${characterId}`;
+  const path = `${base.replace(/\/$/, '')}/img/badges/${locale}/${characterId}`;
   return <div className="badge-fallback" role="group" aria-label={locale === 'en' ? 'Crew pass preview' : '工牌预览'}>
-    <img src={`${path}-${back ? 'back' : 'front'}.png`} alt={locale === 'en' ? `${characterId} crew pass, ${back ? 'back' : 'front'}` : `${characterId} 工牌${back ? '背面' : '正面'}`} />
+    <img src={`${path}-${back ? 'back' : 'front'}.webp`} alt={locale === 'en' ? `${characterId} crew pass, ${back ? 'back' : 'front'}` : `${characterId} 工牌${back ? '背面' : '正面'}`} />
     <button type="button" data-static-flip onClick={() => setBack(value => !value)}>{locale === 'en' ? 'Flip pass' : '翻转工牌'} ↻</button>
     <p>{locale === 'en' ? '3D is unavailable. You can still flip and download your pass.' : '当前浏览器无法显示 3D，仍可翻面和下载工牌。'}</p>
   </div>;
@@ -48,5 +48,6 @@ export default function ReactBitsBadge({ characterId, color, cardColor, base, lo
     imageFit="cover"
     size={compact ? 0.44 : 0.51}
     finish="glossy"
+    crispFront={true}
   /></BadgeBoundary>}</div>;
 }

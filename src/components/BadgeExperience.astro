@@ -14,9 +14,32 @@ const characterIndex = characters.findIndex(c => c.id === character.id);
 const previousCharacter = characters[(characterIndex + characters.length - 1) % characters.length];
 const nextCharacter = characters[(characterIndex + 1) % characters.length];
 const coverCard = { label: character.brand };
+const layeredArt: Record<string, { front: string; back: string; portrait: string; width: number; height: number }> = {
+  deepseek: { front: 'img/deepseek/front-background-v4.webp', back: 'img/deepseek/back-background-v4.webp', portrait: 'img/deepseek/portrait-cutout-v3.webp', width: 1254, height: 1254 },
+  gpt: { front: 'img/gpt/front-background-v1.webp', back: 'img/gpt/back-background-v1.webp', portrait: 'img/gpt/portrait-cutout-v1.webp', width: 1297, height: 1212 },
+  glm: { front: 'img/glm/front-background-v1.webp', back: 'img/glm/back-background-v1.webp', portrait: 'img/glm/portrait-cutout-v1.webp', width: 1254, height: 1254 },
+  qwen: { front: 'img/qwen/front-background-v1.webp', back: 'img/qwen/back-background-v1.webp', portrait: 'img/qwen/portrait-cutout-v1.webp', width: 1254, height: 1254 },
+  gemini: { front: 'img/gemini/front-background-v1.webp', back: 'img/gemini/back-background-v1.webp', portrait: 'img/gemini/portrait-cutout-v1.webp', width: 1254, height: 1254 },
+  claude: { front: 'img/claude/front-background-v1.webp', back: 'img/claude/back-background-v1.webp', portrait: 'img/claude/portrait-cutout-v1.webp', width: 1254, height: 1254 },
+  kimi: { front: 'img/kimi/front-background-v1.webp', back: 'img/kimi/back-background-v1.webp', portrait: 'img/kimi/portrait-cutout-v1.webp', width: 1254, height: 1254 },
+  grok: { front: 'img/grok/front-background-v1.webp', back: 'img/grok/back-background-v1.webp', portrait: 'img/grok/portrait-cutout-v1.webp', width: 1283, height: 1226 },
+  doubao: { front: 'img/doubao/front-background-v1.webp', back: 'img/doubao/back-background-v1.webp', portrait: 'img/doubao/portrait-cutout-v1.webp', width: 1254, height: 1254 },
+};
+const cardArt = layeredArt[character.id];
 
 const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path}`;
-const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[^。！？]+[。！？]?/g) || [character.motto];
+const englishMottos: Record<string, string[]> = {
+  deepseek: ['Think deeply. Drift a little.', 'Your questions deserve another dive.'],
+  gpt: ['Stay curious. Imagine freely.', 'Every little idea is worth a conversation.'],
+  glm: ['Slow down. Read the details.', 'Make the complicated a little clearer.'],
+  qwen: ['Ask widely. Discover daily.', 'Bring your curiosity along.'],
+  gemini: ['Look up at the stars. Gather little sparks.', 'Curiosity opens possibilities.'],
+  claude: ['Read slowly. Write thoughtfully.', 'Give your ideas a clearer shape.'],
+  kimi: ['Long story? Take your time.', 'Even the smallest clues deserve a place.'],
+  grok: ['Think boldly. Speak freely.', 'Add a little surprise to the everyday.'],
+  doubao: ['Little questions matter, too.', 'What is on your mind today?'],
+};
+const mottoLines = locale === 'en' ? englishMottos[character.id] : character.motto.match(/[^。！？]+[。！？]?/g) || [character.motto];
 ---
 
 <Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={`${ui.siteName} · ${character.brand} · ${ui.badge}`} description={character.summary} theme={characterStyle(character)} themeColor={character.color}>
@@ -47,6 +70,7 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
     
     <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">AI CREW COLLECTION <i>·</i> 09 CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {character.name} {ui.arrived} <span>NO. {character.code}—001</span></div>
     <div class="react-bits-stage" aria-label={`${character.name} · ${ui.badge}`}>
+      <div class="badge-loading-preview" aria-hidden="true"><img src={asset(`img/badges/${locale}/${character.id}-front.webp`)} crossorigin="anonymous" alt="" decoding="async" fetchpriority="high" width="1296" height="1824" /></div>
       <ReactBitsBadge locale={locale} client:only="react" characterId={character.id} color={character.color} cardColor={character.id === 'deepseek' ? '#e1ebfa' : mix(character.color,.87)} base={import.meta.env.BASE_URL} />
     </div>
     <nav class="badge-controls" aria-label={ui.choose}>
@@ -107,15 +131,17 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
       <article class="badge-card" data-morph-card data-chapter-index="0" data-card-label={coverCard.label} aria-label={`${coverCard.label} profile card`}>
         <div class="badge-tilt">
           <div class="badge-flip">
-            <div class="badge-face badge-face--front" data-badge-face="front">
+            <div class:list={['badge-face', 'badge-face--front', { 'badge-face--ocean': !!cardArt, 'badge-face--dragon': character.id === 'gpt', 'badge-face--crew': !['deepseek', 'gpt'].includes(character.id) }]} data-badge-face="front">
+              {cardArt && <img class="ocean-card-generated" data-print-src={asset(cardArt.front)} alt="" aria-hidden="true" />}
               <div class="badge-face__topline"><span class="badge-face__site">{character.brand}</span><span class="badge-pass-type">CREW PASS</span></div>
 
-              <div class:list={["badge-portrait", { "badge-portrait--cutout": character.portraitTransparent }]}>
+              <div class:list={["badge-portrait", { "badge-portrait--cutout": character.portraitTransparent || !!cardArt }]}>
                 <span class="portrait-orbit" aria-hidden="true"></span>
-                <img data-print-src={asset(character.portraitImage || `img/characters/${character.image}`)} alt={`${character.brand} · ${character.name}角色立绘`} width={character.imageWidth} height={character.imageHeight} style={`object-position:${character.portraitPosition || "50% 0%"}`} draggable="false" /><span class="portrait-label">{character.brand} · {character.name}</span><span class="portrait-edition">CHARACTER EDITION</span>
+                <img data-print-src={asset(cardArt?.portrait || character.portraitImage || `img/characters/${character.image}`)} alt={`${character.brand} · ${character.name}角色立绘`} width={cardArt?.width || character.imageWidth} height={cardArt?.height || character.imageHeight} style={`object-position:${character.portraitPosition || "50% 0%"}`} draggable="false" /><span class="portrait-label">{character.brand} · {character.name}</span><span class="portrait-edition">CHARACTER EDITION</span>
               </div>
 
               <div class="badge-face__identity">
+                {cardArt && <span class="ocean-crew-seal"><span aria-hidden="true">✦</span> AI CREW</span>}
                 <p class="badge-face__name">{character.name}<span>{locale === "zh" ? character.alias : ""}</span></p><p class="badge-role">{character.role}</p>
               </div>
 
@@ -124,11 +150,16 @@ const mottoLines = character.motto.match(locale === "en" ? /[^.!?]+[.!?]?/g : /[
               <p class="badge-face__motto"><span class="badge-barcode" aria-hidden="true"></span><span><b>CREW PASS · {ui.siteName} · {character.code}—001</b><small>{ui.unofficial}</small></span></p>
             </div>
 
-            <div class="badge-face badge-face--back" data-badge-face="back" hidden>
+            <div class:list={['badge-face', 'badge-face--back', { 'badge-face--ocean-back': !!cardArt, 'badge-face--dragon-back': character.id === 'gpt', 'badge-face--crew-back': !['deepseek', 'gpt'].includes(character.id) }]} data-badge-face="back" hidden>
+              {cardArt && <img class="ocean-back-generated" data-print-src={asset(cardArt.back)} alt="" aria-hidden="true" />}
               <div class="badge-face__topline"><span class="badge-face__site">{character.brand}</span><span class="badge-pass-type">CREW PASS</span></div>
 
               <div class="badge-back__body">
-                <p class="badge-back__headline">Stay curious.<br /><span>{character.title[0]}<br />{character.title[1]}</span></p>
+                {cardArt ? <>
+                  <p class="ocean-back-kicker">Stay curious.</p>
+                  <h2 class="ocean-back-title">{character.title[0]}<br />{character.title[1]}</h2>
+                  <span class="ocean-back-accent" aria-hidden="true"></span>
+                </> : <p class="badge-back__headline">Stay curious.<br /><span>{character.title[0]}<br />{character.title[1]}</span></p>}
                 <ul class="badge-back__roles">
                   {character.features.map(feature => <li>{feature}</li>)}
                 </ul><blockquote class="badge-catchphrase"><span>{memeFor(character.id, locale).label}</span>“{characterCatchphrase(character.id, locale)}”</blockquote>

@@ -709,6 +709,7 @@ const Lanyard = ({
   cardColor = '#ffffff',
   orientation = 'portrait',
   finish = 'glossy',
+  crispFront = false,
   cornerRadius = 0.3,
   size = 0.6,
   anchor = 'center',
@@ -737,6 +738,7 @@ const Lanyard = ({
     cardColor,
     orientation: orientation === 'landscape' ? 'landscape' : 'portrait',
     finish,
+    crispFront,
     cornerRadius,
     size,
     anchor,
@@ -821,6 +823,9 @@ const Lanyard = ({
       normalMap: grain,
       normalScale: new THREE.Vector2(0.015, 0.015)
     });
+    // The print is shown in its original colors, independent of lighting/coating.
+    // Geometry, card thickness, metal hardware and reverse remain physically lit.
+    const directFrontMaterial = new THREE.MeshBasicMaterial({ map: frontTexture, toneMapped: false });
     const backMaterial = new THREE.MeshPhysicalMaterial({
       map: backTexture,
       normalMap: grain,
@@ -843,7 +848,7 @@ const Lanyard = ({
 
     const cardGroup = new THREE.Group();
     const bodyMesh = new THREE.Mesh(undefined, edgeMaterial);
-    const frontMesh = new THREE.Mesh(undefined, frontMaterial);
+    const frontMesh = new THREE.Mesh(undefined, settingsRef.current.crispFront ? directFrontMaterial : frontMaterial);
     const backMesh = new THREE.Mesh(undefined, backMaterial);
     const ring = new THREE.Mesh(new THREE.TorusGeometry(RING_RADIUS, RING_TUBE, 18, 72), metalMaterial);
     ring.rotation.y = Math.PI / 2 - 0.7;
@@ -888,8 +893,9 @@ const Lanyard = ({
     const paintFaces = () => {
       const s = settingsRef.current;
       const color = parseColor(s.cardColor, [1, 1, 1]);
-      const width = FACE_WIDTH;
-      const height = Math.round((FACE_WIDTH * layout.height) / layout.width);
+      const nativePrint = s.crispFront && images.front;
+      const width = nativePrint ? Math.min(2048, images.front.naturalWidth || FACE_WIDTH) : FACE_WIDTH;
+      const height = nativePrint ? Math.round(width * images.front.naturalHeight / images.front.naturalWidth) : Math.round((FACE_WIDTH * layout.height) / layout.width);
       if (frontCanvas.width !== width || frontCanvas.height !== height) {
         frontCanvas.width = width;
         frontCanvas.height = height;
@@ -977,11 +983,12 @@ const Lanyard = ({
           images.front = front;
           paintFaces();
           container.dataset.frontReady = front ? 'true' : 'error';
-        });
-        loadImage(imageCache, s.backImage).then(back => {
-          if (!alive || token !== imageToken) return;
-          images.back = back;
-          paintFaces();
+          // Give the visible print the full image bandwidth before requesting its reverse.
+          loadImage(imageCache, s.backImage).then(back => {
+            if (!alive || token !== imageToken) return;
+            images.back = back;
+            paintFaces();
+          });
         });
         loadImage(imageCache, s.strapImage).then(strap => {
           if (!alive || token !== imageToken) return;
@@ -989,7 +996,7 @@ const Lanyard = ({
           repaintStrap();
         });
       }
-      const faceKey = `${layoutKey}|${s.cardColor}|${s.imageFit}`;
+      const faceKey = `${layoutKey}|${s.cardColor}|${s.imageFit}|${s.crispFront}`;
       if (faceKey !== applied.faceKey) paintFaces();
       if (s.strapColor !== applied.strapColor) repaintStrap();
 
@@ -1002,6 +1009,14 @@ const Lanyard = ({
         material.clearcoatRoughness = finish.clearcoatRoughness;
         material.anisotropy = finish.anisotropy;
       });
+      frontMesh.material = s.crispFront ? directFrontMaterial : frontMaterial;
+      const printFilter = s.crispFront ? THREE.LinearMipmapNearestFilter : THREE.LinearMipmapLinearFilter;
+      const printAnisotropy = s.crispFront ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : anisotropy;
+      if (frontTexture.minFilter !== printFilter || frontTexture.anisotropy !== printAnisotropy) {
+        frontTexture.minFilter = printFilter;
+        frontTexture.anisotropy = printAnisotropy;
+        frontTexture.needsUpdate = true;
+      }
       foilUniforms.foilStrength.value = finish.foil;
       foilUniforms.foilAspect.value = layout.height / layout.width;
       edgeMaterial.color.setRGB(card[0] * 0.92, card[1] * 0.92, card[2] * 0.92, THREE.SRGBColorSpace);
@@ -1301,7 +1316,7 @@ const Lanyard = ({
       canvas.removeEventListener('lostpointercapture', onPointerUp);
       canvas.removeEventListener('touchstart', onTouchStart);
       [bodyMesh, frontMesh, backMesh, ring, clampMesh, eyelet, band].forEach(mesh => mesh.geometry?.dispose());
-      [frontMaterial, backMaterial, edgeMaterial, metalMaterial, bandMaterial].forEach(material => material.dispose());
+      [frontMaterial, directFrontMaterial, backMaterial, edgeMaterial, metalMaterial, bandMaterial].forEach(material => material.dispose());
       [frontTexture, backTexture, strapTexture, grain, weave].forEach(texture => texture.dispose());
       environment.dispose();
       renderer.dispose();
