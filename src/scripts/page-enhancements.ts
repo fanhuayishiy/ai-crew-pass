@@ -93,6 +93,8 @@ export function initPageEnhancements(): void {
     loading?.querySelector('[data-loading-retry]')?.addEventListener('click', () => location.reload());
     const timeout = window.setTimeout(showFailure, 20000);
     let started = false;
+    let revealed = false;
+    let previewDecoding = false;
     const queueOthers = async () => {
       if (!canWarm) return;
       const current = document.querySelector<HTMLElement>('.home-experience')?.dataset.characterId;
@@ -121,17 +123,29 @@ export function initPageEnhancements(): void {
         await warm(link, [face]);
       }
     };
-    const afterFront = () => {
-      if (stage.querySelector('[data-front-ready="error"]')) { showFailure(); return; }
-      const fallback = stage.querySelector<HTMLImageElement>('.badge-fallback img');
-      const ready = !!stage.querySelector('[data-front-ready="true"]') || !!(fallback?.complete && fallback.naturalWidth);
-      if (!ready || started) return;
-      started = true;
-      observer.disconnect();
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
       clearTimeout(timeout);
       requestAnimationFrame(() => requestAnimationFrame(() => {
         document.documentElement.classList.remove('crew-first-loading');
         try { sessionStorage.setItem('crew-first-ready', '1'); } catch { /* storage may be blocked */ }
+      }));
+    };
+    const afterFront = () => {
+      if (stage.querySelector('[data-front-ready="error"]')) { showFailure(); return; }
+      const fallback = stage.querySelector<HTMLImageElement>('.badge-fallback img');
+      const ready = !!stage.querySelector('[data-front-ready="true"]') || !!(fallback?.complete && fallback.naturalWidth);
+      const preview = stage.querySelector<HTMLImageElement>('.badge-loading-preview img');
+      if (!revealed && !previewDecoding && preview?.complete && preview.naturalWidth) {
+        previewDecoding = true;
+        preview.decode().then(reveal).catch(() => { previewDecoding = false; });
+      }
+      if (ready) reveal();
+      if (!ready || started) return;
+      started = true;
+      observer.disconnect();
+      requestAnimationFrame(() => requestAnimationFrame(() => {
         const schedule = window.requestIdleCallback || ((callback: () => void) => window.setTimeout(callback,300));
         schedule(() => { void queueOthers(); });
       }));
