@@ -627,7 +627,7 @@ const stepSimulation = (sim, dt, physics, time) => {
     for (let i = 1; i < JOINTS; i++) {
       const v = velocities[i];
       v.y -= physics.gravity * h;
-      v.x += windX * h;
+      v.x += (windX + physics.gravityX) * h;
       v.z += windZ * h;
       previous[i].copy(nodes[i]);
       nodes[i].addScaledVector(v, h);
@@ -659,7 +659,7 @@ const stepSimulation = (sim, dt, physics, time) => {
       body.angular.addScaledVector(up, (physics.twist * (sim.turn - sim.twist) - physics.twistDamping * spin) * h);
     }
     body.velocity.y -= physics.gravity * h;
-    body.velocity.x += windX * 0.35 * h;
+    body.velocity.x += (windX * 0.35 + physics.gravityX) * h;
     body.velocity.z += windZ * 0.35 * h;
     body.position.addScaledVector(body.velocity, h);
     rotateBody(body.quaternion, scratch.f.copy(body.angular).multiplyScalar(h));
@@ -1124,6 +1124,7 @@ const Lanyard = ({
       renderer.render(scene, camera);
     };
 
+    let tilt = 0;
     const physics = () => {
       const s = settingsRef.current;
       const gravity = 40 * clamp(s.gravity, 0, 3);
@@ -1132,6 +1133,7 @@ const Lanyard = ({
       const settle = clamp(s.damping, 0, 1);
       return {
         gravity,
+        gravityX: gravity * tilt,
         hold: weight * mix(2.2, 5.5, springy),
         stiffness: weight * 10 * JOINTS,
         spring: weight * mix(0.1, 0.4, springy) * JOINTS,
@@ -1184,6 +1186,23 @@ const Lanyard = ({
       last = performance.now();
       raf = requestAnimationFrame(tick);
     };
+
+    // Orientation changes alter the gravity vector rather than moving the card
+    // directly, so the existing strap, drag and damping remain in control.
+    const onOrientation = event => {
+      if (reducedMotion || !visible || document.hidden || !Number.isFinite(event.gamma) || !Number.isFinite(event.beta)) return;
+      const angle = (screen.orientation?.angle ?? window.orientation ?? 0) * Math.PI / 180;
+      const horizontal = Math.sin(event.gamma * Math.PI / 180) * Math.cos(angle)
+        + Math.sin(event.beta * Math.PI / 180) * Math.sin(angle);
+      const target = clamp(horizontal * 0.55, -0.42, 0.42);
+      const next = Math.abs(target) < 0.025 ? 0 : target;
+      const smoothed = tilt + (next - tilt) * 0.18;
+      if (Math.abs(smoothed - tilt) < 0.002) return;
+      tilt = smoothed;
+      start();
+    };
+    const motionEnabled = window.isSecureContext && window.matchMedia('(pointer: coarse)').matches && !reducedMotion && 'DeviceOrientationEvent' in window;
+    if (motionEnabled) window.addEventListener('deviceorientation', onOrientation);
 
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
@@ -1309,6 +1328,7 @@ const Lanyard = ({
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
+      if (motionEnabled) window.removeEventListener('deviceorientation', onOrientation);
       canvas.removeEventListener('pointerdown', onPointerDown);
       canvas.removeEventListener('pointermove', onPointerMove);
       canvas.removeEventListener('pointerup', onPointerUp);

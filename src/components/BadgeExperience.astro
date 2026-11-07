@@ -43,6 +43,14 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
 ---
 
 <Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={`${ui.siteName} · ${character.brand} · ${ui.badge}`} description={character.summary} theme={characterStyle(character)} themeColor={character.color}>
+  <div class="crew-loading" data-crew-loading role="status" aria-live="polite">
+    <div class="crew-loading__mark" aria-hidden="true"><span>✦</span></div>
+    <p class="crew-loading__eyebrow">NONHUMAN EMPLOYEES · CREW PASS</p>
+    <p class="crew-loading__title" data-loading-title>{locale === 'en' ? 'Preparing your crew pass' : '正在准备你的工牌'}</p>
+    <p class="crew-loading__hint" data-loading-hint>{locale === 'en' ? 'Getting your first pass ready…' : '第一张工牌马上就好…'}</p>
+    <span class="crew-loading__progress" aria-hidden="true"></span>
+    <button type="button" data-loading-retry hidden>{locale === 'en' ? 'Try again' : '重新加载'}</button>
+  </div>
   <main class="home-experience" id="top" data-character-id={character.id} data-locale={locale}>
 
 
@@ -56,6 +64,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
       <nav class="social-links" aria-label={locale === 'en' ? 'Links and language' : '相关链接与语言'}>
         <a class="github-star" href={PROJECT_GITHUB_URL} data-profile-github data-project-star target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" fill="currentColor"/></svg><span>Star on GitHub</span><span aria-hidden="true">↗</span></a>
         <span class="language-switch" aria-label="Language / 语言">
+          <button type="button" class="motion-toggle" data-motion-toggle hidden aria-label={locale === 'en' ? 'Enable tilt motion' : '开启手机倾斜效果'} title={locale === 'en' ? 'Enable tilt motion' : '开启手机倾斜效果'}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2M3 8l-2 2 2 2m18-4 2 2-2 2"/></svg><span>{locale === 'en' ? 'Tilt' : '倾斜'}</span></button>
           <button type="button" class="sound-toggle" data-badge-sound data-on-label={locale === 'en' ? 'Sound on · click to mute' : '声音已开启 · 点击静音'} data-off-label={locale === 'en' ? 'Sound off · click to enable' : '声音已关闭 · 点击开启'} aria-label={locale === 'en' ? 'Sound on · click to mute' : '声音已开启 · 点击静音'} aria-pressed="true" data-enabled="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4Z"/><path class="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="sound-muted" d="m16 9 5 6m0-6-5 6"/></svg></button>
           <a data-language="zh" lang="zh-CN" href={localeCharacterUrl(originalCharacter, 'zh')} aria-current={locale === 'zh' ? 'true' : undefined}>中文</a>
           <span aria-hidden="true">/</span>

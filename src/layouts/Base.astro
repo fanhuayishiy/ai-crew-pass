@@ -41,6 +41,9 @@ const fontCss = urls
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      try { if (!sessionStorage.getItem('crew-first-ready')) document.documentElement.classList.add('crew-first-loading'); } catch { document.documentElement.classList.add('crew-first-loading'); }
+    </script>
     <title>{title}</title>
     <meta name="description" content={description} />
     {frontTexture && <link rel="preload" as="image" href={frontTexture} crossorigin="anonymous" fetchpriority="high" />}
