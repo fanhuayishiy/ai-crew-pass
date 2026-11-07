@@ -1000,6 +1000,8 @@ const Lanyard = ({
           if (!alive || token !== imageToken) return;
           images.front = front;
           paintFaces();
+          // Upload and draw the print before exposing the 3D canvas.
+          if (front) render();
           container.dataset.frontReady = front ? 'true' : 'error';
           // Give the visible print the full image bandwidth before requesting its reverse.
           loadBack();

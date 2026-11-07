@@ -80,6 +80,13 @@ export function initPageEnhancements(): void {
       }
     });
     const loading = document.querySelector<HTMLElement>('[data-crew-loading]');
+    const showStageFailure = () => {
+      const label = stage.querySelector<HTMLElement>('[data-stage-loading-label]');
+      const retry = stage.querySelector<HTMLButtonElement>('[data-stage-retry]');
+      const message = document.documentElement.lang === 'en' ? 'Could not load pass' : '工牌加载失败';
+      if (label && label.textContent !== message) label.textContent = message;
+      if (retry) retry.hidden = false;
+    };
     const showFailure = () => {
       if (!document.documentElement.classList.contains('crew-first-loading')) return;
       const en = document.documentElement.lang === 'en';
@@ -91,7 +98,8 @@ export function initPageEnhancements(): void {
       if (retry) retry.hidden = false;
     };
     loading?.querySelector('[data-loading-retry]')?.addEventListener('click', () => location.reload());
-    const timeout = window.setTimeout(showFailure, 20000);
+    stage.querySelector('[data-stage-retry]')?.addEventListener('click', () => location.reload());
+    const timeout = window.setTimeout(() => { showFailure(); showStageFailure(); }, 20000);
     let started = false;
     let revealed = false;
     let previewDecoding = false;
@@ -133,13 +141,13 @@ export function initPageEnhancements(): void {
       }));
     };
     const afterFront = () => {
-      if (stage.querySelector('[data-front-ready="error"]')) { showFailure(); return; }
+      if (stage.querySelector('[data-front-ready="error"]')) { showFailure(); showStageFailure(); return; }
       const fallback = stage.querySelector<HTMLImageElement>('.badge-fallback img');
       const ready = !!stage.querySelector('[data-front-ready="true"]') || !!(fallback?.complete && fallback.naturalWidth);
       const preview = stage.querySelector<HTMLImageElement>('.badge-loading-preview img');
       if (!revealed && !previewDecoding && preview?.complete && preview.naturalWidth) {
         previewDecoding = true;
-        preview.decode().then(reveal).catch(() => { previewDecoding = false; });
+        preview.decode().then(() => { preview.dataset.decoded = 'true'; reveal(); }).catch(() => { previewDecoding = false; });
       }
       if (ready) reveal();
       if (!ready || started) return;

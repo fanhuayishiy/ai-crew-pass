@@ -79,6 +79,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
     
     <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">AI CREW COLLECTION <i>·</i> 09 CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {character.name} {ui.arrived} <span>NO. {character.code}—001</span></div>
     <div class="react-bits-stage" aria-label={`${character.name} · ${ui.badge}`}>
+      <div class="badge-stage-loading" role="status" aria-live="polite"><span class="badge-stage-loading__spinner" aria-hidden="true"></span><span data-stage-loading-label>{locale === 'en' ? 'Loading pass…' : '工牌加载中…'}</span><button type="button" data-stage-retry hidden>{locale === 'en' ? 'Retry' : '重试'}</button></div>
       <div class="badge-loading-preview" aria-hidden="true"><img src={asset(`img/badges/${locale}/${character.id}-front.webp`)} crossorigin="anonymous" alt="" decoding="async" fetchpriority="high" width="1296" height="1824" /></div>
       <p class="badge-back-status" data-badge-back-status role="status" aria-live="polite" hidden></p>
       <ReactBitsBadge locale={locale} client:only="react" characterId={character.id} color={character.color} cardColor={character.id === 'deepseek' ? '#e1ebfa' : mix(character.color,.87)} base={import.meta.env.BASE_URL} />

@@ -42,6 +42,7 @@ const fontCss = urls
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script is:inline>
+      document.documentElement.classList.add('js-enabled');
       try { if (!sessionStorage.getItem('crew-first-ready')) document.documentElement.classList.add('crew-first-loading'); } catch { document.documentElement.classList.add('crew-first-loading'); }
     </script>
     <title>{title}</title>
