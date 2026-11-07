@@ -1,4 +1,7 @@
+import { initBadgeSound } from './badge-sound';
+
 export function initPageEnhancements(): void {
+  initBadgeSound();
   const connection = (navigator as Navigator & { connection?: {saveData?: boolean;effectiveType?: string} }).connection;
   const canWarm = !connection?.saveData && !['slow-2g','2g'].includes(connection?.effectiveType || '');
   const warmed = new Set<string>();

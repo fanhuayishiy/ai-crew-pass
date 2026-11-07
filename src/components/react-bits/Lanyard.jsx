@@ -1190,6 +1190,7 @@ const Lanyard = ({
       }
       sim.turn = sim.turn === 0 ? Math.PI * direction : 0;
       body.angular.addScaledVector(up, FLIP_SPIN * direction);
+      canvas.dispatchEvent(new CustomEvent('badge-sound', { bubbles: true, detail: 'flip' }));
     };
 
     const onPointerDown = event => {
@@ -1227,8 +1228,10 @@ const Lanyard = ({
 
     const onPointerUp = event => {
       if (!sim.grab) return;
+      const dragged = !press;
       sim.grab = null;
       if (press && event.type === 'pointerup' && performance.now() - press.time < 450) flip(press.point);
+      if (dragged && event.type === 'pointerup') canvas.dispatchEvent(new CustomEvent('badge-sound', { bubbles: true, detail: 'release' }));
       press = null;
       canvas.releasePointerCapture?.(event.pointerId);
       setCursor(hovering && event.pointerType !== 'touch' ? 'grab' : '');

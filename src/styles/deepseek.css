@@ -196,6 +196,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--theme-brand, #4
 /* Retained only as the texture source and gallery measurement anchor. */
 .legacy-badge-scene, .legacy-badge-scene * { visibility: hidden !important; pointer-events: none !important; }
 .home-stage .home-masthead, .home-stage .home-footer { z-index: 4; }
+.sound-toggle { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 1px solid var(--theme-line); border-radius: 50%; background: transparent; color: var(--home-ink); cursor: pointer; touch-action: manipulation; }
+.sound-toggle:hover { background: color-mix(in srgb,var(--theme-brand) 10%,transparent); }
+.sound-toggle:focus-visible { outline: 2px solid var(--theme-brand); outline-offset: 3px; }
+.sound-toggle .sound-muted, .sound-toggle[data-enabled="false"] .sound-waves { display: none; }
+.sound-toggle[data-enabled="false"] .sound-muted { display: block; }
 .language-switch { display: inline-flex; align-items: center; gap: 7px; color: var(--home-muted); white-space: nowrap; font-size: 10px; }
 .language-switch a { border: 0 !important; padding: 3px 0 !important; opacity: .55; }
 .language-switch a[aria-current="true"] { opacity: 1; color: var(--home-ink); text-decoration: underline; text-underline-offset: 4px; }
@@ -323,7 +328,8 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
 .download-dialog a[aria-disabled="true"] { pointer-events: none; opacity: .4; }
 @media (max-width: 760px) {
   .social-links > .github-star { display: inline-flex; padding: 8px 10px; gap: 5px; font-size: 9px; }
-  .home-masthead > .social-links { flex-direction: column; align-items: flex-end; gap: 7px; }
+  .home-masthead > .social-links { flex-direction: column; align-items: flex-end; gap: 3px; }
+  .sound-toggle { width: 24px; height: 24px; }
   .social-links > .github-star > span:last-child { display: none; }
   .hero-role-control { width: 36px; height: 36px; }
   .hero-role-control--previous { left: 10px; }

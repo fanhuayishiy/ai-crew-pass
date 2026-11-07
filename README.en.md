@@ -26,6 +26,7 @@ Scan with WeChat, or save the QR code and open it in WeChat to follow.
 - Chinese and English interfaces, an avatar character menu, previous/next controls, and layouts for mobile touchscreens and short viewports.
 - Transparent front/back PNG downloads, individually or as a ZIP. Downloads are static files and do not depend on live browser rendering.
 - A flippable static preview when WebGL is unavailable. Crew pass downloads remain available with JavaScript disabled.
+- Subtle flip and release sounds, enabled at low volume by default after the first interaction. A mute toggle remembers your preference. No background music or audio file downloads.
 
 Card catchphrases are selected fan jokes, not claims about product capabilities. All character portrayals are unofficial fan creations.
 
