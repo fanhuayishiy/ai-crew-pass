@@ -4,6 +4,39 @@ import { initVisitCounter } from './visit-counter';
 export function initPageEnhancements(): void {
   initBadgeSound();
   initVisitCounter();
+  const shareButton = document.querySelector<HTMLButtonElement>('[data-share]');
+  const shareStatus = document.querySelector<HTMLElement>('[data-share-status]');
+  let shareTimer = 0;
+  shareButton?.addEventListener('click', async () => {
+    const en = document.documentElement.lang === 'en';
+    const url = new URL(location.href);
+    url.search = '';
+    url.hash = '';
+    const text = `${shareButton.dataset.shareText}\n${url.href}`;
+    let copied = false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      }
+    } catch { /* Try the legacy copy method below. */ }
+    if (!copied) {
+      const input = document.createElement('textarea');
+      input.value = text;
+      input.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(input);
+      input.select();
+      try { copied = document.execCommand('copy'); } catch { /* Manual copy remains available. */ }
+      input.remove();
+      shareButton.focus();
+    }
+    if (shareStatus) {
+      shareStatus.textContent = copied ? (en ? 'Text and link copied' : '文案和链接已复制') : (en ? 'Please copy the text below' : '请手动复制分享内容');
+      window.clearTimeout(shareTimer);
+      shareTimer = window.setTimeout(() => { shareStatus.textContent = ''; }, 3000);
+    }
+    if (!copied) window.prompt(en ? 'Copy this text and link:' : '请复制以下文字和链接：', text);
+  });
   document.addEventListener('click', event => {
     const mouse = event as MouseEvent;
     const link = (event.target as Element).closest<HTMLAnchorElement>('[data-role-previous], [data-role-next], .crew-roster a');

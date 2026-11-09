@@ -549,3 +549,10 @@ html[lang] .station-heading .collection-heading { position: static; inset: auto;
   .badge-fallback { transform: translateY(-20px); }
   .badge-fallback > img { height: 40svh; }
 }
+
+/* Share the current character alongside its downloadable pass. */
+.badge-controls .share-pass { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; padding: 10px 15px; border: 1px solid var(--theme-line); border-radius: 999px; color: var(--home-ink); background: var(--theme-paper); font: inherit; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.badge-controls .share-pass:hover { border-color: var(--theme-brand); background: #fff; }
+.share-status { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); padding: 7px 12px; border-radius: 999px; color: #fff; background: var(--theme-ink); font-size: 12px; white-space: nowrap; pointer-events: none; }
+.share-status:empty { display: none; }
+@media (max-width: 600px) { .badge-controls .share-pass { min-height: 44px; padding: 9px 12px; font-size: 11px; } }
