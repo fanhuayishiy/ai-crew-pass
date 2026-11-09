@@ -24,7 +24,8 @@ Scan with WeChat, or save the QR code and open it in WeChat to follow.
 - 3D lanyard physics, dragging, swinging, and card flipping based on the official React Bits Lanyard component, with matching ShinyText background accents.
 - High-priority front texture preload in HTML. Front, back, and lanyard textures render independently. Display textures use WebP at the original resolution, with lossless backs; PNG downloads retain their original quality. Adjacent characters are prefetched during idle time after the current front appears, and menu targets are prefetched on hover or touch. Prefetching is skipped on data-saving and 2G connections.
 - Chinese and English interfaces, an avatar character menu, previous/next controls, and layouts for mobile touchscreens and short viewports.
-- Transparent front/back PNG downloads, individually or as a ZIP. Downloads are static files and do not depend on live browser rendering.
+- Edit mode: click text on either side to replace it. The finished artwork is shared by the 3D pass, static fallback, download previews, PNGs, and ZIP. Text is saved per employee and language in this browser and can be reset; shared links still open the original pass.
+- Transparent front/back PNG downloads, individually or as a ZIP. Original downloads use static files; edited passes are generated in the browser.
 - A flippable static preview when WebGL is unavailable. Crew pass downloads remain available with JavaScript disabled.
 - Recorded foley for flips, metal contacts on release, and character switching (Freesound, CC0), enabled by default after the first interaction. A mute toggle remembers your preference. Samples are hosted locally with the project; no background music. See [audio credits](public/audio/badge/NOTICE.md).
 
@@ -46,7 +47,7 @@ npm run build
 - Interface translations: `src/data/i18n.ts`; catchphrases: `src/data/memes.ts`.
 - Shared page: `src/components/BadgeExperience.astro`.
 - After changing card faces, keep the development server running and run `python -X utf8 scripts/export-badge-faces.py`, followed by `python -X utf8 scripts/export-downloads.py` to update downloads.
-- Pushing to `main` runs GitHub Actions to build and deploy to GitHub Pages. Production builds use the custom domain in `public/CNAME` and the root path when that file exists; otherwise, `GITHUB_REPOSITORY` determines the GitHub Pages subpath.
+- Pushing to `main` runs GitHub Actions; a branch can also be selected for a manual deployment. The workflow uses this repository's configured Pages URL and preserves the artwork needed by the editor, so forks can use their own domains. Manual builds without `GITHUB_PAGES_URL` continue to fall back to `public/CNAME` or `GITHUB_REPOSITORY`.
 
 ## Visit counter
 
@@ -62,6 +63,7 @@ python -X utf8 scripts/verify-downloads.py
 python -X utf8 scripts/verify-reference-edits.py
 python -X utf8 scripts/verify-optimizations.py
 python -X utf8 scripts/verify-texture-loading.py
+python -X utf8 scripts/verify-edit-mode.py
 ```
 
 Earlier gallery and custom physics tests are retained as historical records and do not apply to the current single-screen version.

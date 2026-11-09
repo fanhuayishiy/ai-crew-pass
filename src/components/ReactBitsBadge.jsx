@@ -1,11 +1,12 @@
 import Lanyard from './react-bits/Lanyard';
 import { Component, useEffect, useRef, useState } from 'react';
+import { getBadgeFaces } from '../scripts/badge-editor-state';
 
-function StaticBadge({ base, characterId, locale }) {
+function StaticBadge({ base, characterId, locale, faces }) {
   const [back, setBack] = useState(false);
   const path = `${base.replace(/\/$/, '')}/img/badges/${locale}/${characterId}`;
   return <div className="badge-fallback" role="group" aria-label={locale === 'en' ? 'Crew pass preview' : '工牌预览'}>
-    <img src={`${path}-${back ? 'back' : 'front'}.webp`} alt={locale === 'en' ? `${characterId} crew pass, ${back ? 'back' : 'front'}` : `${characterId} 工牌${back ? '背面' : '正面'}`} />
+    <img src={faces?.[back ? 'back' : 'front'] || `${path}-${back ? 'back' : 'front'}.webp`} alt={locale === 'en' ? `${characterId} crew pass, ${back ? 'back' : 'front'}` : `${characterId} 工牌${back ? '背面' : '正面'}`} />
     <button type="button" data-static-flip onClick={() => setBack(value => !value)}>{locale === 'en' ? 'Flip pass' : '翻转工牌'} ↻</button>
     <p>{locale === 'en' ? '3D is unavailable. You can still flip and download your pass.' : '当前浏览器无法显示 3D，仍可翻面和下载工牌。'}</p>
   </div>;
@@ -17,11 +18,18 @@ class BadgeBoundary extends Component {
   render() { return this.state.failed ? this.props.fallback : this.props.children; }
 }
 
-// Keep the upstream interaction intact; customize only its public props.
+// Feed edited artwork through the upstream component's public image props.
 export default function ReactBitsBadge({ characterId, color, cardColor, base, locale = 'zh' }) {
+  const [faces, setFaces] = useState(getBadgeFaces);
   const [compact, setCompact] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
   const host = useRef(null);
+  useEffect(() => {
+    const update = () => setFaces(getBadgeFaces());
+    update();
+    window.addEventListener('badge-faces-updated', update);
+    return () => window.removeEventListener('badge-faces-updated', update);
+  }, []);
   useEffect(() => {
     let active = true;
     // Upstream silently returns when renderer creation fails. Check after effects
@@ -38,10 +46,10 @@ export default function ReactBitsBadge({ characterId, color, cardColor, base, lo
     return () => query.removeEventListener('change', update);
   }, []);
   const path = `${base.replace(/\/$/, '')}/img/badges/${locale}/${characterId}`;
-  const fallback = <StaticBadge base={base} characterId={characterId} locale={locale} />;
+  const fallback = <StaticBadge base={base} characterId={characterId} locale={locale} faces={faces} />;
   return <div ref={host} style={{width:'100%',height:'100%'}}>{unavailable ? fallback : <BadgeBoundary fallback={fallback}><Lanyard
-    frontImage={`${path}-front.webp`}
-    backImage={`${path}-back.webp`}
+    frontImage={faces?.front || `${path}-front.webp`}
+    backImage={faces?.back || `${path}-back.webp`}
     strapImage={`${base.replace(/\/$/, '')}/img/badges/${characterId}-strap.svg`}
     strapColor={color}
     cardColor={cardColor}

@@ -24,7 +24,8 @@
 - React Bits 官方 Lanyard 的 3D 挂绳、拖拽回摆与翻面；同色系 ShinyText 背景扫光。
 - 正面贴图在 HTML 阶段高优先级预加载，正反面与挂绳独立显示；展示纹理采用同分辨率 WebP（背面无损），PNG 下载保留原画质。当前正面显示后空闲预取相邻角色，悬停或触摸菜单时预取目标角色；省流量模式及 2G 网络跳过预取。
 - 中英文切换、头像员工菜单、左右角色切换，适配手机触屏与矮屏。
-- 下载透明背景正反面 PNG，或一次下载 ZIP；下载为静态文件，不依赖浏览器实时绘图。
+- 编辑模式：点击正反面文字即可替换，完成后 3D 展示、静态预览及 PNG / ZIP 下载使用同一份编辑结果。文字按员工和语言保存在当前浏览器，可恢复原版；分享链接仍指向原版工牌。
+- 下载透明背景正反面 PNG，或一次下载 ZIP；原版使用静态文件，编辑后的工牌由浏览器生成。
 - WebGL 不可用时提供可翻面的静态预览；关闭脚本后仍可下载工牌。
 - 翻面、松手金属声与角色切换使用实录拟音素材（Freesound，CC0），默认开启；右上角可静音并记住偏好，首次交互后启用声音。音频随项目本地托管，无背景音乐，详见[音效说明](public/audio/badge/NOTICE.md)。
 
@@ -46,7 +47,7 @@ npm run build
 - 中英文文案：`src/data/i18n.ts`；口头禅：`src/data/memes.ts`。
 - 共用页面：`src/components/BadgeExperience.astro`。
 - 修改卡面后，开发服务运行时执行 `python -X utf8 scripts/export-badge-faces.py`，再执行 `python -X utf8 scripts/export-downloads.py` 更新下载。
-- `main` 分支推送自动运行 GitHub Actions，构建并发布 GitHub Pages。生产构建优先使用 `public/CNAME` 中的自定义域名和根路径；没有该文件时，使用 `GITHUB_REPOSITORY` 决定 GitHub Pages 子路径。
+- `main` 分支推送自动运行 GitHub Actions，也可手动选择分支发布。工作流按当前仓库配置的 Pages 地址构建域名与子路径，并保留编辑所需素材；fork 可使用自己的域名。手动构建未指定 `GITHUB_PAGES_URL` 时，继续使用 `public/CNAME` 或 `GITHUB_REPOSITORY` 作为默认配置。
 
 ## 访问量统计
 
@@ -62,6 +63,7 @@ python -X utf8 scripts/verify-downloads.py
 python -X utf8 scripts/verify-reference-edits.py
 python -X utf8 scripts/verify-optimizations.py
 python -X utf8 scripts/verify-texture-loading.py
+python -X utf8 scripts/verify-edit-mode.py
 ```
 
 此前图鉴与旧自写物理测试保留作历史记录，不适用于当前单屏版本。
