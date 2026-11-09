@@ -2,21 +2,12 @@
 import { type Character } from '../data/characters';
 import { copy, characterCatchphrase, type Locale } from '../data/i18n';
 import { memeFor } from '../data/memes';
+import artwork from '../data/badge-artwork.json';
 interface Props { character: Character; locale: Locale }
 const { character, locale } = Astro.props;
 const ui = copy(locale);
 const coverCard = { label: character.brand };
-const layeredArt: Record<string, { front: string; back: string; portrait: string; width: number; height: number }> = {
-  deepseek: { front: 'img/deepseek/front-background-v4.webp', back: 'img/deepseek/back-background-v4.webp', portrait: 'img/deepseek/portrait-cutout-v3.webp', width: 1254, height: 1254 },
-  gpt: { front: 'img/gpt/front-background-v1.webp', back: 'img/gpt/back-background-v1.webp', portrait: 'img/gpt/portrait-cutout-v1.webp', width: 1297, height: 1212 },
-  glm: { front: 'img/glm/front-background-v1.webp', back: 'img/glm/back-background-v1.webp', portrait: 'img/glm/portrait-cutout-v1.webp', width: 1254, height: 1254 },
-  qwen: { front: 'img/qwen/front-background-v1.webp', back: 'img/qwen/back-background-v1.webp', portrait: 'img/qwen/portrait-cutout-v1.webp', width: 1254, height: 1254 },
-  gemini: { front: 'img/gemini/front-background-v1.webp', back: 'img/gemini/back-background-v1.webp', portrait: 'img/gemini/portrait-cutout-v2.webp', width: 1254, height: 1254 },
-  claude: { front: 'img/claude/front-background-v1.webp', back: 'img/claude/back-background-v1.webp', portrait: 'img/claude/portrait-cutout-v2.webp', width: 1254, height: 1254 },
-  kimi: { front: 'img/kimi/front-background-v1.webp', back: 'img/kimi/back-background-v1.webp', portrait: 'img/kimi/portrait-cutout-v1.webp', width: 1254, height: 1254 },
-  grok: { front: 'img/grok/front-background-v1.webp', back: 'img/grok/back-background-v1.webp', portrait: 'img/grok/portrait-cutout-v1.webp', width: 1283, height: 1226 },
-  doubao: { front: 'img/doubao/front-background-v1.webp', back: 'img/doubao/back-background-v1.webp', portrait: 'img/doubao/portrait-cutout-v1.webp', width: 1254, height: 1254 },
-};
+const layeredArt: Record<string, { front: string; back: string; portrait: string; width: number; height: number }> = artwork;
 const cardArt = layeredArt[character.id];
 
 const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path}`;

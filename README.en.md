@@ -47,7 +47,7 @@ npm run build
 - Interface translations: `src/data/i18n.ts`; catchphrases: `src/data/memes.ts`.
 - Shared page: `src/components/BadgeExperience.astro`.
 - After changing card faces, keep the development server running and run `python -X utf8 scripts/export-badge-faces.py`, followed by `python -X utf8 scripts/export-downloads.py` to update downloads.
-- Pushing to `main` runs GitHub Actions to build and deploy to GitHub Pages. Production builds use the custom domain in `public/CNAME` and the root path when that file exists; otherwise, `GITHUB_REPOSITORY` determines the GitHub Pages subpath.
+- Pushing to `main` runs GitHub Actions; a branch can also be selected for a manual deployment. The workflow uses this repository's configured Pages URL and preserves the artwork needed by the editor, so forks can use their own domains. Manual builds without `GITHUB_PAGES_URL` continue to fall back to `public/CNAME` or `GITHUB_REPOSITORY`.
 
 ## Visit counter
 

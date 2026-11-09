@@ -47,7 +47,7 @@ npm run build
 - 中英文文案：`src/data/i18n.ts`；口头禅：`src/data/memes.ts`。
 - 共用页面：`src/components/BadgeExperience.astro`。
 - 修改卡面后，开发服务运行时执行 `python -X utf8 scripts/export-badge-faces.py`，再执行 `python -X utf8 scripts/export-downloads.py` 更新下载。
-- `main` 分支推送自动运行 GitHub Actions，构建并发布 GitHub Pages。生产构建优先使用 `public/CNAME` 中的自定义域名和根路径；没有该文件时，使用 `GITHUB_REPOSITORY` 决定 GitHub Pages 子路径。
+- `main` 分支推送自动运行 GitHub Actions，也可手动选择分支发布。工作流按当前仓库配置的 Pages 地址构建域名与子路径，并保留编辑所需素材；fork 可使用自己的域名。手动构建未指定 `GITHUB_PAGES_URL` 时，继续使用 `public/CNAME` 或 `GITHUB_REPOSITORY` 作为默认配置。
 
 ## 访问量统计
 

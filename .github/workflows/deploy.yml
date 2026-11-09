@@ -20,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+        id: pages
       - uses: actions/setup-node@v4
         with:
           node-version: 22   # Astro 7 要求 Node >= 22.12
@@ -29,12 +30,15 @@ jobs:
         # （rolldown 的 binding-*.wasi/node 包），CI 上 npm ci 会直接崩。
         run: npm install --no-package-lock --no-audit --no-fund
       - name: Build
-        # CI 按 public/CNAME 构建自定义域名；无 CNAME 时使用项目子路径
+        # Use this repository's configured Pages URL, including forks and subpaths.
         run: npm run build
         env:
           GITHUB_PAGES: '1'
+          GITHUB_PAGES_URL: ${{ steps.pages.outputs.base_url }}
       - name: Keep deployment output lean
         run: node scripts/prepare-pages.mjs
+        env:
+          GITHUB_PAGES_URL: ${{ steps.pages.outputs.base_url }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
