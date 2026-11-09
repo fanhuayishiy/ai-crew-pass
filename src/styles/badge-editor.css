@@ -16,6 +16,8 @@
 .badge-editor__scene [data-edit-field] { pointer-events: auto; cursor: text; outline: 1px dashed transparent; outline-offset: 2px; }
 .badge-editor__scene [data-edit-field]:hover, .badge-editor__scene [data-edit-field]:focus-visible { outline-color: currentColor; }
 .badge-editor__scene [data-edit-selected] { outline: 1px solid currentColor; background-color: #aab3db33; }
+.badge-editor__scene .badge-face--ocean .badge-face__name > span[data-edit-empty], .badge-editor__scene [data-edit-empty] { display: inline-block; min-width: 1.5em; min-height: 1em; }
+.badge-editor__scene [data-edit-empty]::before { content: '＋'; opacity: .7; }
 .badge-editor__tools { align-self: center; min-width: 0; font-size: 13px; line-height: 1.6; }
 .badge-editor__tools label { display: block; margin: 16px 0 8px; font-weight: 600; }
 .badge-editor__tools textarea { width: 100%; padding: 12px; resize: vertical; border: 1px solid var(--theme-line); border-radius: 12px; background: #fff; color: var(--home-ink); font: inherit; }

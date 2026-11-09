@@ -65,7 +65,11 @@ export function initBadgeEditor(): void {
     }
   } catch { /* Editing remains available when browser storage is blocked. */ }
 
-  const paintText = () => fields.forEach((field, key) => { field.textContent = edits[key] ?? originals[key]; });
+  const paintField = (field: HTMLElement, key: string, value: string) => {
+    field.textContent = value;
+    field.toggleAttribute('data-edit-empty', !!originals[key] && !value);
+  };
+  const paintText = () => fields.forEach((field, key) => paintField(field, key, edits[key] ?? originals[key]));
   paintText();
 
   const loadAssets = () => assetsReady ||= Promise.all([
@@ -82,7 +86,7 @@ export function initBadgeEditor(): void {
     const value = input.value;
     if (value === originals[key]) delete edits[key];
     else edits[key] = value;
-    selected.textContent = value;
+    paintField(selected, key, value);
     status.textContent = '';
   });
   dialog.querySelectorAll<HTMLButtonElement>('[data-edit-side]').forEach(button => {
@@ -127,6 +131,7 @@ export function initBadgeEditor(): void {
     clone.querySelectorAll<HTMLElement>('[data-edit-field]').forEach(field => {
       field.removeAttribute('data-edit-field');
       field.removeAttribute('data-edit-selected');
+      field.removeAttribute('data-edit-empty');
       field.removeAttribute('tabindex');
     });
     document.body.append(clone);
@@ -158,9 +163,55 @@ export function initBadgeEditor(): void {
     } finally { clone.remove(); }
   };
 
+  const findOverflow = (): string | null => {
+    const clone = scene.cloneNode(false) as HTMLElement;
+    clone.append(artwork.cloneNode(true));
+    clone.style.cssText = 'position:fixed!important;left:-10000px!important;top:0!important;transform:none!important';
+    clone.querySelectorAll('[data-edit-empty]').forEach(field => field.removeAttribute('data-edit-empty'));
+    document.body.append(clone);
+    try {
+      for (const side of ['front', 'back']) {
+        clone.querySelectorAll<HTMLElement>('[data-badge-face]').forEach(face => { face.hidden = face.dataset.badgeFace !== side; });
+        const face = clone.querySelector<HTMLElement>(`[data-badge-face="${side}"]`)!;
+        const elements = Array.from(face.querySelectorAll<HTMLElement>('[data-edit-field]'));
+        const measure = () => elements.map(element => {
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          return range.getBoundingClientRect();
+        });
+        const current = measure();
+        elements.forEach(element => { element.textContent = originals[`${side}:${element.dataset.editField}`]; });
+        const original = measure();
+        const bounds = face.getBoundingClientRect();
+        const overlaps = (a: DOMRect, b: DOMRect) => a.width > 0 && a.height > 0 && b.width > 0 && b.height > 0 &&
+          Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1;
+        for (let i = 0; i < elements.length; i++) {
+          const key = `${side}:${elements[i].dataset.editField}`;
+          if (!(key in edits) || !current[i].width) continue;
+          const rect = current[i];
+          if (rect.left < bounds.left - 1 || rect.right > bounds.right + 1 || rect.top < bounds.top - 1 || rect.bottom > bounds.bottom + 1) return key;
+          for (let j = 0; j < elements.length; j++) {
+            if (i !== j && overlaps(rect, current[j]) && !overlaps(original[i], original[j])) return key;
+          }
+        }
+      }
+      return null;
+    } finally { clone.remove(); }
+  };
+
   const apply = async (close: boolean) => {
     if (busy) return;
     if (JSON.stringify(edits) === applied) { if (close) dialog.close(); return; }
+    const overflow = findOverflow();
+    if (overflow) {
+      scene.append(artwork);
+      if (!dialog.open) dialog.showModal();
+      const [side] = overflow.split(':');
+      dialog.querySelector<HTMLButtonElement>(`[data-edit-side="${side}"]`)?.click();
+      fields.get(overflow)?.click();
+      status.textContent = en ? 'Text overlaps or extends beyond the pass. Please shorten it before finishing.' : '文字超出卡面或与其他内容重叠，请缩短后再完成编辑。';
+      return;
+    }
     busy = true;
     dialog.querySelectorAll<HTMLButtonElement>('button').forEach(button => { button.disabled = true; });
     input.disabled = true;
