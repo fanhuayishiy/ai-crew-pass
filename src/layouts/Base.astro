@@ -43,7 +43,12 @@ const fontCss = urls
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script is:inline>
       document.documentElement.classList.add('js-enabled');
-      try { if (!sessionStorage.getItem('crew-first-ready')) document.documentElement.classList.add('crew-first-loading'); } catch { document.documentElement.classList.add('crew-first-loading'); }
+      try {
+        if (!sessionStorage.getItem('crew-first-ready')) document.documentElement.classList.add('crew-first-loading');
+        const transition = JSON.parse(sessionStorage.getItem('crew-role-transition') || 'null');
+        sessionStorage.removeItem('crew-role-transition');
+        if (transition?.path === location.pathname && Date.now() - transition.time < 15000) document.documentElement.classList.add('crew-role-switching');
+      } catch { document.documentElement.classList.add('crew-first-loading'); }
     </script>
     <title>{title}</title>
     <meta name="description" content={description} />

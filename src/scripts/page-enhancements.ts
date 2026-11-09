@@ -4,6 +4,14 @@ import { initVisitCounter } from './visit-counter';
 export function initPageEnhancements(): void {
   initBadgeSound();
   initVisitCounter();
+  document.addEventListener('click', event => {
+    const mouse = event as MouseEvent;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('[data-role-previous], [data-role-next], .crew-roster a');
+    if (!link || event.defaultPrevented || mouse.button !== 0 || mouse.ctrlKey || mouse.metaKey || mouse.shiftKey || mouse.altKey || link.target === '_blank') return;
+    const target = new URL(link.href, location.href);
+    if (target.origin !== location.origin || target.pathname === location.pathname) return;
+    try { sessionStorage.setItem('crew-role-transition', JSON.stringify({path:target.pathname,time:Date.now()})); } catch { /* navigation still works without storage */ }
+  });
   const motionButton = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
   const orientation = window.DeviceOrientationEvent as typeof DeviceOrientationEvent & {requestPermission?: () => Promise<string>};
   const motionAvailable = window.isSecureContext && matchMedia('(pointer: coarse)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -152,6 +160,7 @@ export function initPageEnhancements(): void {
       if (ready) reveal();
       if (!ready || started) return;
       started = true;
+      document.documentElement.classList.remove('crew-role-switching');
       observer.disconnect();
       requestAnimationFrame(() => requestAnimationFrame(() => {
         const schedule = window.requestIdleCallback || ((callback: () => void) => window.setTimeout(callback,300));

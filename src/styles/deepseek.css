@@ -230,6 +230,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--theme-brand, #4
 .badge-loading-preview img { height: 49svh; width: auto; max-width: 70vw; object-fit: contain; border-radius: 14px; box-shadow: 0 12px 24px #29365b14; }
 .js-enabled .badge-loading-preview img:not([data-decoded="true"]) { visibility: hidden; }
 .react-bits-stage:has(.lanyard[data-front-ready="true"], .badge-fallback) .badge-loading-preview { display: none; }
+.crew-role-switching .badge-loading-preview { display: none; }
+.crew-role-switching .react-bits-stage:not(:has(.lanyard[data-front-ready="true"], .badge-fallback)) .badge-stage-loading { display: flex; }
 @media (prefers-reduced-motion: reduce) { .badge-stage-loading__spinner { animation: none; } }
 @media (max-width: 760px) { .badge-loading-preview { transform: translateY(-20px); } .badge-loading-preview img { height: 47svh; } }
 @media (max-width: 760px) and (max-height: 700px) { .badge-loading-preview img { height: 40svh; } }

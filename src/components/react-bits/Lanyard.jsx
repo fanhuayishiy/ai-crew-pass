@@ -999,6 +999,13 @@ const Lanyard = ({
         loadImage(imageCache, s.frontImage).then(front => {
           if (!alive || token !== imageToken) return;
           images.front = front;
+          if (front && document.documentElement.classList.contains('crew-role-switching') && s.intro && !reducedMotion) {
+            // The simulation may have settled while the image was hidden. Start
+            // the visible drop only after the print is ready to be shown.
+            placeHanging(sim, layout, true);
+            arrivalFalling = false;
+            arrivalAnnounced = false;
+          }
           paintFaces();
           // Upload and draw the print before exposing the 3D canvas.
           if (front) render();
