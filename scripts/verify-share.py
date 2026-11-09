@@ -23,4 +23,3 @@ with sync_playwright() as p:
     assert '/characters/gpt/' in fallback.evaluate('window.fallbackShare')
     browser.close()
 print('PASS: localized share copies character text and current link on mobile')
-
