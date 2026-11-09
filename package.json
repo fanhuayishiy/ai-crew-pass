@@ -11,6 +11,8 @@
   "dependencies": {
     "@astrojs/react": "^7.0.1",
     "astro": "7.3.5",
+    "fflate": "^0.8.3",
+    "html-to-image": "^1.11.13",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "three": "^0.186.1"

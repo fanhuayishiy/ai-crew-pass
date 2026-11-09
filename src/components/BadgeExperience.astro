@@ -2,9 +2,10 @@
 import Base from '../layouts/Base.astro';
 import ReactBitsBadge from './ReactBitsBadge.jsx';
 import ShinyText from './react-bits/ShinyText.jsx';
-import { memeFor } from '../data/memes';
+import BadgeArtwork from './BadgeArtwork.astro';
+import '../styles/badge-editor.css';
 import { GITHUB_URL, PROJECT_GITHUB_URL, ART_SOURCE, characterStyle, mix, type Character } from '../data/characters';
-import { copy, localizedCharacter, localizedCharacters, localeCharacterUrl, characterCatchphrase, type Locale } from '../data/i18n';
+import { copy, localizedCharacter, localizedCharacters, localeCharacterUrl, type Locale } from '../data/i18n';
 interface Props { character: Character; locale?: Locale }
 const { character: originalCharacter, locale = 'zh' } = Astro.props;
 const character = localizedCharacter(originalCharacter, locale);
@@ -13,33 +14,8 @@ const ui = copy(locale);
 const characterIndex = characters.findIndex(c => c.id === character.id);
 const previousCharacter = characters[(characterIndex + characters.length - 1) % characters.length];
 const nextCharacter = characters[(characterIndex + 1) % characters.length];
-const coverCard = { label: character.brand };
-const layeredArt: Record<string, { front: string; back: string; portrait: string; width: number; height: number }> = {
-  deepseek: { front: 'img/deepseek/front-background-v4.webp', back: 'img/deepseek/back-background-v4.webp', portrait: 'img/deepseek/portrait-cutout-v3.webp', width: 1254, height: 1254 },
-  gpt: { front: 'img/gpt/front-background-v1.webp', back: 'img/gpt/back-background-v1.webp', portrait: 'img/gpt/portrait-cutout-v1.webp', width: 1297, height: 1212 },
-  glm: { front: 'img/glm/front-background-v1.webp', back: 'img/glm/back-background-v1.webp', portrait: 'img/glm/portrait-cutout-v1.webp', width: 1254, height: 1254 },
-  qwen: { front: 'img/qwen/front-background-v1.webp', back: 'img/qwen/back-background-v1.webp', portrait: 'img/qwen/portrait-cutout-v1.webp', width: 1254, height: 1254 },
-  gemini: { front: 'img/gemini/front-background-v1.webp', back: 'img/gemini/back-background-v1.webp', portrait: 'img/gemini/portrait-cutout-v2.webp', width: 1254, height: 1254 },
-  claude: { front: 'img/claude/front-background-v1.webp', back: 'img/claude/back-background-v1.webp', portrait: 'img/claude/portrait-cutout-v2.webp', width: 1254, height: 1254 },
-  kimi: { front: 'img/kimi/front-background-v1.webp', back: 'img/kimi/back-background-v1.webp', portrait: 'img/kimi/portrait-cutout-v1.webp', width: 1254, height: 1254 },
-  grok: { front: 'img/grok/front-background-v1.webp', back: 'img/grok/back-background-v1.webp', portrait: 'img/grok/portrait-cutout-v1.webp', width: 1283, height: 1226 },
-  doubao: { front: 'img/doubao/front-background-v1.webp', back: 'img/doubao/back-background-v1.webp', portrait: 'img/doubao/portrait-cutout-v1.webp', width: 1254, height: 1254 },
-};
-const cardArt = layeredArt[character.id];
 
 const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path}`;
-const englishMottos: Record<string, string[]> = {
-  deepseek: ['Think deeply. Drift a little.', 'Your questions deserve another dive.'],
-  gpt: ['Stay curious. Imagine freely.', 'Every little idea is worth a conversation.'],
-  glm: ['Slow down. Read the details.', 'Make the complicated a little clearer.'],
-  qwen: ['Ask widely. Discover daily.', 'Bring your curiosity along.'],
-  gemini: ['Look up at the stars. Gather little sparks.', 'Curiosity opens possibilities.'],
-  claude: ['Read slowly. Write thoughtfully.', 'Give your ideas a clearer shape.'],
-  kimi: ['Long story? Take your time.', 'Even the smallest clues deserve a place.'],
-  grok: ['Think boldly. Speak freely.', 'Add a little surprise to the everyday.'],
-  doubao: ['Little questions matter, too.', 'What is on your mind today?'],
-};
-const mottoLines = locale === 'en' ? englishMottos[character.id] : character.motto.match(/[^。！？]+[。！？]?/g) || [character.motto];
 ---
 
 <Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={`${ui.siteName} · ${character.brand} · ${ui.badge}`} description={character.summary} theme={characterStyle(character)} themeColor={character.color}>
@@ -63,6 +39,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
       <div class="station-heading"><a class="home-masthead__identity station-brand" href="#top"><span>{ui.siteName}</span></a><h1 class="collection-heading">{ui.pickup}</h1></div>
       <nav class="social-links" aria-label={locale === 'en' ? 'Links and language' : '相关链接与语言'}>
         <a class="github-star" href={PROJECT_GITHUB_URL} data-profile-github data-project-star target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" fill="currentColor"/></svg><span>Star on GitHub</span><span aria-hidden="true">↗</span></a>
+        <button type="button" class="edit-pass" data-edit-pass hidden aria-haspopup="dialog" aria-controls="badge-editor">{locale === 'en' ? 'Edit mode' : '编辑模式'}</button>
         <span class="language-switch" aria-label="Language / 语言">
           <button type="button" class="motion-toggle" data-motion-toggle hidden aria-label={locale === 'en' ? 'Enable tilt motion' : '开启手机倾斜效果'} title={locale === 'en' ? 'Enable tilt motion' : '开启手机倾斜效果'}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2M3 8l-2 2 2 2m18-4 2 2-2 2"/></svg><span>{locale === 'en' ? 'Tilt' : '倾斜'}</span></button>
           <button type="button" class="sound-toggle" data-badge-sound data-on-label={locale === 'en' ? 'Sound on · click to mute' : '声音已开启 · 点击静音'} data-off-label={locale === 'en' ? 'Sound off · click to enable' : '声音已关闭 · 点击开启'} aria-label={locale === 'en' ? 'Sound on · click to mute' : '声音已开启 · 点击静音'} aria-pressed="true" data-enabled="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4Z"/><path class="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="sound-muted" d="m16 9 5 6m0-6-5 6"/></svg></button>
@@ -92,47 +69,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
     <a class="hero-role-control hero-role-control--next" data-role-next data-texture-base={asset(`img/badges/${locale}/${nextCharacter.id}`)} href={localeCharacterUrl(nextCharacter, locale)} aria-label={`${ui.next} · ${nextCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{nextCharacter.brand}</span></a>
     </nav>
     {import.meta.env.DEV && <section class="badge-scene legacy-badge-scene" aria-hidden="true" aria-label={`${character.name}工作牌`} data-strap-label-text={character.brand.toUpperCase().replace(/[^A-Z]/g, "") || "DOUBAO"} data-strap-color={character.color} data-strap-deep={character.ink} data-strap-light={mix(character.color,.25)}>
-      <article class="badge-card" data-morph-card data-chapter-index="0" data-card-label={coverCard.label} aria-label={`${coverCard.label} profile card`}>
-        <div class="badge-tilt">
-          <div class="badge-flip">
-            <div class:list={['badge-face', 'badge-face--front', { 'badge-face--ocean': !!cardArt, 'badge-face--dragon': character.id === 'gpt', 'badge-face--crew': !['deepseek', 'gpt'].includes(character.id) }]} data-badge-face="front">
-              {cardArt && <img class="ocean-card-generated" data-print-src={asset(cardArt.front)} alt="" aria-hidden="true" />}
-              <div class="badge-face__topline"><span class="badge-face__site">{character.brand}</span><span class="badge-pass-type">CREW PASS</span></div>
-
-              <div class:list={["badge-portrait", { "badge-portrait--cutout": character.portraitTransparent || !!cardArt }]}>
-                <span class="portrait-orbit" aria-hidden="true"></span>
-                <img data-print-src={asset(cardArt?.portrait || character.portraitImage || `img/characters/${character.image}`)} alt={`${character.brand} · ${character.name}角色立绘`} width={cardArt?.width || character.imageWidth} height={cardArt?.height || character.imageHeight} style={`object-position:${character.portraitPosition || "50% 0%"}`} draggable="false" /><span class="portrait-label">{character.brand} · {character.name}</span><span class="portrait-edition">CHARACTER EDITION</span>
-              </div>
-
-              <div class="badge-face__identity">
-                {cardArt && <span class="ocean-crew-seal"><span aria-hidden="true">✦</span> AI CREW</span>}
-                <p class="badge-face__name">{character.name}<span>{locale === "zh" ? character.alias : ""}</span></p><p class="badge-role">{character.role}</p>
-              </div>
-
-              <p class="badge-face__desc">{mottoLines.map(line => <span>{line}</span>)}</p>
-
-              <p class="badge-face__motto"><span class="badge-barcode" aria-hidden="true"></span><span><b>CREW PASS · {ui.siteName} · {character.code}—001</b><small>{ui.unofficial}</small></span></p>
-            </div>
-
-            <div class:list={['badge-face', 'badge-face--back', { 'badge-face--ocean-back': !!cardArt, 'badge-face--dragon-back': character.id === 'gpt', 'badge-face--crew-back': !['deepseek', 'gpt'].includes(character.id) }]} data-badge-face="back" hidden>
-              {cardArt && <img class="ocean-back-generated" data-print-src={asset(cardArt.back)} alt="" aria-hidden="true" />}
-              <div class="badge-face__topline"><span class="badge-face__site">{character.brand}</span><span class="badge-pass-type">CREW PASS</span></div>
-
-              <div class="badge-back__body">
-                {cardArt ? <>
-                  <p class="ocean-back-kicker">Stay curious.</p>
-                  <h2 class="ocean-back-title">{character.title[0]}<br />{character.title[1]}</h2>
-                  <span class="ocean-back-accent" aria-hidden="true"></span>
-                </> : <p class="badge-back__headline">Stay curious.<br /><span>{character.title[0]}<br />{character.title[1]}</span></p>}
-                <ul class="badge-back__roles">
-                  {character.features.map(feature => <li>{feature}</li>)}
-                </ul><blockquote class="badge-catchphrase"><span>{memeFor(character.id, locale).label}</span>“{characterCatchphrase(character.id, locale)}”</blockquote>
-              </div>
-            </div>
-          </div>
-        </div>
-        <i class="badge-hole" aria-hidden="true"></i>
-      </article>
+      <BadgeArtwork character={character} locale={locale} />
 
     </section>}
 
@@ -144,6 +81,32 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
 
     </section>
 
+  <dialog class="badge-editor" id="badge-editor" data-badge-editor aria-labelledby="badge-editor-title">
+    <h2 id="badge-editor-title">{locale === 'en' ? 'Edit your crew pass' : '编辑工牌'}</h2>
+    <p class="badge-editor__intro">{locale === 'en' ? 'Click text on either side to replace it. Your display and downloads will use the finished pass.' : '点击正反面的文字进行替换。完成后，展示与下载都会沿用编辑结果。'}</p>
+    <div class="badge-editor__layout">
+      <div class="badge-editor__preview">
+        <div class="badge-editor__tabs" role="group" aria-label={locale === 'en' ? 'Card side' : '工牌面'}>
+          <button type="button" data-edit-side="front" aria-pressed="true">{locale === 'en' ? 'Front' : '正面'}</button>
+          <button type="button" data-edit-side="back" aria-pressed="false">{locale === 'en' ? 'Back' : '背面'}</button>
+        </div>
+        <div class="badge-editor__viewport">
+          <div class="badge-scene badge-scene--interactive texture-export badge-editor__scene" data-edit-scene>
+            <template data-edit-artwork><BadgeArtwork character={character} locale={locale} /></template>
+          </div>
+        </div>
+      </div>
+      <div class="badge-editor__tools">
+        <p data-edit-selection>{locale === 'en' ? 'Select text on the pass to start editing.' : '点一下卡面上的文字，就能开始替换。'}</p>
+        <label for="badge-edit-text">{locale === 'en' ? 'Replacement text' : '替换文字'}</label>
+        <textarea id="badge-edit-text" data-edit-text rows="4" disabled spellcheck="false"></textarea>
+        <p class="badge-editor__hint">{locale === 'en' ? 'Text is saved in this browser for each employee and language. Shared links open the original pass.' : '文字按员工和语言保存在当前浏览器；分享链接打开的是原版工牌。'}</p>
+        <button type="button" class="badge-editor__reset" data-edit-reset>{locale === 'en' ? 'Restore original text' : '恢复原版文字'}</button>
+      </div>
+    </div>
+    <p class="badge-editor__status" data-edit-status role="status" aria-live="polite"></p>
+    <button type="button" class="badge-editor__done" data-edit-done>{locale === 'en' ? 'Finish editing' : '完成编辑'}</button>
+  </dialog>
   <dialog class="community-dialog" id="community" aria-labelledby="community-title">
     <button type="button" class="credits-close" data-close-community aria-label={ui.close}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
     <p class="community-eyebrow">FENGHUA AI LAB / WECHAT</p><h2 id="community-title">风花AI实验室</h2><p class="community-intro">{ui.communityIntro}</p>
@@ -170,5 +133,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
     initPageEnhancements();
     import { initBadgeDownload } from '../scripts/badge-download';
     initBadgeDownload();
+    import { initBadgeEditor } from '../scripts/badge-editor';
+    initBadgeEditor();
   </script>
 </Base>

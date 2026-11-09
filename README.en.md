@@ -24,7 +24,8 @@ Scan with WeChat, or save the QR code and open it in WeChat to follow.
 - 3D lanyard physics, dragging, swinging, and card flipping based on the official React Bits Lanyard component, with matching ShinyText background accents.
 - High-priority front texture preload in HTML. Front, back, and lanyard textures render independently. Display textures use WebP at the original resolution, with lossless backs; PNG downloads retain their original quality. Adjacent characters are prefetched during idle time after the current front appears, and menu targets are prefetched on hover or touch. Prefetching is skipped on data-saving and 2G connections.
 - Chinese and English interfaces, an avatar character menu, previous/next controls, and layouts for mobile touchscreens and short viewports.
-- Transparent front/back PNG downloads, individually or as a ZIP. Downloads are static files and do not depend on live browser rendering.
+- Edit mode: click text on either side to replace it. The finished artwork is shared by the 3D pass, static fallback, download previews, PNGs, and ZIP. Text is saved per employee and language in this browser and can be reset; shared links still open the original pass.
+- Transparent front/back PNG downloads, individually or as a ZIP. Original downloads use static files; edited passes are generated in the browser.
 - A flippable static preview when WebGL is unavailable. Crew pass downloads remain available with JavaScript disabled.
 - Recorded foley for flips, metal contacts on release, and character switching (Freesound, CC0), enabled by default after the first interaction. A mute toggle remembers your preference. Samples are hosted locally with the project; no background music. See [audio credits](public/audio/badge/NOTICE.md).
 
@@ -62,6 +63,7 @@ python -X utf8 scripts/verify-downloads.py
 python -X utf8 scripts/verify-reference-edits.py
 python -X utf8 scripts/verify-optimizations.py
 python -X utf8 scripts/verify-texture-loading.py
+python -X utf8 scripts/verify-edit-mode.py
 ```
 
 Earlier gallery and custom physics tests are retained as historical records and do not apply to the current single-screen version.
