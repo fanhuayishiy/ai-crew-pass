@@ -27,7 +27,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     <span class="crew-loading__progress" aria-hidden="true"></span>
     <button type="button" data-loading-retry hidden>{locale === 'en' ? 'Try again' : '重新加载'}</button>
   </div>
-  <main class="home-experience" id="top" data-character-id={character.id} data-locale={locale} data-chibi-front={asset(`img/badges/${locale}/${character.id}-chibi-front.webp`)} data-original-back={asset(`img/badges/${locale}/${character.id}-back.webp`)}>
+  <main class="home-experience" id="top" data-character-id={character.id} data-locale={locale} data-chibi-front={asset(`img/badges/${locale}/${character.id}-chibi-front.webp`)} data-original-back={asset(`img/badges/${locale}/${character.id}-back.webp`)} data-liangsheng-portrait={asset("img/examples/liangsheng.png")}>
 
 
     <details class="crew-picker" data-crew-picker>
@@ -63,6 +63,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     <div class="badge-version-switch" role="group" aria-label={locale === 'en' ? 'Pass style' : '工牌形象'}>
       <button type="button" data-badge-version="original" aria-pressed="true">{locale === 'en' ? 'Original' : '原版'}</button>
       <button type="button" data-badge-version="chibi" aria-pressed="false">{locale === 'en' ? 'Chibi' : 'Q 版'} <span aria-hidden="true">✦</span></button>
+      {character.id === 'deepseek' && <button type="button" data-badge-version="liangsheng" aria-pressed="false">{locale === 'en' ? 'Liang Sheng' : '梁圣'}</button>}
       {character.id === 'doubao' && <button type="button" data-badge-version="tangbao" aria-pressed="false">{locale === 'en' ? 'Tangbao' : '糖包'}</button>}
       <button type="button" data-badge-version="custom" aria-pressed="false" hidden>{locale === 'en' ? 'Custom' : '自定义'}</button>
       <span class="badge-version-status" data-version-status role="status" aria-live="polite"></span>

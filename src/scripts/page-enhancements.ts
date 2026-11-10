@@ -7,15 +7,48 @@ export function initPageEnhancements(): void {
   const shareButton = document.querySelector<HTMLButtonElement>('[data-share]');
   const shareStatus = document.querySelector<HTMLElement>('[data-share-status]');
   let shareTimer = 0;
+  const frontPreview = document.querySelector<HTMLImageElement>('[data-print-preview="front"]');
+  const frontDownload = document.querySelector<HTMLAnchorElement>('[data-download-face="front"]');
+  let shareImage: File | null = null;
+  let shareImageUrl = '';
+  const prepareShareImage = () => {
+    const source = frontPreview?.src;
+    if (!source || source === shareImageUrl) return;
+    shareImageUrl = source;
+    shareImage = null;
+    if (!navigator.share || !navigator.canShare) return;
+    void fetch(source).then(response => {
+      if (!response.ok) throw new Error('Image unavailable');
+      return response.blob();
+    }).then(blob => {
+      if (shareImageUrl !== source) return;
+      const name = frontDownload?.download || 'crew-pass.png';
+      shareImage = new File([blob], name, { type: 'image/png' });
+    }).catch(() => { /* Text and link sharing remain available. */ });
+  };
+  if (frontPreview) {
+    new MutationObserver(prepareShareImage).observe(frontPreview, { attributes: true, attributeFilter: ['src'] });
+    prepareShareImage();
+  }
   shareButton?.addEventListener('click', async () => {
     const en = document.documentElement.lang === 'en';
     const url = new URL(location.href);
     const selectedVersion = document.querySelector<HTMLButtonElement>('[data-badge-version][aria-pressed="true"]')?.dataset.badgeVersion;
     url.search = '';
-    if (selectedVersion === 'chibi' || selectedVersion === 'tangbao') url.searchParams.set('version', selectedVersion);
+    if (selectedVersion === 'chibi' || selectedVersion === 'tangbao' || selectedVersion === 'liangsheng') url.searchParams.set('version', selectedVersion);
     else url.searchParams.set('version', 'original');
     url.hash = '';
     const text = `${shareButton.dataset.shareText}\n${url.href}`;
+    if (shareImage && shareImageUrl === frontPreview?.src && navigator.share && navigator.canShare) {
+      const data = { files: [shareImage], text: shareButton.dataset.shareText || '', url: url.href };
+      if (navigator.canShare(data)) {
+        try { await navigator.share(data); return; }
+        catch (error) {
+          if (error instanceof DOMException && error.name === 'AbortError') return;
+          // A rejected share falls back to copying the existing text and link.
+        }
+      }
+    }
     let copied = false;
     try {
       if (navigator.clipboard?.writeText) {

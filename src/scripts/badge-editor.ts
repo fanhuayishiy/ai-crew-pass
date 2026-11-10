@@ -23,9 +23,10 @@ export function initBadgeEditor(): void {
   const locale = page.dataset.locale!;
   const storageKey = `crew-pass-edits-v1:${character}:${locale}`;
   const versionStorageKey = 'crew-pass-version-v1';
-  type Version = 'original' | 'chibi' | 'tangbao';
+  type Version = 'original' | 'chibi' | 'tangbao' | 'liangsheng';
+  const specialVersion = character === 'deepseek' ? 'liangsheng' : 'tangbao';
   const requestedParam = new URL(location.href).searchParams.get('version');
-  const requestedVersion: Version | null = requestedParam === 'original' || requestedParam === 'chibi' || (requestedParam === 'tangbao' && character === 'doubao') ? requestedParam as Version : null;
+  const requestedVersion: Version | null = requestedParam === 'original' || requestedParam === 'chibi' || (requestedParam === 'tangbao' && character === 'doubao') || (requestedParam === 'liangsheng' && character === 'deepseek') ? requestedParam as Version : null;
   let version: Version = 'original';
   try { if (!requestedVersion && localStorage.getItem(versionStorageKey) === 'chibi') version = 'chibi'; } catch { /* Use the original when storage is unavailable. */ }
   let appliedVersion: Version = version;
@@ -43,8 +44,8 @@ export function initBadgeEditor(): void {
   const setArtworkVersion = (value: Version) => {
     version = value;
     artwork.dataset.version = value;
-    artwork.toggleAttribute('data-custom-portrait', (customActive && !!customPortrait) || value === 'tangbao');
-    portrait.dataset.printSrc = customActive && customPortrait ? customPortrait : value === 'tangbao' ? dialog.querySelector<HTMLElement>('[data-portrait-example]')!.dataset.exampleSrc : value === 'chibi' ? portrait.dataset.chibiSrc : portrait.dataset.originalSrc;
+    artwork.toggleAttribute('data-custom-portrait', (customActive && !!customPortrait) || value === 'tangbao' || value === 'liangsheng');
+    portrait.dataset.printSrc = customActive && customPortrait ? customPortrait : value === 'tangbao' ? dialog.querySelector<HTMLElement>('[data-portrait-example]')!.dataset.exampleSrc : value === 'liangsheng' ? page.dataset.liangshengPortrait : value === 'chibi' ? portrait.dataset.chibiSrc : portrait.dataset.originalSrc;
     if (portrait.src) portrait.src = portrait.dataset.printSrc!;
     versionButtons.forEach(button => {
       const option = button.dataset.badgeVersion;
@@ -60,7 +61,7 @@ export function initBadgeEditor(): void {
   let selected: HTMLElement | null = null;
   let edits: Edits = {};
   let normalEdits: Edits = {};
-  let tangbaoEdits: Edits = {};
+  let specialEdits: Edits = {};
   let applied = '{}';
   let busy = false;
   let urls: string[] = [];
@@ -116,10 +117,10 @@ export function initBadgeEditor(): void {
   } catch { /* Editing remains available when browser storage is blocked. */ }
 
   try {
-    const stored: unknown = JSON.parse(localStorage.getItem(`${storageKey}:tangbao`) || '{}');
+    const stored: unknown = JSON.parse(localStorage.getItem(`${storageKey}:${specialVersion}`) || '{}');
     if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
       for (const [key, value] of Object.entries(stored)) {
-        if (fields.has(key) && typeof value === 'string') tangbaoEdits[key] = value;
+        if (fields.has(key) && typeof value === 'string') specialEdits[key] = value;
       }
     }
   } catch { /* Editing remains available for this visit. */ }
@@ -139,7 +140,21 @@ export function initBadgeEditor(): void {
     'back:brand': '豆包', 'back:title-0': '围巾围好，', 'back:title-1': '快乐报到。',
     'back:feature-0': '棕色短发 · 红色长围巾', 'back:feature-1': '呆萌表情 · 口水闪亮登场', 'back:feature-2': '糖包限定 · 非官方趣味形象', 'back:catchphrase': '“阿巴阿巴阿巴”',
   };
-  const paintText = () => fields.forEach((field, key) => paintField(field, key, edits[key] ?? (version === 'tangbao' ? tangbaoText[key] : undefined) ?? originals[key]));
+  const liangshengText: Edits = en ? {
+    'front:name': 'Liang Sheng', 'front:alias': '', 'front:role': 'Deep Exploration / Whale Guardian',
+    'front:motto-0': 'Open ideas travel far.', 'front:motto-1': 'Shh, deep thinking in progress.',
+    'back:title-0': 'Liang Sheng arrives,', 'back:title-1': 'the whale rejoices.',
+    'back:feature-0': 'Blue suit · a quiet entrance', 'back:feature-1': 'Deep exploration · open ideas', 'back:feature-2': 'Liang Sheng · unofficial fan art',
+    'back:catchphrase-label': 'Community meme', 'back:catchphrase': '“Thank you, Liang Sheng!”',
+  } : {
+    'front:name': '梁圣', 'front:alias': 'Liang Sheng', 'front:role': '深度求索部 / 大肥鱼守护者',
+    'front:motto-0': '开源的风吹向远方，', 'front:motto-1': '嘘，正在深度思考。',
+    'back:title-0': '梁圣一出，', 'back:title-1': '大肥鱼有福了。',
+    'back:feature-0': '蓝色西装 · 嘘声登场', 'back:feature-1': '深度求索 · 开源探索', 'back:feature-2': '肌肉梁圣 · 非官方趣味形象',
+    'back:catchphrase-label': '社区梗', 'back:catchphrase': '“梁圣的恩情还不完！”',
+  };
+  const specialText = () => version === 'tangbao' ? tangbaoText : version === 'liangsheng' ? liangshengText : undefined;
+  const paintText = () => fields.forEach((field, key) => paintField(field, key, edits[key] ?? specialText()?.[key] ?? originals[key]));
   paintText();
 
   const loadAssets = () => assetsReady ||= Promise.all([
@@ -154,7 +169,7 @@ export function initBadgeEditor(): void {
     if (!selected) return;
     const key = Array.from(fields).find(([, field]) => field === selected)![0];
     const value = input.value;
-    if (value === (version === 'tangbao' ? tangbaoText[key] ?? originals[key] : originals[key])) delete edits[key];
+    if (value === (specialText()?.[key] ?? originals[key])) delete edits[key];
     else edits[key] = value;
     paintField(selected, key, value);
     status.textContent = '';
@@ -184,7 +199,7 @@ export function initBadgeEditor(): void {
   downloadTrigger.addEventListener('click', event => {
     if (busy) { event.preventDefault(); event.stopImmediatePropagation(); }
   }, true);
-  const versionSuffix = () => customActive ? '-custom' : version === 'tangbao' ? '-tangbao' : version === 'chibi' ? '-chibi' : '';
+  const versionSuffix = () => customActive ? '-custom' : version === 'tangbao' ? '-tangbao' : version === 'liangsheng' ? '-liangsheng' : version === 'chibi' ? '-chibi' : '';
   const publish = (result: { front: string; back: string; zip: string } | null) => {
     const chibi = !customActive && version === 'chibi';
     const staticLink = (url: string, face: string) => chibi && face !== 'back'
@@ -307,7 +322,7 @@ export function initBadgeEditor(): void {
     status.textContent = en ? 'Preparing your edited pass…' : '正在生成编辑后的工牌…';
     try {
       const previousUrls = urls;
-      if (Object.keys(edits).length || customActive || version === 'tangbao') {
+      if (Object.keys(edits).length || customActive || version === specialVersion) {
         const result = await render();
         const front = URL.createObjectURL(result.images.front);
         const back = URL.createObjectURL(result.images.back);
@@ -329,7 +344,7 @@ export function initBadgeEditor(): void {
       appliedCustomPortrait = customPortrait;
       appliedCustomActive = customActive;
       try {
-        const activeStorageKey = version === 'tangbao' ? `${storageKey}:tangbao` : storageKey;
+        const activeStorageKey = version === specialVersion ? `${storageKey}:${specialVersion}` : storageKey;
         if (Object.keys(edits).length) localStorage.setItem(activeStorageKey, applied);
         else localStorage.removeItem(activeStorageKey);
       } catch { /* The edited pass still works for this visit. */ }
@@ -377,13 +392,13 @@ export function initBadgeEditor(): void {
         image.src = page.dataset.chibiFront!;
         await image.decode();
       }
-      if (previous === 'tangbao') tangbaoEdits = edits; else normalEdits = edits;
-      edits = next === 'tangbao' ? tangbaoEdits : normalEdits;
+      if (previous === specialVersion) specialEdits = edits; else normalEdits = edits;
+      edits = next === specialVersion ? specialEdits : normalEdits;
       customActive = next === 'custom';
-      setArtworkVersion(next === 'custom' ? (version === 'tangbao' ? 'original' : version) : next);
+      setArtworkVersion(next === 'custom' ? (version === specialVersion ? 'original' : version) : next);
       paintText();
-      if (!(await apply(false))) { customActive = previouslyCustom; setArtworkVersion(previous); edits = previous === 'tangbao' ? tangbaoEdits : normalEdits; paintText(); if (versionStatus) versionStatus.textContent = ''; return; }
-      if (next !== 'custom' && next !== 'tangbao') {
+      if (!(await apply(false))) { customActive = previouslyCustom; setArtworkVersion(previous); edits = previous === specialVersion ? specialEdits : normalEdits; paintText(); if (versionStatus) versionStatus.textContent = ''; return; }
+      if (next !== 'custom' && next !== specialVersion) {
         try { localStorage.setItem(versionStorageKey, next); } catch { /* Keep the selection for this visit. */ }
       }
       const currentUrl = new URL(location.href);
@@ -393,14 +408,14 @@ export function initBadgeEditor(): void {
       const title = document.querySelector<HTMLElement>('.ocean-note__title');
       const caption = document.querySelector<HTMLElement>('.ocean-note__caption');
       if (title && caption) {
-        title.innerHTML = version === 'tangbao' && !customActive ? (en ? 'Scarf on,<br>joy incoming.' : '围巾围好，<br>快乐报到。') : title.dataset.originalTitle!;
-        caption.textContent = version === 'tangbao' && !customActive ? (en ? 'A red scarf for a brighter day.' : '红围巾一戴，今天也要开开心心。') : caption.dataset.originalCaption!;
+        title.innerHTML = version === 'tangbao' && !customActive ? (en ? 'Scarf on,<br>joy incoming.' : '围巾围好，<br>快乐报到。') : version === 'liangsheng' && !customActive ? (en ? 'Liang Sheng arrives,<br>the whale rejoices.' : '梁圣一出，<br>大肥鱼有福了。') : title.dataset.originalTitle!;
+        caption.textContent = version === 'tangbao' && !customActive ? (en ? 'A red scarf for a brighter day.' : '红围巾一戴，今天也要开开心心。') : version === 'liangsheng' && !customActive ? (en ? 'Shh, let the whale think.' : '嘘，先让大肥鱼思考一下。') : caption.dataset.originalCaption!;
       }
     } catch (error) {
       console.error('Could not load Q-version pass', error);
       customActive = previouslyCustom;
       setArtworkVersion(previous);
-      edits = previous === 'tangbao' ? tangbaoEdits : normalEdits;
+      edits = previous === specialVersion ? specialEdits : normalEdits;
       paintText();
       if (versionStatus) versionStatus.textContent = en ? 'Could not load. Try again.' : '加载失败，请重试。';
     } finally { versionButtons.forEach(item => { item.disabled = false; }); }

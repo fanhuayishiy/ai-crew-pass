@@ -7,3 +7,6 @@
 `nailong.png` 是用户提供的奶龙示例图片，由内置 imagegen 根据用户要求生成，用于非官方演示；图片及其所涉角色的权利归各自权利人，不随项目代码自动获得 MIT 许可。
 
 `nailong.png` is a user-provided Nailong sample generated with the built-in image generator at the user's request for an unofficial demonstration. Rights in the image and depicted character belong to their respective holders; the image is not automatically covered by the project's MIT code license.
+
+
+`liangsheng.png` 基于用户提供的网络二创参考图，经 AI 去背景、移除讲台和麦克风并补全被遮挡部分，用于非官方趣味工牌。相关权利归各自权利人，图片不随项目代码自动获得 MIT 许可。
