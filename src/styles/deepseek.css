@@ -492,10 +492,11 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
 .badge-controls { position: absolute; z-index: 6; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; width: max-content; }
 .badge-version-switch { position: absolute; z-index: 6; left: 50%; bottom: calc(154px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; border: 1px solid var(--theme-line); border-radius: 999px; background: var(--theme-paper); box-shadow: 0 4px 16px #29365b0c; }
 .badge-version-switch button { min-width: 63px; min-height: 32px; padding: 5px 12px; border: 0; border-radius: 999px; color: var(--home-muted); background: transparent; font: inherit; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.badge-version-switch button[hidden] { display: none; }
 .badge-version-switch button[aria-pressed="true"] { color: #fff; background: var(--theme-brand); }
 .badge-version-switch button:focus-visible { outline: 2px solid var(--theme-brand); outline-offset: 2px; }
 .badge-version-switch button:disabled { opacity: .55; cursor: wait; }
-.badge-version-status { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); padding-bottom: 5px; color: var(--home-muted); font-size: 10px; white-space: nowrap; }
+.badge-version-status { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); width: max-content; max-width: min(90vw, 420px); padding-bottom: 5px; color: var(--home-muted); font-size: 10px; text-align: center; white-space: normal; }
 .badge-controls .hero-role-control, .badge-controls .download-pass { position: relative; inset: auto; transform: none; flex: 0 0 auto; }
 .badge-controls .hero-role-control { width: 46px; height: 46px; }
 .badge-controls .hero-role-control span { display: none; }

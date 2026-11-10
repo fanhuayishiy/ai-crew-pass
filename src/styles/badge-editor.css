@@ -19,13 +19,35 @@
 .badge-editor__scene .badge-face--ocean .badge-face__name > span[data-edit-empty], .badge-editor__scene [data-edit-empty] { display: inline-block; min-width: 1.5em; min-height: 1em; }
 .badge-editor__scene [data-edit-empty]::before { content: '＋'; opacity: .7; }
 .badge-editor__tools { align-self: center; min-width: 0; font-size: 13px; line-height: 1.6; }
+.badge-editor__portrait { padding: 14px; border: 1px solid var(--theme-line); border-radius: 14px; background: color-mix(in srgb, var(--theme-brand) 5%, var(--theme-paper)); }
+.badge-editor__portrait strong { font-size: 13px; }
+.badge-editor__portrait p { margin: 2px 0 10px; color: var(--home-muted); font-size: 12px; }
+.badge-editor__portrait-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge-editor__upload { padding: 8px 14px; border: 1px solid var(--theme-brand); border-radius: 999px; color: var(--theme-paper); background: var(--theme-brand); font: inherit; font-size: 12px; cursor: pointer; }
+.badge-editor__portrait-actions [hidden] { display: none; }
+.badge-editor__scene .badge-card[data-custom-portrait] .badge-portrait img, .badge-card[data-custom-portrait] .badge-face--ocean .badge-portrait img { object-fit: contain; object-position: 50% 50% !important; transform: none !important; }
 .badge-editor__tools label { display: block; margin: 16px 0 8px; font-weight: 600; }
 .badge-editor__tools textarea { width: 100%; padding: 12px; resize: vertical; border: 1px solid var(--theme-line); border-radius: 12px; background: #fff; color: var(--home-ink); font: inherit; }
 .badge-editor__tools textarea:focus { outline: 2px solid var(--theme-brand); outline-offset: 2px; }
 .badge-editor__status { min-height: 1.6em; margin: 18px 0 8px; font-size: 12px; }
 .badge-editor__done { width: 100%; min-height: 44px; border: 0; border-radius: 999px; background: var(--home-ink); color: var(--theme-paper); font: inherit; cursor: pointer; }
+.badge-editor button:focus-visible, .portrait-crop button:focus-visible, .portrait-crop canvas:focus-visible, .portrait-crop input:focus-visible { outline: 2px solid var(--theme-brand); outline-offset: 3px; }
 .badge-editor button:disabled { cursor: wait; opacity: .6; }
 .badge-editor__scene .badge-face__name > b { min-width: 0; }
+.portrait-crop { width: min(480px, calc(100vw - 32px)); max-height: calc(100svh - 32px); padding: 24px; overflow: auto; border: 1px solid var(--theme-line); border-radius: 24px; background: var(--theme-paper); color: var(--home-ink); }
+.portrait-crop::backdrop { background: #18203599; }
+.portrait-crop h2 { margin: 0; font-size: 21px; }
+.portrait-crop__hint { margin: 8px 0 14px; color: var(--home-muted); font-size: 12px; line-height: 1.6; }
+.portrait-crop__frame { width: min(100%, 340px, max(180px, calc(100svh - 290px))); aspect-ratio: 1; margin: 0 auto; overflow: hidden; border: 1px solid var(--theme-line); border-radius: 12px; background-color: #fff; background-image: linear-gradient(45deg, #e9eaf0 25%, transparent 25%), linear-gradient(-45deg, #e9eaf0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e9eaf0 75%), linear-gradient(-45deg, transparent 75%, #e9eaf0 75%); background-position: 0 0, 0 8px, 8px -8px, -8px 0; background-size: 16px 16px; }
+.portrait-crop__frame canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+.portrait-crop__frame canvas:active { cursor: grabbing; }
+.portrait-crop__zoom { display: flex; align-items: center; gap: 12px; margin: 16px auto; max-width: 340px; color: var(--home-muted); font-size: 12px; }
+.portrait-crop__zoom input { flex: 1; min-width: 0; accent-color: var(--theme-brand); }
+.portrait-crop__status:empty { display: none; }
+.portrait-crop__status { color: var(--home-muted); font-size: 12px; }
+.portrait-crop__actions { display: flex; justify-content: flex-end; gap: 8px; }
+.portrait-crop__actions button { min-height: 42px; padding: 8px 18px; border: 1px solid var(--theme-line); border-radius: 999px; color: var(--home-ink); background: transparent; font: inherit; font-size: 13px; cursor: pointer; }
+.portrait-crop__actions [data-crop-apply] { border-color: var(--theme-brand); background: var(--theme-brand); color: var(--theme-paper); }
 @media (max-width: 700px) {
   .badge-editor { padding: 20px 14px; }
   .badge-editor__layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }

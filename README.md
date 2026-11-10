@@ -10,6 +10,10 @@
 
 一个支持中文 / English 的 AI 同人工牌小项目：拖动挂绳、松手回摆、点击翻面，再把喜欢的工牌下载下来。由 **风花AI实验室** 分享。
 
+## 豆包 Q 版预览
+
+![豆包 Q 版工牌页面截图](docs/screenshots/doubao-chibi-zh.png)
+
 ## 关注风花AI实验室
 
 如果你也喜欢 AI 创作、实用工具和有趣的小实验，欢迎关注微信公众号 **「风花AI实验室」**。后续项目更新与制作分享会在这里交流。
@@ -21,10 +25,12 @@
 ## 可以做什么
 
 - 九位 AI 同事：DeepSeek、ChatGPT、GLM、Qwen、Gemini、Claude、Kimi、Grok、豆包。
+- 九位角色均可在原版和 Q 版形象之间切换，展示与下载同步更新；选择保存在当前浏览器。
 - React Bits 官方 Lanyard 的 3D 挂绳、拖拽回摆与翻面；同色系 ShinyText 背景扫光。
 - 正面贴图在 HTML 阶段高优先级预加载，正反面与挂绳独立显示；展示纹理采用同分辨率 WebP（背面无损），PNG 下载保留原画质。当前正面显示后空闲预取相邻角色，悬停或触摸菜单时预取目标角色；省流量模式及 2G 网络跳过预取。
 - 中英文切换、头像员工菜单、左右角色切换，适配手机触屏与矮屏。
-- 编辑模式：点击正反面文字即可替换，完成后 3D 展示、静态预览及 PNG / ZIP 下载使用同一份编辑结果。文字按员工和语言保存在当前浏览器，可恢复原版；分享链接仍指向原版工牌。
+- 编辑模式：点击正反面文字进行替换，也可以上传本地图片，按 1∶1 比例拖动、缩放裁剪并替换角色形象（图片不超过 20 MB、4000 万像素）。完成后 3D 展示、静态预览及 PNG / ZIP 下载使用同一份编辑结果；可切换或恢复原角色。
+- 自定义图片和文字按员工、语言保存在当前浏览器，图片在本地处理，不上传服务器。分享链接不包含本地编辑内容；清除站点数据会移除本地保存的编辑。
 - 下载透明背景正反面 PNG，或一次下载 ZIP；原版使用静态文件，编辑后的工牌由浏览器生成。
 - WebGL 不可用时提供可翻面的静态预览；关闭脚本后仍可下载工牌。
 - 翻面、松手金属声与角色切换使用实录拟音素材（Freesound，CC0），默认开启；右上角可静音并记住偏好，首次交互后启用声音。音频随项目本地托管，无背景音乐，详见[音效说明](public/audio/badge/NOTICE.md)。
@@ -47,6 +53,7 @@ npm run build
 - 中英文文案：`src/data/i18n.ts`；口头禅：`src/data/memes.ts`。
 - 共用页面：`src/components/BadgeExperience.astro`。
 - 修改卡面后，开发服务运行时执行 `python -X utf8 scripts/export-badge-faces.py`，再执行 `python -X utf8 scripts/export-downloads.py` 更新下载。
+- 修改 Q 版卡面或角色素材后，在开发服务运行时执行 `python -X utf8 scripts/export-chibi-faces.py`，更新中英文 Q 版展示与下载素材。
 - `main` 分支推送自动运行 GitHub Actions，也可手动选择分支发布。工作流按当前仓库配置的 Pages 地址构建域名与子路径，并保留编辑所需素材；fork 可使用自己的域名。手动构建未指定 `GITHUB_PAGES_URL` 时，继续使用 `public/CNAME` 或 `GITHUB_REPOSITORY` 作为默认配置。
 
 ## 访问量统计
@@ -64,6 +71,8 @@ python -X utf8 scripts/verify-reference-edits.py
 python -X utf8 scripts/verify-optimizations.py
 python -X utf8 scripts/verify-texture-loading.py
 python -X utf8 scripts/verify-edit-mode.py
+python -X utf8 scripts/verify-chibi-mode.py
+python -X utf8 scripts/verify-custom-portrait.py
 ```
 
 此前图鉴与旧自写物理测试保留作历史记录，不适用于当前单屏版本。

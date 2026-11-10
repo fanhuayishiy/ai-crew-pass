@@ -1,4 +1,5 @@
 import { setBadgeFaces } from './badge-editor-state';
+import { initPortraitCrop, loadPortrait, savePortrait } from './badge-portrait';
 
 type Edits = Record<string, string>;
 const width = 1200;
@@ -26,13 +27,26 @@ export function initBadgeEditor(): void {
   const versionButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-badge-version]'));
   const versionStatus = document.querySelector<HTMLElement>('[data-version-status]');
   const portrait = artwork.querySelector<HTMLImageElement>('.badge-portrait img')!;
+  const portraitReset = dialog.querySelector<HTMLButtonElement>('[data-portrait-reset]')!;
+  const portraitStorageKey = `${character}:${locale}`;
+  let customPortrait: string | null = null;
+  let customActive = false;
+  let appliedCustomPortrait: string | null = null;
+  let appliedCustomActive = false;
+  let portraitStoragePending = false;
   let assetsReady: Promise<void> | undefined;
   const setArtworkVersion = (value: 'original' | 'chibi') => {
     version = value;
     artwork.dataset.version = value;
-    portrait.dataset.printSrc = value === 'chibi' ? portrait.dataset.chibiSrc : portrait.dataset.originalSrc;
+    artwork.toggleAttribute('data-custom-portrait', customActive && !!customPortrait);
+    portrait.dataset.printSrc = customActive && customPortrait ? customPortrait : value === 'chibi' ? portrait.dataset.chibiSrc : portrait.dataset.originalSrc;
     if (portrait.src) portrait.src = portrait.dataset.printSrc!;
-    versionButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.badgeVersion === value)));
+    versionButtons.forEach(button => {
+      const option = button.dataset.badgeVersion;
+      if (option === 'custom') button.hidden = !customPortrait;
+      button.setAttribute('aria-pressed', String(option === (customActive ? 'custom' : value)));
+    });
+    portraitReset.hidden = !customPortrait;
     assetsReady = undefined;
   };
   setArtworkVersion(version);
@@ -43,6 +57,19 @@ export function initBadgeEditor(): void {
   let applied = '{}';
   let busy = false;
   let urls: string[] = [];
+
+  const portraitCrop = initPortraitCrop(dialog, en, image => {
+    customPortrait = image;
+    customActive = true;
+    setArtworkVersion(version);
+    status.textContent = en ? 'Portrait cropped. Finish editing to apply it.' : '角色图片已裁剪，完成编辑后生效。';
+  }, () => busy);
+  portraitReset.addEventListener('click', () => {
+    customPortrait = null;
+    customActive = false;
+    setArtworkVersion(version);
+    status.textContent = en ? 'Original portrait restored. Finish editing to apply.' : '已恢复原角色，完成编辑后生效。';
+  });
 
   artwork.querySelectorAll<HTMLElement>('[data-edit-field]').forEach(field => {
     const side = field.closest<HTMLElement>('[data-badge-face]')!.dataset.badgeFace;
@@ -130,9 +157,9 @@ export function initBadgeEditor(): void {
   downloadTrigger.addEventListener('click', event => {
     if (busy) { event.preventDefault(); event.stopImmediatePropagation(); }
   }, true);
-  const versionSuffix = () => version === 'chibi' ? '-chibi' : '';
+  const versionSuffix = () => customActive ? '-custom' : version === 'chibi' ? '-chibi' : '';
   const publish = (result: { front: string; back: string; zip: string } | null) => {
-    const chibi = version === 'chibi';
+    const chibi = !customActive && version === 'chibi';
     const staticLink = (url: string, face: string) => chibi && face !== 'back'
       ? url.replace(face === 'front' ? '-front.png' : '-crew-pass.zip', face === 'front' ? '-chibi-front.png' : '-chibi-crew-pass.zip') : url;
     downloadLinks.forEach((link, index) => {
@@ -226,7 +253,14 @@ export function initBadgeEditor(): void {
 
   const apply = async (close: boolean) => {
     if (busy) return false;
-    if (JSON.stringify(edits) === applied && version === appliedVersion) { if (close) dialog.close(); return true; }
+    if (close && portraitCrop.isLoading()) {
+      status.textContent = en ? 'Image is loading. Please wait and finish cropping.' : '图片正在读取，请稍候并完成裁剪。';
+      return false;
+    }
+    if (close) portraitCrop.cancelPending();
+    const unchanged = JSON.stringify(edits) === applied && version === appliedVersion && customPortrait === appliedCustomPortrait && customActive === appliedCustomActive;
+    if (unchanged && !portraitStoragePending) { if (close) dialog.close(); return true; }
+    const retryingSave = unchanged && portraitStoragePending;
     const overflow = findOverflow();
     if (overflow) {
       scene.append(artwork);
@@ -246,7 +280,7 @@ export function initBadgeEditor(): void {
     status.textContent = en ? 'Preparing your edited pass…' : '正在生成编辑后的工牌…';
     try {
       const previousUrls = urls;
-      if (Object.keys(edits).length) {
+      if (Object.keys(edits).length || customActive) {
         const result = await render();
         const front = URL.createObjectURL(result.images.front);
         const back = URL.createObjectURL(result.images.back);
@@ -256,14 +290,27 @@ export function initBadgeEditor(): void {
       } else { urls = []; publish(null); }
       // Let consumers release the previous texture before revoking its URL.
       window.setTimeout(() => previousUrls.forEach(url => URL.revokeObjectURL(url)), 1000);
+      let portraitSaveFailed = false;
+      if (customPortrait !== appliedCustomPortrait || customActive !== appliedCustomActive || portraitStoragePending) {
+        try {
+          await savePortrait(portraitStorageKey, customPortrait ? { image: customPortrait, active: customActive } : null);
+          portraitStoragePending = false;
+        } catch { portraitSaveFailed = true; portraitStoragePending = true; }
+      }
       applied = JSON.stringify(edits);
       appliedVersion = version;
+      appliedCustomPortrait = customPortrait;
+      appliedCustomActive = customActive;
       try {
         if (Object.keys(edits).length) localStorage.setItem(storageKey, applied);
         else localStorage.removeItem(storageKey);
       } catch { /* The edited pass still works for this visit. */ }
-      status.textContent = en ? 'Your edited pass is ready.' : '编辑后的工牌已生效。';
-      if (close) dialog.close();
+      status.textContent = portraitSaveFailed
+        ? (en ? 'The pass is ready, but the portrait could not be saved. Finish again to retry or continue for this visit.' : '工牌已生效，但角色图片未能保存在浏览器中；再次完成可重试或继续本次使用。')
+        : (en ? 'Your edited pass is ready.' : '编辑后的工牌已生效。');
+      if (versionStatus) versionStatus.textContent = portraitSaveFailed
+        ? (en ? 'Selection was not saved. Open Edit mode and finish to retry.' : '选择未能保存，可打开编辑模式并完成来重试。') : '';
+      if (close && (!portraitSaveFailed || retryingSave)) dialog.close();
       return true;
     } catch (error) {
       console.error('Could not generate edited crew pass', error);
@@ -282,11 +329,14 @@ export function initBadgeEditor(): void {
   };
 
   trigger.hidden = false;
+  trigger.disabled = true;
+  versionButtons.forEach(button => { button.disabled = true; });
   publish(null);
   versionButtons.forEach(button => button.addEventListener('click', async () => {
-    const next = button.dataset.badgeVersion as 'original' | 'chibi';
-    if (busy || next === version) return;
+    const next = button.dataset.badgeVersion as 'original' | 'chibi' | 'custom';
+    if (busy || (next === 'custom' ? customActive || !customPortrait : !customActive && next === version)) return;
     const previous = version;
+    const previouslyCustom = customActive;
     versionButtons.forEach(item => { item.disabled = true; });
     if (versionStatus) versionStatus.textContent = en ? 'Loading…' : '正在切换…';
     try {
@@ -295,14 +345,16 @@ export function initBadgeEditor(): void {
         image.src = page.dataset.chibiFront!;
         await image.decode();
       }
-      setArtworkVersion(next);
-      if (Object.keys(edits).length) {
-        if (!(await apply(false))) { setArtworkVersion(previous); if (versionStatus) versionStatus.textContent = ''; return; }
-      } else { appliedVersion = next; publish(null); }
-      try { localStorage.setItem(versionStorageKey, next); } catch { /* Keep the selection for this visit. */ }
-      if (versionStatus) versionStatus.textContent = '';
+      customActive = next === 'custom';
+      setArtworkVersion(next === 'custom' ? version : next);
+      if (!(await apply(false))) { customActive = previouslyCustom; setArtworkVersion(previous); if (versionStatus) versionStatus.textContent = ''; return; }
+      if (next !== 'custom') {
+        try { localStorage.setItem(versionStorageKey, next); } catch { /* Keep the selection for this visit. */ }
+      }
+      if (versionStatus && !portraitStoragePending) versionStatus.textContent = '';
     } catch (error) {
       console.error('Could not load Q-version pass', error);
+      customActive = previouslyCustom;
       setArtworkVersion(previous);
       if (versionStatus) versionStatus.textContent = en ? 'Could not load. Try again.' : '加载失败，请重试。';
     } finally { versionButtons.forEach(item => { item.disabled = false; }); }
@@ -314,5 +366,17 @@ export function initBadgeEditor(): void {
   });
   dialog.querySelector('[data-edit-done]')?.addEventListener('click', () => { void apply(true); });
   dialog.addEventListener('cancel', event => { event.preventDefault(); void apply(true); });
-  if (Object.keys(edits).length) void apply(false);
+  void (async () => {
+    try {
+      const stored = await loadPortrait(portraitStorageKey);
+      if (stored) {
+        customPortrait = stored.image;
+        customActive = stored.active;
+        appliedCustomPortrait = stored.image;
+        setArtworkVersion(version);
+      }
+    } catch { /* Portrait editing remains available for this visit. */ }
+    if (Object.keys(edits).length || customActive) await apply(false);
+    else { trigger.disabled = false; versionButtons.forEach(button => { button.disabled = false; }); }
+  })();
 }

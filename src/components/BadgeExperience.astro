@@ -64,6 +64,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     <div class="badge-version-switch" role="group" aria-label={locale === 'en' ? 'Pass style' : '工牌形象'}>
       <button type="button" data-badge-version="original" aria-pressed="true">{locale === 'en' ? 'Original' : '原版'}</button>
       <button type="button" data-badge-version="chibi" aria-pressed="false">{locale === 'en' ? 'Chibi' : 'Q 版'} <span aria-hidden="true">✦</span></button>
+      <button type="button" data-badge-version="custom" aria-pressed="false" hidden>{locale === 'en' ? 'Custom' : '自定义'}</button>
       <span class="badge-version-status" data-version-status role="status" aria-live="polite"></span>
     </div>
     <nav class="badge-controls" aria-label={ui.choose}>
@@ -88,7 +89,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
 
   <dialog class="badge-editor" id="badge-editor" data-badge-editor aria-labelledby="badge-editor-title">
     <h2 id="badge-editor-title">{locale === 'en' ? 'Edit your crew pass' : '编辑工牌'}</h2>
-    <p class="badge-editor__intro">{locale === 'en' ? 'Click text on either side to replace it. Your display and downloads will use the finished pass.' : '点击正反面的文字进行替换。完成后，展示与下载都会沿用编辑结果。'}</p>
+    <p class="badge-editor__intro">{locale === 'en' ? 'Replace the portrait or click text on either side. Your display and downloads will use the finished pass.' : '替换角色图片，或点击正反面的文字进行修改。完成后，展示与下载都会沿用编辑结果。'}</p>
     <div class="badge-editor__layout">
       <div class="badge-editor__preview">
         <div class="badge-editor__tabs" role="group" aria-label={locale === 'en' ? 'Card side' : '工牌面'}>
@@ -102,15 +103,31 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
         </div>
       </div>
       <div class="badge-editor__tools">
+        <div class="badge-editor__portrait">
+          <div><strong>{locale === 'en' ? 'Character portrait' : '角色形象'}</strong><p>{locale === 'en' ? 'Upload a local image and crop it to a square.' : '上传本地图片，裁剪为正方形。'}</p></div>
+          <input type="file" accept="image/*" data-portrait-file hidden />
+          <div class="badge-editor__portrait-actions">
+            <button type="button" class="badge-editor__upload" data-edit-upload>{locale === 'en' ? 'Upload image' : '上传图片'}</button>
+            <button type="button" class="badge-editor__reset" data-portrait-reset hidden>{locale === 'en' ? 'Restore portrait' : '恢复原角色'}</button>
+          </div>
+        </div>
         <p data-edit-selection>{locale === 'en' ? 'Select text on the pass to start editing.' : '点一下卡面上的文字，就能开始替换。'}</p>
         <label for="badge-edit-text">{locale === 'en' ? 'Replacement text' : '替换文字'}</label>
         <textarea id="badge-edit-text" data-edit-text rows="4" disabled spellcheck="false"></textarea>
-        <p class="badge-editor__hint">{locale === 'en' ? 'Text is saved in this browser for each employee and language. Shared links open the original pass.' : '文字按员工和语言保存在当前浏览器；分享链接打开的是原版工牌。'}</p>
+        <p class="badge-editor__hint">{locale === 'en' ? 'Your edits are saved in this browser for each employee and language. Shared links do not include local edits.' : '编辑内容按员工和语言保存在当前浏览器；分享链接不包含本地编辑。'}</p>
         <button type="button" class="badge-editor__reset" data-edit-reset>{locale === 'en' ? 'Restore original text' : '恢复原版文字'}</button>
       </div>
     </div>
     <p class="badge-editor__status" data-edit-status role="status" aria-live="polite"></p>
     <button type="button" class="badge-editor__done" data-edit-done>{locale === 'en' ? 'Finish editing' : '完成编辑'}</button>
+  </dialog>
+  <dialog class="portrait-crop" data-portrait-crop aria-labelledby="portrait-crop-title" aria-describedby="portrait-crop-hint">
+    <h2 id="portrait-crop-title">{locale === 'en' ? 'Crop character portrait' : '裁剪角色图片'}</h2>
+    <p id="portrait-crop-hint" class="portrait-crop__hint">{locale === 'en' ? 'Drag the image or use the arrow keys to position it. The crop is fixed at 1:1.' : '拖动图片或使用方向键调整位置，裁剪比例固定为 1∶1。'}</p>
+    <div class="portrait-crop__frame"><canvas width="512" height="512" data-crop-canvas tabindex="0" role="img" aria-label={locale === 'en' ? 'Square crop preview; use arrow keys to move the image' : '正方形裁剪预览，可使用方向键移动图片'}></canvas></div>
+    <label class="portrait-crop__zoom" for="portrait-crop-zoom"><span>{locale === 'en' ? 'Zoom' : '缩放'}</span><input id="portrait-crop-zoom" data-crop-zoom type="range" min="1" max="4" step="0.01" value="1" /><span aria-hidden="true">＋</span></label>
+    <p class="portrait-crop__status" data-crop-status role="status" aria-live="polite"></p>
+    <div class="portrait-crop__actions"><button type="button" data-crop-cancel>{locale === 'en' ? 'Cancel' : '取消'}</button><button type="button" data-crop-apply>{locale === 'en' ? 'Use portrait' : '使用图片'}</button></div>
   </dialog>
   <dialog class="community-dialog" id="community" aria-labelledby="community-title">
     <button type="button" class="credits-close" data-close-community aria-label={ui.close}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
