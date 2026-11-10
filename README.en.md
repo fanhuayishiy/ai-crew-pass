@@ -29,7 +29,7 @@ Scan with WeChat, or save the QR code and open it in WeChat to follow.
 - 3D lanyard physics, dragging, swinging, and card flipping based on the official React Bits Lanyard component, with matching ShinyText background accents.
 - High-priority front texture preload in HTML. Front, back, and lanyard textures render independently. Display textures use WebP at the original resolution, with lossless backs; PNG downloads retain their original quality. Adjacent characters are prefetched during idle time after the current front appears, and menu targets are prefetched on hover or touch. Prefetching is skipped on data-saving and 2G connections.
 - Chinese and English interfaces, an avatar character menu, previous/next controls, and layouts for mobile touchscreens and short viewports.
-- Edit mode: replace text on either side or upload a local image and drag/zoom it within a fixed 1:1 crop to replace the portrait (up to 20 MB and 40 million pixels). The finished artwork is shared by the 3D pass, static fallback, download previews, PNGs, and ZIP. You can switch back to or restore the original portrait.
+- Edit mode: replace text on either side, or choose the built-in Tangbao sample or upload a local image and drag/zoom it within a fixed 1:1 crop to replace the portrait (local images up to 20 MB and 40 million pixels). The finished artwork is shared by the 3D pass, static fallback, download previews, PNGs, and ZIP. You can switch back to or restore the original portrait.
 - Custom images and text are saved in this browser per employee and language; images are processed locally and are not uploaded to a server. Shared links do not include local edits, and clearing site data removes saved edits.
 - Transparent front/back PNG downloads, individually or as a ZIP. Original downloads use static files; edited passes are generated in the browser.
 - A flippable static preview when WebGL is unavailable. Crew pass downloads remain available with JavaScript disabled.
@@ -73,6 +73,7 @@ python -X utf8 scripts/verify-texture-loading.py
 python -X utf8 scripts/verify-edit-mode.py
 python -X utf8 scripts/verify-chibi-mode.py
 python -X utf8 scripts/verify-custom-portrait.py
+python -X utf8 scripts/verify-example-portrait.py
 ```
 
 Earlier gallery and custom physics tests are retained as historical records and do not apply to the current single-screen version.
@@ -86,8 +87,8 @@ The source is public, but **each part retains its own license. The entire collec
 | New project code and original Hanging Pass code | [MIT](LICENSE), retaining attribution to [xu-yaoting/hanging-pass](https://github.com/xu-yaoting/hanging-pass) |
 | Lanyard and ShinyText | [React Bits](https://github.com/DavidHDev/react-bits), [MIT + Commons Clause](src/components/react-bits/LICENSE.md); not an unconditional license for commercial redistribution |
 | Geist fonts | [SIL OFL 1.1](public/fonts/LICENSE-Geist.txt) |
-| Character artwork, derived card faces, and downloadable images | Subject to their individual asset notices; not automatically covered by the code's MIT license, and provided for noncommercial fan display only |
+| Character artwork, derived card faces, downloadable images, and the built-in sample | Subject to their individual asset notices; not automatically covered by the code's MIT license, and provided for noncommercial fan display only |
 
-Original DeepSeek character: **上善无形**. Eight AI character designs: **ZipZipPipe**. Doubao is a transparent anime-style fan character generated for this project. Sources, original dimensions, hashes, and adaptation records are documented in the [Chinese asset notice](public/img/characters/NOTICE.md), [English credits](public/img/characters/NOTICE.en.md), [Doubao creation notes](docs/doubao-anime-v4.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
+Original DeepSeek character: **上善无形**. Eight AI character designs: **ZipZipPipe**. Doubao is a transparent anime-style fan character generated for this project. Sources, original dimensions, hashes, and adaptation records are documented in the [Chinese asset notice](public/img/characters/NOTICE.md), [English credits](public/img/characters/NOTICE.en.md), [Doubao creation notes](docs/doubao-anime-v4.md), [sample image notice](public/img/examples/NOTICE.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
 
 Characters, trademarks, and brands belong to their respective rights holders. This project is not affiliated with or officially endorsed by the AI companies depicted. Review the applicable licenses separately before reuse or commercial use.

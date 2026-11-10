@@ -29,7 +29,7 @@
 - React Bits 官方 Lanyard 的 3D 挂绳、拖拽回摆与翻面；同色系 ShinyText 背景扫光。
 - 正面贴图在 HTML 阶段高优先级预加载，正反面与挂绳独立显示；展示纹理采用同分辨率 WebP（背面无损），PNG 下载保留原画质。当前正面显示后空闲预取相邻角色，悬停或触摸菜单时预取目标角色；省流量模式及 2G 网络跳过预取。
 - 中英文切换、头像员工菜单、左右角色切换，适配手机触屏与矮屏。
-- 编辑模式：点击正反面文字进行替换，也可以上传本地图片，按 1∶1 比例拖动、缩放裁剪并替换角色形象（图片不超过 20 MB、4000 万像素）。完成后 3D 展示、静态预览及 PNG / ZIP 下载使用同一份编辑结果；可切换或恢复原角色。
+- 编辑模式：点击正反面文字进行替换，也可以选用内置的糖包示例或上传本地图片，按 1∶1 比例拖动、缩放裁剪并替换角色形象（本地图片不超过 20 MB、4000 万像素）。完成后 3D 展示、静态预览及 PNG / ZIP 下载使用同一份编辑结果；可切换或恢复原角色。
 - 自定义图片和文字按员工、语言保存在当前浏览器，图片在本地处理，不上传服务器。分享链接不包含本地编辑内容；清除站点数据会移除本地保存的编辑。
 - 下载透明背景正反面 PNG，或一次下载 ZIP；原版使用静态文件，编辑后的工牌由浏览器生成。
 - WebGL 不可用时提供可翻面的静态预览；关闭脚本后仍可下载工牌。
@@ -73,6 +73,7 @@ python -X utf8 scripts/verify-texture-loading.py
 python -X utf8 scripts/verify-edit-mode.py
 python -X utf8 scripts/verify-chibi-mode.py
 python -X utf8 scripts/verify-custom-portrait.py
+python -X utf8 scripts/verify-example-portrait.py
 ```
 
 此前图鉴与旧自写物理测试保留作历史记录，不适用于当前单屏版本。
@@ -86,8 +87,8 @@ python -X utf8 scripts/verify-custom-portrait.py
 | 本项目新增代码、原 Hanging Pass 代码 | [MIT](LICENSE)，保留 [xu-yaoting/hanging-pass](https://github.com/xu-yaoting/hanging-pass) 原作者署名 |
 | Lanyard、ShinyText | [React Bits](https://github.com/DavidHDev/react-bits)，[MIT + Commons Clause](src/components/react-bits/LICENSE.md)，不属于无条件商业再分发许可 |
 | Geist 字体 | [SIL OFL 1.1](public/fonts/LICENSE-Geist.txt) |
-| 角色美术、衍生卡面与下载图片 | 各自素材声明；不随代码自动变为 MIT，仅作非商业同人展示 |
+| 角色美术、衍生卡面、下载图片与内置示例 | 各自素材声明；不随代码自动变为 MIT，仅作非商业同人展示 |
 
-DeepSeek 原角色：**上善无形**；八位 AI 娘设计：**ZipZipPipe**。豆包是本项目生成的透明动漫同人形象。详细出处、原尺寸、哈希与改编记录见 [中文素材说明](public/img/characters/NOTICE.md)、[English credits](public/img/characters/NOTICE.en.md)、[豆包记录](docs/doubao-anime-v4.md) 和 [第三方许可汇总](THIRD_PARTY_NOTICES.md)。
+DeepSeek 原角色：**上善无形**；八位 AI 娘设计：**ZipZipPipe**。豆包是本项目生成的透明动漫同人形象。详细出处、原尺寸、哈希与改编记录见 [中文素材说明](public/img/characters/NOTICE.md)、[English credits](public/img/characters/NOTICE.en.md)、[豆包记录](docs/doubao-anime-v4.md)、[示例图片说明](public/img/examples/NOTICE.md) 和 [第三方许可汇总](THIRD_PARTY_NOTICES.md)。
 
 角色、商标和品牌权利归各自权利人。本项目与相关 AI 公司无隶属或官方合作关系。复用或商业使用前，请分别核对对应许可。

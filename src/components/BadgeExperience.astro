@@ -110,6 +110,11 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
             <button type="button" class="badge-editor__upload" data-edit-upload>{locale === 'en' ? 'Upload image' : '上传图片'}</button>
             <button type="button" class="badge-editor__reset" data-portrait-reset hidden>{locale === 'en' ? 'Restore portrait' : '恢复原角色'}</button>
           </div>
+          <button type="button" class="badge-editor__example" data-portrait-example data-example-src={asset('img/examples/tangbao.png')}>
+            <span class="badge-editor__example-image"><img src={asset('img/examples/tangbao.png')} width="56" height="56" loading="lazy" decoding="async" alt="" /></span>
+            <span class="badge-editor__example-copy"><b>{locale === 'en' ? 'Tangbao sample' : '糖包示例'}</b><small>{locale === 'en' ? 'Crop and use' : '点击裁剪使用'}</small></span>
+            <span class="badge-editor__example-arrow" aria-hidden="true">↗</span>
+          </button>
         </div>
         <p data-edit-selection>{locale === 'en' ? 'Select text on the pass to start editing.' : '点一下卡面上的文字，就能开始替换。'}</p>
         <label for="badge-edit-text">{locale === 'en' ? 'Replacement text' : '替换文字'}</label>

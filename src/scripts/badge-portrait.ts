@@ -45,6 +45,7 @@ export async function savePortrait(key: string, portrait: StoredPortrait | null)
 export function initPortraitCrop(editor: HTMLDialogElement, en: boolean, onApply: (image: string) => void, isBusy: () => boolean): { isLoading: () => boolean; cancelPending: () => void } {
   const fileInput = editor.querySelector<HTMLInputElement>('[data-portrait-file]')!;
   const upload = editor.querySelector<HTMLButtonElement>('[data-edit-upload]')!;
+  const example = editor.querySelector<HTMLButtonElement>('[data-portrait-example]')!;
   const status = editor.querySelector<HTMLElement>('[data-edit-status]')!;
   const dialog = document.querySelector<HTMLDialogElement>('[data-portrait-crop]')!;
   const canvas = dialog.querySelector<HTMLCanvasElement>('[data-crop-canvas]')!;
@@ -78,23 +79,9 @@ export function initPortraitCrop(editor: HTMLDialogElement, en: boolean, onApply
   const cancelPending = () => { loading++; imageLoading = false; };
   editor.addEventListener('close', cancelPending);
   upload.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', async () => {
-    const file = fileInput.files?.[0];
-    fileInput.value = '';
-    if (!file || !editor.open || isBusy()) return;
-    const token = ++loading;
-    imageLoading = false;
-    if (!file.type.startsWith('image/')) {
-      showError(en ? 'Choose an image file and try again.' : '请选择图片文件后重试。');
-      return;
-    }
-    if (!file.size || file.size > 20 * 1024 * 1024) {
-      showError(en ? 'Choose an image smaller than 20 MB.' : '请选择小于 20 MB 的图片。');
-      return;
-    }
+  const openImage = async (url: string, token: number, revoke: boolean, isExample: boolean) => {
     imageLoading = true;
     status.textContent = en ? 'Loading image…' : '正在读取图片…';
-    const url = URL.createObjectURL(file);
     try {
       const image = new Image();
       image.src = url;
@@ -113,11 +100,33 @@ export function initPortraitCrop(editor: HTMLDialogElement, en: boolean, onApply
       dialog.showModal();
       canvas.focus();
     } catch {
-      if (token === loading && editor.open && !isBusy()) showError(en ? 'Could not open this image. Try another image.' : '无法读取这张图片，请换一张图片重试。');
+      if (token === loading && editor.open && !isBusy()) showError(isExample
+        ? (en ? 'Could not load the sample image. Try again.' : '示例图片加载失败，请重试。')
+        : (en ? 'Could not open this image. Try another image.' : '无法读取这张图片，请换一张图片重试。'));
     } finally {
       if (token === loading) imageLoading = false;
-      URL.revokeObjectURL(url);
+      if (revoke) URL.revokeObjectURL(url);
     }
+  };
+  example.addEventListener('click', () => {
+    if (!editor.open || isBusy()) return;
+    void openImage(example.dataset.exampleSrc!, ++loading, false, true);
+  });
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = '';
+    if (!file || !editor.open || isBusy()) return;
+    const token = ++loading;
+    imageLoading = false;
+    if (!file.type.startsWith('image/')) {
+      showError(en ? 'Choose an image file and try again.' : '请选择图片文件后重试。');
+      return;
+    }
+    if (!file.size || file.size > 20 * 1024 * 1024) {
+      showError(en ? 'Choose an image smaller than 20 MB.' : '请选择小于 20 MB 的图片。');
+      return;
+    }
+    void openImage(URL.createObjectURL(file), token, true, false);
   });
 
   zoom.addEventListener('input', () => draw(canvas));

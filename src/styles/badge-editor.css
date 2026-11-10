@@ -25,6 +25,14 @@
 .badge-editor__portrait-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .badge-editor__upload { padding: 8px 14px; border: 1px solid var(--theme-brand); border-radius: 999px; color: var(--theme-paper); background: var(--theme-brand); font: inherit; font-size: 12px; cursor: pointer; }
 .badge-editor__portrait-actions [hidden] { display: none; }
+.badge-editor__example { display: flex; align-items: center; gap: 11px; width: 100%; margin-top: 12px; padding: 8px; border: 1px solid var(--theme-line); border-radius: 12px; color: inherit; background: var(--theme-paper); font: inherit; text-align: left; cursor: pointer; }
+.badge-editor__example:hover { border-color: var(--theme-brand); }
+.badge-editor__example-image { flex: 0 0 56px; width: 56px; height: 56px; overflow: hidden; border-radius: 8px; background-color: #fff; background-image: linear-gradient(45deg, #e9eaf0 25%, transparent 25%), linear-gradient(-45deg, #e9eaf0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e9eaf0 75%), linear-gradient(-45deg, transparent 75%, #e9eaf0 75%); background-position: 0 0, 0 6px, 6px -6px, -6px 0; background-size: 12px 12px; }
+.badge-editor__example-image img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.badge-editor__example-copy { display: grid; gap: 2px; }
+.badge-editor__example-copy b { font-size: 12px; }
+.badge-editor__example-copy small { color: var(--home-muted); font-size: 11px; }
+.badge-editor__example-arrow { margin-left: auto; padding: 0 5px; color: var(--theme-brand); font-size: 15px; }
 .badge-editor__scene .badge-card[data-custom-portrait] .badge-portrait img, .badge-card[data-custom-portrait] .badge-face--ocean .badge-portrait img { object-fit: contain; object-position: 50% 50% !important; transform: none !important; }
 .badge-editor__tools label { display: block; margin: 16px 0 8px; font-weight: 600; }
 .badge-editor__tools textarea { width: 100%; padding: 12px; resize: vertical; border: 1px solid var(--theme-line); border-radius: 12px; background: #fff; color: var(--home-ink); font: inherit; }
