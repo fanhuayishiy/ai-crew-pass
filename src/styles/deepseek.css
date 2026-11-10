@@ -301,6 +301,9 @@ html[lang] .badge-face--front .badge-face__desc { color: color-mix(in srgb,var(-
 .badge-face--ocean .badge-pass-type::after { display: inline-block; width: 9px; height: 5px; margin-left: 7px; background: repeating-linear-gradient(135deg,#7395d0 0 2px,transparent 2px 4px); content: ''; }
 .badge-face--ocean .badge-portrait { position: absolute; top: 10.5%; left: 3%; width: 94%; height: 54%; margin: 0; background: transparent; }
 .badge-face--ocean .badge-portrait img { object-fit: contain; object-position: 50% 0%; }
+.badge-card[data-version="chibi"] .badge-face--ocean .badge-portrait img { object-position: 50% 100% !important; }
+.badge-card[data-character-id="gemini"][data-version="chibi"] .badge-portrait img { transform: scale(1.17); transform-origin: center bottom; }
+.badge-card[data-character-id="grok"][data-version="chibi"] .badge-portrait img { transform: translateX(-5%) scale(1.1); transform-origin: center bottom; }
 .badge-face--ocean .portrait-orbit, .badge-face--ocean .portrait-edition { display: none; }
 .badge-face--ocean .portrait-label { top: 43px; bottom: auto; right: 15px; color: #5374ab; font-size: 6px; letter-spacing: .1em; }
 .badge-face--ocean .badge-face__identity { position: absolute; top: 66.5%; right: 22px; left: 22px; margin: 0; }
@@ -487,6 +490,12 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
 }
 /* One screen, with controls in their own dock below the physical badge. */
 .badge-controls { position: absolute; z-index: 6; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; width: max-content; }
+.badge-version-switch { position: absolute; z-index: 6; left: 50%; bottom: calc(154px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; border: 1px solid var(--theme-line); border-radius: 999px; background: var(--theme-paper); box-shadow: 0 4px 16px #29365b0c; }
+.badge-version-switch button { min-width: 63px; min-height: 32px; padding: 5px 12px; border: 0; border-radius: 999px; color: var(--home-muted); background: transparent; font: inherit; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.badge-version-switch button[aria-pressed="true"] { color: #fff; background: var(--theme-brand); }
+.badge-version-switch button:focus-visible { outline: 2px solid var(--theme-brand); outline-offset: 2px; }
+.badge-version-switch button:disabled { opacity: .55; cursor: wait; }
+.badge-version-status { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); padding-bottom: 5px; color: var(--home-muted); font-size: 10px; white-space: nowrap; }
 .badge-controls .hero-role-control, .badge-controls .download-pass { position: relative; inset: auto; transform: none; flex: 0 0 auto; }
 .badge-controls .hero-role-control { width: 46px; height: 46px; }
 .badge-controls .hero-role-control span { display: none; }
@@ -494,6 +503,7 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
 .home-footer { bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
 @media (max-width: 760px) {
   .badge-controls { gap: 12px; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+  .badge-version-switch { bottom: calc(139px + env(safe-area-inset-bottom, 0px)); }
   .badge-controls .hero-role-control { width: 44px; height: 44px; }
   .badge-controls .download-pass { min-height: 44px; padding: 10px 18px; }
   .home-footer { gap: 12px; }

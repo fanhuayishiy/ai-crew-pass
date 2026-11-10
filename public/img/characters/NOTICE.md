@@ -14,6 +14,10 @@
 
 逐文件来源 URL、原始尺寸、SHA-256 见 [sources.json](./sources.json)。
 
+## Q 版形象
+
+`../chibi/` 中的九张透明立绘由 image_gen 根据本项目效果预览生成，并非原作者提供的 Q 版原稿。GPT、GLM、千问、Gemini、Claude、Kimi 和 Grok 的角色设定参考 [ai-girls 素材库](https://github.com/shuaizenge/ai-girls)收录的 ZipZipPipe 视频截帧；GPT、Claude 和 Grok 的眼睛参考截帧调整，Kimi 使用用户选定的版本。DeepSeek 和豆包的 Q 版依据用户提供的参考图生成，DeepSeek 保留上善无形与 ZipZipPipe 的角色设计署名。原始设计及品牌权利仍归相应权利人；这些衍生形象不作为代码 MIT 许可的素材发布。DeepSeek 设计沿用署名、非商业使用及相同方式共享的要求。
+
 ## 豆包
 
 当前 v4 使用与其他角色统一的精细动漫立绘，保留棕色短发、红围巾、黑西装短裙、腰链、长靴与手提包。非官方角色设计，不是 ZipZipPipe 发布的豆包原稿。

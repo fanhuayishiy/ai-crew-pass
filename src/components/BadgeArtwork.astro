@@ -25,7 +25,7 @@ const englishMottos: Record<string, string[]> = {
 const mottoLines = locale === 'en' ? englishMottos[character.id] : character.motto.match(/[^。！？]+[。！？]?/g) || [character.motto];
 ---
 
-      <article class="badge-card" data-morph-card data-chapter-index="0" data-card-label={coverCard.label} aria-label={`${coverCard.label} profile card`}>
+      <article class="badge-card" data-morph-card data-character-id={character.id} data-chapter-index="0" data-card-label={coverCard.label} aria-label={`${coverCard.label} profile card`}>
         <div class="badge-tilt">
           <div class="badge-flip">
             <div class:list={['badge-face', 'badge-face--front', { 'badge-face--ocean': !!cardArt, 'badge-face--dragon': character.id === 'gpt', 'badge-face--crew': !['deepseek', 'gpt'].includes(character.id) }]} data-badge-face="front">
@@ -34,7 +34,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
 
               <div class:list={["badge-portrait", { "badge-portrait--cutout": character.portraitTransparent || !!cardArt }]}>
                 <span class="portrait-orbit" aria-hidden="true"></span>
-                <img data-print-src={asset(cardArt?.portrait || character.portraitImage || `img/characters/${character.image}`)} alt={`${character.brand} · ${character.name}角色立绘`} width={cardArt?.width || character.imageWidth} height={cardArt?.height || character.imageHeight} style={`object-position:${character.portraitPosition || "50% 0%"}`} draggable="false" /><span class="portrait-label" data-edit-field="portrait-label">{character.brand} · {character.name}</span><span class="portrait-edition" data-edit-field="portrait-edition">CHARACTER EDITION</span>
+                <img data-print-src={asset(cardArt?.portrait || character.portraitImage || `img/characters/${character.image}`)} data-original-src={asset(cardArt?.portrait || character.portraitImage || `img/characters/${character.image}`)} data-chibi-src={asset(`img/chibi/${character.id}.webp`)} alt={`${character.brand} · ${character.name}角色立绘`} width={cardArt?.width || character.imageWidth} height={cardArt?.height || character.imageHeight} style={`object-position:${character.portraitPosition || "50% 0%"}`} draggable="false" /><span class="portrait-label" data-edit-field="portrait-label">{character.brand} · {character.name}</span><span class="portrait-edition" data-edit-field="portrait-edition">CHARACTER EDITION</span>
               </div>
 
               <div class="badge-face__identity">

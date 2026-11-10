@@ -19,6 +19,23 @@ export function initBadgeEditor(): void {
   const character = page.dataset.characterId!;
   const locale = page.dataset.locale!;
   const storageKey = `crew-pass-edits-v1:${character}:${locale}`;
+  const versionStorageKey = 'crew-pass-version-v1';
+  let version: 'original' | 'chibi' = 'original';
+  try { if (localStorage.getItem(versionStorageKey) === 'chibi') version = 'chibi'; } catch { /* Use the original when storage is unavailable. */ }
+  let appliedVersion: 'original' | 'chibi' = version;
+  const versionButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-badge-version]'));
+  const versionStatus = document.querySelector<HTMLElement>('[data-version-status]');
+  const portrait = artwork.querySelector<HTMLImageElement>('.badge-portrait img')!;
+  let assetsReady: Promise<void> | undefined;
+  const setArtworkVersion = (value: 'original' | 'chibi') => {
+    version = value;
+    artwork.dataset.version = value;
+    portrait.dataset.printSrc = value === 'chibi' ? portrait.dataset.chibiSrc : portrait.dataset.originalSrc;
+    if (portrait.src) portrait.src = portrait.dataset.printSrc!;
+    versionButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.badgeVersion === value)));
+    assetsReady = undefined;
+  };
+  setArtworkVersion(version);
   const fields = new Map<string, HTMLElement>();
   const originals: Edits = {};
   let selected: HTMLElement | null = null;
@@ -26,7 +43,6 @@ export function initBadgeEditor(): void {
   let applied = '{}';
   let busy = false;
   let urls: string[] = [];
-  let assetsReady: Promise<void> | undefined;
 
   artwork.querySelectorAll<HTMLElement>('[data-edit-field]').forEach(field => {
     const side = field.closest<HTMLElement>('[data-badge-face]')!.dataset.badgeFace;
@@ -114,12 +130,21 @@ export function initBadgeEditor(): void {
   downloadTrigger.addEventListener('click', event => {
     if (busy) { event.preventDefault(); event.stopImmediatePropagation(); }
   }, true);
+  const versionSuffix = () => version === 'chibi' ? '-chibi' : '';
   const publish = (result: { front: string; back: string; zip: string } | null) => {
-    downloadLinks.forEach((link, index) => { link.href = result ? result[(link.dataset.downloadFace || 'zip') as keyof typeof result] : originalLinks[index]; });
-    previews.forEach((image, index) => { image.src = result ? result[image.dataset.printPreview as 'front' | 'back'] : originalPreviews[index]; });
+    const chibi = version === 'chibi';
+    const staticLink = (url: string, face: string) => chibi && face !== 'back'
+      ? url.replace(face === 'front' ? '-front.png' : '-crew-pass.zip', face === 'front' ? '-chibi-front.png' : '-chibi-crew-pass.zip') : url;
+    downloadLinks.forEach((link, index) => {
+      const face = link.dataset.downloadFace || 'zip';
+      link.href = result ? result[face as keyof typeof result] : staticLink(originalLinks[index], face);
+      link.download = `${character}-${locale}${versionSuffix()}-${face === 'zip' ? 'crew-pass.zip' : `${face}.png`}`;
+    });
+    previews.forEach((image, index) => { image.src = result ? result[image.dataset.printPreview as 'front' | 'back'] : staticLink(originalPreviews[index], image.dataset.printPreview!); });
+    downloadTrigger.href = result?.zip || staticLink(originalLinks.find((_, index) => downloadLinks[index].hasAttribute('data-download-zip'))!, 'zip');
     const preview = document.querySelector<HTMLImageElement>('.badge-loading-preview img');
-    if (preview) preview.src = result?.front || originalPreviews[previews.findIndex(image => image.dataset.printPreview === 'front')];
-    setBadgeFaces(result ? { front: result.front, back: result.back } : null);
+    if (preview) preview.src = result?.front || (chibi ? page.dataset.chibiFront! : originalPreviews[previews.findIndex(image => image.dataset.printPreview === 'front')]);
+    setBadgeFaces(result ? { front: result.front, back: result.back } : chibi ? { front: page.dataset.chibiFront!, back: page.dataset.originalBack! } : null);
   };
 
   const render = async () => {
@@ -157,7 +182,7 @@ export function initBadgeEditor(): void {
         context.fill();
         const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(new Error('PNG export failed')), 'image/png'));
         images[side] = blob;
-        result[`${character}-${locale}-${side}.png`] = new Uint8Array(await blob.arrayBuffer());
+        result[`${character}-${locale}${versionSuffix()}-${side}.png`] = new Uint8Array(await blob.arrayBuffer());
       }
       return { images, zip: new Blob([zipSync(result, { level: 0 })], { type: 'application/zip' }) };
     } finally { clone.remove(); }
@@ -200,8 +225,8 @@ export function initBadgeEditor(): void {
   };
 
   const apply = async (close: boolean) => {
-    if (busy) return;
-    if (JSON.stringify(edits) === applied) { if (close) dialog.close(); return; }
+    if (busy) return false;
+    if (JSON.stringify(edits) === applied && version === appliedVersion) { if (close) dialog.close(); return true; }
     const overflow = findOverflow();
     if (overflow) {
       scene.append(artwork);
@@ -210,13 +235,14 @@ export function initBadgeEditor(): void {
       dialog.querySelector<HTMLButtonElement>(`[data-edit-side="${side}"]`)?.click();
       fields.get(overflow)?.click();
       status.textContent = en ? 'Text overlaps or extends beyond the pass. Please shorten it before finishing.' : '文字超出卡面或与其他内容重叠，请缩短后再完成编辑。';
-      return;
+      return false;
     }
     busy = true;
     dialog.querySelectorAll<HTMLButtonElement>('button').forEach(button => { button.disabled = true; });
     input.disabled = true;
     trigger.disabled = true;
     downloadTrigger.setAttribute('aria-disabled', 'true');
+    versionButtons.forEach(button => { button.disabled = true; });
     status.textContent = en ? 'Preparing your edited pass…' : '正在生成编辑后的工牌…';
     try {
       const previousUrls = urls;
@@ -231,27 +257,56 @@ export function initBadgeEditor(): void {
       // Let consumers release the previous texture before revoking its URL.
       window.setTimeout(() => previousUrls.forEach(url => URL.revokeObjectURL(url)), 1000);
       applied = JSON.stringify(edits);
+      appliedVersion = version;
       try {
         if (Object.keys(edits).length) localStorage.setItem(storageKey, applied);
         else localStorage.removeItem(storageKey);
       } catch { /* The edited pass still works for this visit. */ }
       status.textContent = en ? 'Your edited pass is ready.' : '编辑后的工牌已生效。';
       if (close) dialog.close();
+      return true;
     } catch (error) {
       console.error('Could not generate edited crew pass', error);
       status.textContent = en ? 'Could not generate the pass. Please try again.' : '生成工牌失败，请重试；已输入的文字还在。';
       scene.append(artwork);
       if (!dialog.open) dialog.showModal();
+      return false;
     } finally {
       busy = false;
       trigger.disabled = false;
       downloadTrigger.removeAttribute('aria-disabled');
+      versionButtons.forEach(button => { button.disabled = false; });
       dialog.querySelectorAll<HTMLButtonElement>('button').forEach(button => { button.disabled = false; });
       input.disabled = !selected;
     }
   };
 
   trigger.hidden = false;
+  publish(null);
+  versionButtons.forEach(button => button.addEventListener('click', async () => {
+    const next = button.dataset.badgeVersion as 'original' | 'chibi';
+    if (busy || next === version) return;
+    const previous = version;
+    versionButtons.forEach(item => { item.disabled = true; });
+    if (versionStatus) versionStatus.textContent = en ? 'Loading…' : '正在切换…';
+    try {
+      if (next === 'chibi') {
+        const image = new Image();
+        image.src = page.dataset.chibiFront!;
+        await image.decode();
+      }
+      setArtworkVersion(next);
+      if (Object.keys(edits).length) {
+        if (!(await apply(false))) { setArtworkVersion(previous); if (versionStatus) versionStatus.textContent = ''; return; }
+      } else { appliedVersion = next; publish(null); }
+      try { localStorage.setItem(versionStorageKey, next); } catch { /* Keep the selection for this visit. */ }
+      if (versionStatus) versionStatus.textContent = '';
+    } catch (error) {
+      console.error('Could not load Q-version pass', error);
+      setArtworkVersion(previous);
+      if (versionStatus) versionStatus.textContent = en ? 'Could not load. Try again.' : '加载失败，请重试。';
+    } finally { versionButtons.forEach(item => { item.disabled = false; }); }
+  }));
   trigger.addEventListener('click', () => {
     scene.append(artwork);
     dialog.showModal();

@@ -14,6 +14,10 @@ Eight character illustrations come from [ZipZipPipe’s original post](https://w
 
 Per-file source URLs, original dimensions and SHA-256 hashes: [sources.json](./sources.json).
 
+## Chibi portraits
+
+The nine transparent portraits in `../chibi/` were generated with image_gen from this project's previews; they are not the original artist's chibi files. GPT, GLM, Qwen, Gemini, Claude, Kimi and Grok follow ZipZipPipe character designs referenced through video stills in the [ai-girls archive](https://github.com/shuaizenge/ai-girls); the eyes of GPT, Claude and Grok were adjusted with the stills as reference, and Kimi uses the user's chosen version. DeepSeek and Doubao follow user-provided references; DeepSeek retains credits to Shangshan Wuxing and ZipZipPipe. Character and brand rights remain with their respective owners, and these illustrations are not licensed under the code's MIT license. DeepSeek's design retains attribution, non-commercial and share-alike requirements.
+
 ## Doubao
 
 The current v4 illustration is AI-generated anime fan art, with short brown hair, a red scarf, a black blazer and skirt, a waist chain, tall boots and a handbag. It is not an original Doubao illustration by ZipZipPipe.
