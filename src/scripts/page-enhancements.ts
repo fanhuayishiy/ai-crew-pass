@@ -10,7 +10,10 @@ export function initPageEnhancements(): void {
   shareButton?.addEventListener('click', async () => {
     const en = document.documentElement.lang === 'en';
     const url = new URL(location.href);
+    const selectedVersion = document.querySelector<HTMLButtonElement>('[data-badge-version][aria-pressed="true"]')?.dataset.badgeVersion;
     url.search = '';
+    if (selectedVersion === 'chibi' || selectedVersion === 'tangbao') url.searchParams.set('version', selectedVersion);
+    else url.searchParams.set('version', 'original');
     url.hash = '';
     const text = `${shareButton.dataset.shareText}\n${url.href}`;
     let copied = false;

@@ -7,7 +7,9 @@ const height = 1688;
 
 export function initBadgeEditor(): void {
   const dialog = document.querySelector<HTMLDialogElement>('[data-badge-editor]');
-  const trigger = document.querySelector<HTMLButtonElement>('[data-edit-pass]');
+  const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-edit-pass], [data-open-customize]'));
+  const trigger = triggers[0];
+  const setTriggersDisabled = (disabled: boolean) => triggers.forEach(button => { button.disabled = disabled; });
   const scene = dialog?.querySelector<HTMLElement>('[data-edit-scene]');
   const input = dialog?.querySelector<HTMLTextAreaElement>('[data-edit-text]');
   const status = dialog?.querySelector<HTMLElement>('[data-edit-status]');
@@ -21,9 +23,12 @@ export function initBadgeEditor(): void {
   const locale = page.dataset.locale!;
   const storageKey = `crew-pass-edits-v1:${character}:${locale}`;
   const versionStorageKey = 'crew-pass-version-v1';
-  let version: 'original' | 'chibi' = 'original';
-  try { if (localStorage.getItem(versionStorageKey) === 'chibi') version = 'chibi'; } catch { /* Use the original when storage is unavailable. */ }
-  let appliedVersion: 'original' | 'chibi' = version;
+  type Version = 'original' | 'chibi' | 'tangbao';
+  const requestedParam = new URL(location.href).searchParams.get('version');
+  const requestedVersion: Version | null = requestedParam === 'original' || requestedParam === 'chibi' || (requestedParam === 'tangbao' && character === 'doubao') ? requestedParam as Version : null;
+  let version: Version = 'original';
+  try { if (!requestedVersion && localStorage.getItem(versionStorageKey) === 'chibi') version = 'chibi'; } catch { /* Use the original when storage is unavailable. */ }
+  let appliedVersion: Version = version;
   const versionButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-badge-version]'));
   const versionStatus = document.querySelector<HTMLElement>('[data-version-status]');
   const portrait = artwork.querySelector<HTMLImageElement>('.badge-portrait img')!;
@@ -35,11 +40,11 @@ export function initBadgeEditor(): void {
   let appliedCustomActive = false;
   let portraitStoragePending = false;
   let assetsReady: Promise<void> | undefined;
-  const setArtworkVersion = (value: 'original' | 'chibi') => {
+  const setArtworkVersion = (value: Version) => {
     version = value;
     artwork.dataset.version = value;
-    artwork.toggleAttribute('data-custom-portrait', customActive && !!customPortrait);
-    portrait.dataset.printSrc = customActive && customPortrait ? customPortrait : value === 'chibi' ? portrait.dataset.chibiSrc : portrait.dataset.originalSrc;
+    artwork.toggleAttribute('data-custom-portrait', (customActive && !!customPortrait) || value === 'tangbao');
+    portrait.dataset.printSrc = customActive && customPortrait ? customPortrait : value === 'tangbao' ? dialog.querySelector<HTMLElement>('[data-portrait-example]')!.dataset.exampleSrc : value === 'chibi' ? portrait.dataset.chibiSrc : portrait.dataset.originalSrc;
     if (portrait.src) portrait.src = portrait.dataset.printSrc!;
     versionButtons.forEach(button => {
       const option = button.dataset.badgeVersion;
@@ -54,6 +59,8 @@ export function initBadgeEditor(): void {
   const originals: Edits = {};
   let selected: HTMLElement | null = null;
   let edits: Edits = {};
+  let normalEdits: Edits = {};
+  let tangbaoEdits: Edits = {};
   let applied = '{}';
   let busy = false;
   let urls: string[] = [];
@@ -108,11 +115,31 @@ export function initBadgeEditor(): void {
     }
   } catch { /* Editing remains available when browser storage is blocked. */ }
 
+  try {
+    const stored: unknown = JSON.parse(localStorage.getItem(`${storageKey}:tangbao`) || '{}');
+    if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
+      for (const [key, value] of Object.entries(stored)) {
+        if (fields.has(key) && typeof value === 'string') tangbaoEdits[key] = value;
+      }
+    }
+  } catch { /* Editing remains available for this visit. */ }
+
   const paintField = (field: HTMLElement, key: string, value: string) => {
     field.textContent = value;
     field.toggleAttribute('data-edit-empty', !!originals[key] && !value);
   };
-  const paintText = () => fields.forEach((field, key) => paintField(field, key, edits[key] ?? originals[key]));
+  const tangbaoText: Edits = en ? {
+    'front:brand': 'Doubao', 'front:name': 'Tangbao', 'front:alias': '', 'front:role': 'Joy Department / Red Scarf Envoy',
+    'front:motto-0': 'Lots of ideas, and just a little drool...', 'front:motto-1': 'Let’s make today a happy one!',
+    'back:brand': 'Doubao', 'back:title-0': 'Scarf on,', 'back:title-1': 'joy incoming.',
+    'back:feature-0': 'Short brown hair · red scarf', 'back:feature-1': 'A dreamy look · a little drool', 'back:feature-2': 'Tangbao edition · unofficial fan art', 'back:catchphrase': '“Aba aba aba”',
+  } : {
+    'front:brand': '豆包', 'front:name': '糖包', 'front:alias': 'Tangbao', 'front:role': '快乐摸鱼部 / 红围巾特派员',
+    'front:motto-0': '想法有点多，口水有一点点……', 'front:motto-1': '今天也请多多关照！',
+    'back:brand': '豆包', 'back:title-0': '围巾围好，', 'back:title-1': '快乐报到。',
+    'back:feature-0': '棕色短发 · 红色长围巾', 'back:feature-1': '呆萌表情 · 口水闪亮登场', 'back:feature-2': '糖包限定 · 非官方趣味形象', 'back:catchphrase': '“阿巴阿巴阿巴”',
+  };
+  const paintText = () => fields.forEach((field, key) => paintField(field, key, edits[key] ?? (version === 'tangbao' ? tangbaoText[key] : undefined) ?? originals[key]));
   paintText();
 
   const loadAssets = () => assetsReady ||= Promise.all([
@@ -127,7 +154,7 @@ export function initBadgeEditor(): void {
     if (!selected) return;
     const key = Array.from(fields).find(([, field]) => field === selected)![0];
     const value = input.value;
-    if (value === originals[key]) delete edits[key];
+    if (value === (version === 'tangbao' ? tangbaoText[key] ?? originals[key] : originals[key])) delete edits[key];
     else edits[key] = value;
     paintField(selected, key, value);
     status.textContent = '';
@@ -157,7 +184,7 @@ export function initBadgeEditor(): void {
   downloadTrigger.addEventListener('click', event => {
     if (busy) { event.preventDefault(); event.stopImmediatePropagation(); }
   }, true);
-  const versionSuffix = () => customActive ? '-custom' : version === 'chibi' ? '-chibi' : '';
+  const versionSuffix = () => customActive ? '-custom' : version === 'tangbao' ? '-tangbao' : version === 'chibi' ? '-chibi' : '';
   const publish = (result: { front: string; back: string; zip: string } | null) => {
     const chibi = !customActive && version === 'chibi';
     const staticLink = (url: string, face: string) => chibi && face !== 'back'
@@ -274,13 +301,13 @@ export function initBadgeEditor(): void {
     busy = true;
     dialog.querySelectorAll<HTMLButtonElement>('button').forEach(button => { button.disabled = true; });
     input.disabled = true;
-    trigger.disabled = true;
+    setTriggersDisabled(true);
     downloadTrigger.setAttribute('aria-disabled', 'true');
     versionButtons.forEach(button => { button.disabled = true; });
     status.textContent = en ? 'Preparing your edited pass…' : '正在生成编辑后的工牌…';
     try {
       const previousUrls = urls;
-      if (Object.keys(edits).length || customActive) {
+      if (Object.keys(edits).length || customActive || version === 'tangbao') {
         const result = await render();
         const front = URL.createObjectURL(result.images.front);
         const back = URL.createObjectURL(result.images.back);
@@ -302,14 +329,15 @@ export function initBadgeEditor(): void {
       appliedCustomPortrait = customPortrait;
       appliedCustomActive = customActive;
       try {
-        if (Object.keys(edits).length) localStorage.setItem(storageKey, applied);
-        else localStorage.removeItem(storageKey);
+        const activeStorageKey = version === 'tangbao' ? `${storageKey}:tangbao` : storageKey;
+        if (Object.keys(edits).length) localStorage.setItem(activeStorageKey, applied);
+        else localStorage.removeItem(activeStorageKey);
       } catch { /* The edited pass still works for this visit. */ }
       status.textContent = portraitSaveFailed
         ? (en ? 'The pass is ready, but the portrait could not be saved. Finish again to retry or continue for this visit.' : '工牌已生效，但角色图片未能保存在浏览器中；再次完成可重试或继续本次使用。')
         : (en ? 'Your edited pass is ready.' : '编辑后的工牌已生效。');
       if (versionStatus) versionStatus.textContent = portraitSaveFailed
-        ? (en ? 'Selection was not saved. Open Edit mode and finish to retry.' : '选择未能保存，可打开编辑模式并完成来重试。') : '';
+        ? (en ? 'Selection was not saved. Open Customize and finish to retry.' : '选择未能保存，可打开自定义并完成来重试。') : '';
       if (close && (!portraitSaveFailed || retryingSave)) dialog.close();
       return true;
     } catch (error) {
@@ -320,7 +348,7 @@ export function initBadgeEditor(): void {
       return false;
     } finally {
       busy = false;
-      trigger.disabled = false;
+      setTriggersDisabled(false);
       downloadTrigger.removeAttribute('aria-disabled');
       versionButtons.forEach(button => { button.disabled = false; });
       dialog.querySelectorAll<HTMLButtonElement>('button').forEach(button => { button.disabled = false; });
@@ -328,12 +356,16 @@ export function initBadgeEditor(): void {
     }
   };
 
-  trigger.hidden = false;
-  trigger.disabled = true;
+  const pageTitle = document.querySelector<HTMLElement>('.ocean-note__title');
+  const pageCaption = document.querySelector<HTMLElement>('.ocean-note__caption');
+  if (pageTitle) pageTitle.dataset.originalTitle = pageTitle.innerHTML;
+  if (pageCaption) pageCaption.dataset.originalCaption = pageCaption.textContent || '';
+  triggers.forEach(button => { button.hidden = false; });
+  setTriggersDisabled(true);
   versionButtons.forEach(button => { button.disabled = true; });
   publish(null);
   versionButtons.forEach(button => button.addEventListener('click', async () => {
-    const next = button.dataset.badgeVersion as 'original' | 'chibi' | 'custom';
+    const next = button.dataset.badgeVersion as Version | 'custom';
     if (busy || (next === 'custom' ? customActive || !customPortrait : !customActive && next === version)) return;
     const previous = version;
     const previouslyCustom = customActive;
@@ -345,38 +377,58 @@ export function initBadgeEditor(): void {
         image.src = page.dataset.chibiFront!;
         await image.decode();
       }
+      if (previous === 'tangbao') tangbaoEdits = edits; else normalEdits = edits;
+      edits = next === 'tangbao' ? tangbaoEdits : normalEdits;
       customActive = next === 'custom';
-      setArtworkVersion(next === 'custom' ? version : next);
-      if (!(await apply(false))) { customActive = previouslyCustom; setArtworkVersion(previous); if (versionStatus) versionStatus.textContent = ''; return; }
-      if (next !== 'custom') {
+      setArtworkVersion(next === 'custom' ? (version === 'tangbao' ? 'original' : version) : next);
+      paintText();
+      if (!(await apply(false))) { customActive = previouslyCustom; setArtworkVersion(previous); edits = previous === 'tangbao' ? tangbaoEdits : normalEdits; paintText(); if (versionStatus) versionStatus.textContent = ''; return; }
+      if (next !== 'custom' && next !== 'tangbao') {
         try { localStorage.setItem(versionStorageKey, next); } catch { /* Keep the selection for this visit. */ }
       }
+      const currentUrl = new URL(location.href);
+      currentUrl.searchParams.set('version', next === 'custom' ? 'original' : next);
+      history.replaceState(history.state, '', currentUrl);
       if (versionStatus && !portraitStoragePending) versionStatus.textContent = '';
+      const title = document.querySelector<HTMLElement>('.ocean-note__title');
+      const caption = document.querySelector<HTMLElement>('.ocean-note__caption');
+      if (title && caption) {
+        title.innerHTML = version === 'tangbao' && !customActive ? (en ? 'Scarf on,<br>joy incoming.' : '围巾围好，<br>快乐报到。') : title.dataset.originalTitle!;
+        caption.textContent = version === 'tangbao' && !customActive ? (en ? 'A red scarf for a brighter day.' : '红围巾一戴，今天也要开开心心。') : caption.dataset.originalCaption!;
+      }
     } catch (error) {
       console.error('Could not load Q-version pass', error);
       customActive = previouslyCustom;
       setArtworkVersion(previous);
+      edits = previous === 'tangbao' ? tangbaoEdits : normalEdits;
+      paintText();
       if (versionStatus) versionStatus.textContent = en ? 'Could not load. Try again.' : '加载失败，请重试。';
     } finally { versionButtons.forEach(item => { item.disabled = false; }); }
   }));
-  trigger.addEventListener('click', () => {
+  triggers.forEach(button => button.addEventListener('click', () => {
+    const download = document.querySelector<HTMLDialogElement>('[data-download-dialog]');
+    if (download?.open) download.close();
     scene.append(artwork);
-    dialog.showModal();
+    if (!dialog.open) dialog.showModal();
     void loadAssets().catch(() => { status.textContent = en ? 'Artwork failed to load. Finish editing to retry.' : '卡面素材加载失败，完成编辑时会重试。'; });
-  });
+  }));
   dialog.querySelector('[data-edit-done]')?.addEventListener('click', () => { void apply(true); });
+  dialog.querySelector('[data-edit-close]')?.addEventListener('click', () => { void apply(true); });
   dialog.addEventListener('cancel', event => { event.preventDefault(); void apply(true); });
   void (async () => {
     try {
       const stored = await loadPortrait(portraitStorageKey);
       if (stored) {
         customPortrait = stored.image;
-        customActive = stored.active;
+        customActive = requestedVersion ? false : stored.active;
         appliedCustomPortrait = stored.image;
         setArtworkVersion(version);
       }
     } catch { /* Portrait editing remains available for this visit. */ }
     if (Object.keys(edits).length || customActive) await apply(false);
-    else { trigger.disabled = false; versionButtons.forEach(button => { button.disabled = false; }); }
+    else { setTriggersDisabled(false); versionButtons.forEach(button => { button.disabled = false; }); }
+    if (requestedVersion && requestedVersion !== version) {
+      versionButtons.find(button => button.dataset.badgeVersion === requestedVersion)?.click();
+    }
   })();
 }

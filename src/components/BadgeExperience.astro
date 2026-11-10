@@ -39,7 +39,6 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
       <div class="station-heading"><a class="home-masthead__identity station-brand" href="#top"><span>{ui.siteName}</span></a><h1 class="collection-heading">{ui.pickup}</h1></div>
       <nav class="social-links" aria-label={locale === 'en' ? 'Links and language' : '相关链接与语言'}>
         <a class="github-star" href={PROJECT_GITHUB_URL} data-profile-github data-project-star target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" fill="currentColor"/></svg><span>Star on GitHub</span><span aria-hidden="true">↗</span></a>
-        <button type="button" class="edit-pass" data-edit-pass hidden aria-haspopup="dialog" aria-controls="badge-editor">{locale === 'en' ? 'Edit mode' : '编辑模式'}</button>
         <span class="language-switch" aria-label="Language / 语言">
           <button type="button" class="motion-toggle" data-motion-toggle hidden aria-label={locale === 'en' ? 'Enable tilt motion' : '开启手机倾斜效果'} title={locale === 'en' ? 'Enable tilt motion' : '开启手机倾斜效果'}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2M3 8l-2 2 2 2m18-4 2 2-2 2"/></svg><span>{locale === 'en' ? 'Tilt' : '倾斜'}</span></button>
           <button type="button" class="sound-toggle" data-badge-sound data-on-label={locale === 'en' ? 'Sound on · click to mute' : '声音已开启 · 点击静音'} data-off-label={locale === 'en' ? 'Sound off · click to enable' : '声音已关闭 · 点击开启'} aria-label={locale === 'en' ? 'Sound on · click to mute' : '声音已开启 · 点击静音'} aria-pressed="true" data-enabled="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4Z"/><path class="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="sound-muted" d="m16 9 5 6m0-6-5 6"/></svg></button>
@@ -64,11 +63,13 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     <div class="badge-version-switch" role="group" aria-label={locale === 'en' ? 'Pass style' : '工牌形象'}>
       <button type="button" data-badge-version="original" aria-pressed="true">{locale === 'en' ? 'Original' : '原版'}</button>
       <button type="button" data-badge-version="chibi" aria-pressed="false">{locale === 'en' ? 'Chibi' : 'Q 版'} <span aria-hidden="true">✦</span></button>
+      {character.id === 'doubao' && <button type="button" data-badge-version="tangbao" aria-pressed="false">{locale === 'en' ? 'Tangbao' : '糖包'}</button>}
       <button type="button" data-badge-version="custom" aria-pressed="false" hidden>{locale === 'en' ? 'Custom' : '自定义'}</button>
       <span class="badge-version-status" data-version-status role="status" aria-live="polite"></span>
     </div>
     <nav class="badge-controls" aria-label={ui.choose}>
     <a class="hero-role-control hero-role-control--previous" data-role-previous data-texture-base={asset(`img/badges/${locale}/${previousCharacter.id}`)} href={localeCharacterUrl(previousCharacter, locale)} aria-label={`${ui.previous} · ${previousCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{previousCharacter.brand}</span></a>
+    <button type="button" class="customize-pass" data-edit-pass hidden aria-haspopup="dialog" aria-controls="badge-editor"><span aria-hidden="true">✦</span>{locale === 'en' ? 'Customize' : '自定义工牌'}</button>
     <a class="download-pass" href={asset(`downloads/${locale}/${character.id}-crew-pass.zip`)} download={`${character.id}-${locale}-crew-pass.zip`} data-download-pass><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{ui.download}</a>
     <button type="button" class="share-pass" data-share data-share-text="以大肥鱼的工牌做好了，快来领取！！！"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 13v7h14v-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{locale === 'en' ? 'Share' : '分享'}</button>
     <span class="share-status" data-share-status role="status" aria-live="polite"></span>
@@ -88,7 +89,8 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     </section>
 
   <dialog class="badge-editor" id="badge-editor" data-badge-editor aria-labelledby="badge-editor-title">
-    <h2 id="badge-editor-title">{locale === 'en' ? 'Edit your crew pass' : '编辑工牌'}</h2>
+    <button type="button" class="credits-close" data-edit-close aria-label={ui.close} title={ui.close}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+    <h2 id="badge-editor-title">{locale === 'en' ? 'Customize your crew pass' : '自定义工牌'}</h2>
     <p class="badge-editor__intro">{locale === 'en' ? 'Replace the portrait or click text on either side. Your display and downloads will use the finished pass.' : '替换角色图片，或点击正反面的文字进行修改。完成后，展示与下载都会沿用编辑结果。'}</p>
     <div class="badge-editor__layout">
       <div class="badge-editor__preview">
@@ -151,6 +153,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     <button type="button" class="credits-close" data-download-close aria-label={ui.close}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
     <p class="download-eyebrow">{character.brand} · {character.code}—001</p><h2 id="download-title">{ui.download}</h2>
     <p class="download-status" data-download-status aria-live="polite">{ui.downloadHint}</p>
+    <button type="button" class="download-customize" data-open-customize hidden aria-haspopup="dialog" aria-controls="badge-editor"><span aria-hidden="true">✦</span><span>{locale === 'en' ? 'Customize your pass' : '自定义工牌'}</span><small>{locale === 'en' ? 'Change portrait or text' : '更换形象或文字'}</small><span aria-hidden="true">↗</span></button>
     <div class="download-previews">{(['front','back'] as const).map(face => <figure><div class="transparency-grid"><img src={asset(`downloads/${locale}/${character.id}-${face}.png`)} loading="lazy" data-print-preview={face} alt={`${character.brand} · ${face === 'front' ? ui.front : ui.backImage}`} /></div><a data-download-face={face} href={asset(`downloads/${locale}/${character.id}-${face}.png`)} target="_blank" rel="noreferrer" download={`${character.id}-${locale}-${face}.png`}>{face === 'front' ? ui.front : ui.backImage} ↓</a></figure>)}</div>
     <a class="download-both" href={asset(`downloads/${locale}/${character.id}-crew-pass.zip`)} data-download-zip download={`${character.id}-${locale}-crew-pass.zip`}>{ui.downloadBoth} ↓</a>
     <aside class="download-support" aria-label={ui.downloadSupportTitle}>

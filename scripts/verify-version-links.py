@@ -1,0 +1,21 @@
+from playwright.sync_api import sync_playwright
+with sync_playwright() as p:
+    browser=p.chromium.launch(headless=True)
+    page=browser.new_page()
+    page.goto('http://127.0.0.1:4321/characters/doubao/?version=tangbao', wait_until='domcontentloaded')
+    page.wait_for_selector('[data-badge-version=tangbao][aria-pressed=true]', timeout=20000)
+    page.wait_for_function("!document.querySelector('[data-badge-version=tangbao]').disabled", timeout=30000)
+    assert '围巾围好' in page.locator('.ocean-note__title').inner_text()
+    page.locator('[data-badge-version=chibi]').click()
+    page.wait_for_function("!document.querySelector('[data-badge-version=chibi]').disabled", timeout=30000)
+    assert 'version=chibi' in page.url
+    page.reload()
+    page.wait_for_selector('[data-badge-version=chibi][aria-pressed=true]', timeout=20000)
+    page.wait_for_function("!document.querySelector('[data-badge-version=chibi]').disabled", timeout=30000)
+    page.evaluate("navigator.clipboard.writeText = async value => window.copiedText = value")
+    page.locator('[data-share]').click()
+    assert 'version=chibi' in page.evaluate('window.copiedText')
+    page.goto('http://127.0.0.1:4321/characters/doubao/?version=tangbao')
+    page.wait_for_selector('[data-badge-version=tangbao][aria-pressed=true]',timeout=30000)
+    browser.close()
+print('Version links, reload and sharing verified')

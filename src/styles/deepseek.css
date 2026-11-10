@@ -489,8 +489,8 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
   .interaction-hint { display: none; }
 }
 /* One screen, with controls in their own dock below the physical badge. */
-.badge-controls { position: absolute; z-index: 6; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; width: max-content; }
-.badge-version-switch { position: absolute; z-index: 6; left: 50%; bottom: calc(154px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; border: 1px solid var(--theme-line); border-radius: 999px; background: var(--theme-paper); box-shadow: 0 4px 16px #29365b0c; }
+.badge-controls { position: absolute; z-index: 6; bottom: calc(57px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; width: max-content; }
+.badge-version-switch { position: absolute; z-index: 6; left: 50%; bottom: calc(115px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; border: 1px solid var(--theme-line); border-radius: 999px; background: var(--theme-paper); box-shadow: 0 4px 16px #29365b0c; }
 .badge-version-switch button { min-width: 63px; min-height: 32px; padding: 5px 12px; border: 0; border-radius: 999px; color: var(--home-muted); background: transparent; font: inherit; font-size: 11px; cursor: pointer; white-space: nowrap; }
 .badge-version-switch button[hidden] { display: none; }
 .badge-version-switch button[aria-pressed="true"] { color: #fff; background: var(--theme-brand); }
@@ -503,8 +503,8 @@ dialog.artwork-note h2 { margin: 0 0 18px; color: var(--home-ink); font-size: 22
 .badge-controls .download-pass { min-height: 46px; justify-content: center; }
 .home-footer { bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
 @media (max-width: 760px) {
-  .badge-controls { gap: 12px; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
-  .badge-version-switch { bottom: calc(139px + env(safe-area-inset-bottom, 0px)); }
+  .badge-controls { gap: 12px; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+  .badge-version-switch { bottom: calc(123px + env(safe-area-inset-bottom, 0px)); }
   .badge-controls .hero-role-control { width: 44px; height: 44px; }
   .badge-controls .download-pass { min-height: 44px; padding: 10px 18px; }
   .home-footer { gap: 12px; }
@@ -567,3 +567,27 @@ html[lang] .station-heading .collection-heading { position: static; inset: auto;
 .share-status { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); padding: 7px 12px; border-radius: 999px; color: #fff; background: var(--theme-ink); font-size: 12px; white-space: nowrap; pointer-events: none; }
 .share-status:empty { display: none; }
 @media (max-width: 600px) { .badge-controls .share-pass { min-height: 44px; padding: 9px 12px; font-size: 11px; } }
+
+/* Customize actions share the active employee color. */
+.customize-pass, .download-customize { font: inherit; cursor: pointer; }
+.customize-pass { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; padding: 10px 16px; border: 1px solid var(--theme-brand); border-radius: 999px; background: var(--theme-brand); color: #fff; font-size: 12px; font-weight: 600; white-space: nowrap; box-shadow: 0 5px 18px color-mix(in srgb, var(--theme-brand) 22%, transparent); }
+.customize-pass[hidden], .download-customize[hidden] { display: none; }
+.customize-pass:hover { filter: brightness(.92); }
+.customize-pass:focus-visible, .download-customize:focus-visible { outline: 2px solid var(--theme-brand); outline-offset: 3px; }
+.customize-pass:disabled, .download-customize:disabled { opacity: .55; cursor: wait; }
+.download-customize { display: flex; align-items: center; gap: 9px; width: 100%; margin: 0 0 16px; padding: 12px 16px; border: 1px solid var(--theme-line); border-radius: 12px; background: color-mix(in srgb, var(--theme-brand) 9%, var(--theme-paper)); color: var(--theme-ink); text-align: left; font-size: 13px; font-weight: 600; }
+.download-customize small { color: var(--home-muted); font-size: 11px; font-weight: 400; }
+.download-customize span:last-child { margin-left: auto; }
+.download-customize:hover { border-color: var(--theme-brand); }
+@media (max-width: 760px) {
+  .badge-controls { gap: 6px; }
+  .customize-pass { min-height: 44px; padding: 9px 10px; font-size: 11px; }
+  .badge-controls .download-pass { padding: 9px 10px; }
+  .badge-controls .share-pass { padding: 9px 9px; }
+}
+
+@media (max-width: 380px) {
+  .badge-controls { gap: 2px; }
+  .badge-controls .hero-role-control { width: 35px; height: 44px; }
+  .customize-pass, .badge-controls .download-pass, .badge-controls .share-pass { padding-left: 6px; padding-right: 6px; font-size: 10px; gap: 3px; }
+}
