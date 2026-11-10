@@ -25,16 +25,54 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.goto(BASE + '/characters/doubao/', wait_until='networkidle')
     ready(page)
-    assert page.locator('[data-portrait-example]').count() == 1, 'Editor has no default example portrait'
-    assert not any('/img/examples/tangbao.png' in url for url in requests), 'Example loaded before opening the editor'
+    assert page.locator('[data-portrait-example]').count() == 2, 'Editor should offer both Tangbao and Nailong examples'
+    assert not any('/img/examples/tangbao.png' in url or '/img/examples/nailong.png' in url for url in requests), 'Example loaded before opening the editor'
     page.locator('[data-edit-pass]').click()
-    example = page.locator('[data-portrait-example]')
+    example = page.locator('[data-portrait-example][data-example-src$="/tangbao.png"]')
+    nailong = page.locator('[data-portrait-example][data-example-src$="/nailong.png"]')
     assert example.is_visible()
     assert '糖包' in example.inner_text()
+    assert nailong.is_visible() and '奶龙' in nailong.inner_text()
     thumbnail = example.locator('img')
     thumbnail.evaluate('image => image.decode()')
     assert thumbnail.evaluate('image => image.naturalWidth > 0')
     original = page.locator('[data-edit-scene] .badge-portrait img').get_attribute('data-print-src')
+
+    # The second sample uses the requested transparent image and can be exported and restored.
+    nailong.click()
+    page.locator('[data-portrait-crop][open]').wait_for()
+    canvas = page.locator('[data-crop-canvas]')
+    assert canvas.evaluate('''async canvas => {
+      const img = new Image();
+      img.src = document.querySelector('[data-portrait-example][data-example-src$="/nailong.png"]').dataset.exampleSrc;
+      await img.decode();
+      const expected = document.createElement('canvas');
+      expected.width = canvas.width; expected.height = canvas.height;
+      expected.getContext('2d').drawImage(img, 0, 0, expected.width, expected.height);
+      return expected.toDataURL() === canvas.toDataURL();
+    }'''), 'The Nailong crop does not show the bundled image'
+    page.locator('[data-crop-apply]').click()
+    page.locator('[data-edit-done]').click()
+    page.locator('[data-badge-editor]').wait_for(state='hidden', timeout=30000)
+    ready(page)
+    page.locator('[data-badge-version=custom][aria-pressed=true]').wait_for()
+    page.locator('[data-download-pass]').click()
+    with page.expect_download() as nailong_download:
+        page.locator('[data-download-face=front]').click()
+    nailong_image = Image.open(nailong_download.value.path()).convert('RGBA')
+    pixels = nailong_image.crop((150, 150, 1050, 1150)).tobytes()
+    yellow = sum(1 for r, g, b, a in zip(pixels[0::4], pixels[1::4], pixels[2::4], pixels[3::4]) if r > 210 and g > 110 and b < 100 and a > 128)
+    assert yellow > 5000, 'Nailong did not reach the downloaded pass'
+    page.locator('[data-download-close]').click()
+    page.reload(wait_until='networkidle')
+    ready(page)
+    page.locator('[data-badge-version=custom][aria-pressed=true]').wait_for(timeout=30000)
+    page.locator('[data-edit-pass]').click()
+    page.locator('[data-portrait-reset]').click()
+    page.locator('[data-edit-done]').click()
+    page.locator('[data-badge-editor]').wait_for(state='hidden', timeout=30000)
+    ready(page)
+    page.locator('[data-edit-pass]').click()
 
     example.click()
     page.locator('[data-portrait-crop][open]').wait_for()
@@ -42,7 +80,7 @@ with sync_playwright() as p:
     assert canvas.evaluate('canvas => canvas.getContext("2d").getImageData(0, 0, 1, 1).data[3]') == 0
     assert canvas.evaluate('''async canvas => {
       const img = new Image();
-      img.src = document.querySelector('[data-portrait-example]').dataset.exampleSrc;
+      img.src = document.querySelector('[data-portrait-example][data-example-src$="/tangbao.png"]').dataset.exampleSrc;
       await img.decode();
       const expected = document.createElement('canvas');
       expected.width = canvas.width; expected.height = canvas.height;
@@ -98,8 +136,12 @@ with sync_playwright() as p:
     ready(touch)
     touch.locator('[data-edit-pass]').tap()
     assert touch.locator('[data-badge-editor]').evaluate('e => e.scrollWidth <= e.clientWidth')
-    assert 'Tangbao' in touch.locator('[data-portrait-example]').inner_text()
-    touch.locator('[data-portrait-example]').tap()
+    assert 'Tangbao' in touch.locator('[data-portrait-example][data-example-src$="/tangbao.png"]').inner_text()
+    assert 'Nailong' in touch.locator('[data-portrait-example][data-example-src$="/nailong.png"]').inner_text()
+    touch.locator('[data-portrait-example][data-example-src$="/nailong.png"]').tap()
+    touch.locator('[data-portrait-crop][open]').wait_for()
+    touch.locator('[data-crop-cancel]').tap()
+    touch.locator('[data-portrait-example][data-example-src$="/tangbao.png"]').tap()
     touch.locator('[data-portrait-crop][open]').wait_for()
     touch.locator('[data-crop-cancel]').tap()
     mobile.close()
@@ -117,7 +159,7 @@ with sync_playwright() as p:
     pending.goto(BASE + '/characters/glm/', wait_until='networkidle')
     ready(pending)
     pending.locator('[data-edit-pass]').click()
-    pending.locator('[data-portrait-example]').click()
+    pending.locator('[data-portrait-example][data-example-src$="/tangbao.png"]').click()
     pending.wait_for_function("typeof window.releaseExampleDecode === 'function'")
     pending.locator('[data-edit-done]').click()
     assert pending.locator('[data-badge-editor]').evaluate('dialog => dialog.open')
@@ -135,7 +177,7 @@ with sync_playwright() as p:
     unavailable.goto(BASE + '/characters/qwen/', wait_until='networkidle')
     ready(unavailable)
     unavailable.locator('[data-edit-pass]').click()
-    unavailable.locator('[data-portrait-example]').click()
+    unavailable.locator('[data-portrait-example][data-example-src$="/tangbao.png"]').click()
     unavailable.wait_for_function("document.querySelector('[data-edit-status]').textContent.includes('示例图片加载失败')")
     assert not unavailable.locator('[data-portrait-crop]').evaluate('dialog => dialog.open')
     data = BytesIO()

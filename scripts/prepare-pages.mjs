@@ -8,6 +8,7 @@ const project = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = resolve(project, 'dist');
 const editorImages = new Set(Object.values(artwork).flatMap(({ front, back, portrait }) => [front, back, portrait]));
 editorImages.add('img/examples/tangbao.png');
+editorImages.add('img/examples/nailong.png');
 for (const image of editorImages) {
   if (!existsSync(resolve(dist, image))) throw new Error(`Missing editor artwork: ${image}`);
 }

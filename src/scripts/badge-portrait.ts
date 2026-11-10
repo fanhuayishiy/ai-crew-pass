@@ -45,7 +45,7 @@ export async function savePortrait(key: string, portrait: StoredPortrait | null)
 export function initPortraitCrop(editor: HTMLDialogElement, en: boolean, onApply: (image: string) => void, isBusy: () => boolean): { isLoading: () => boolean; cancelPending: () => void } {
   const fileInput = editor.querySelector<HTMLInputElement>('[data-portrait-file]')!;
   const upload = editor.querySelector<HTMLButtonElement>('[data-edit-upload]')!;
-  const example = editor.querySelector<HTMLButtonElement>('[data-portrait-example]')!;
+  const examples = editor.querySelectorAll<HTMLButtonElement>('[data-portrait-example]');
   const status = editor.querySelector<HTMLElement>('[data-edit-status]')!;
   const dialog = document.querySelector<HTMLDialogElement>('[data-portrait-crop]')!;
   const canvas = dialog.querySelector<HTMLCanvasElement>('[data-crop-canvas]')!;
@@ -108,10 +108,10 @@ export function initPortraitCrop(editor: HTMLDialogElement, en: boolean, onApply
       if (revoke) URL.revokeObjectURL(url);
     }
   };
-  example.addEventListener('click', () => {
+  examples.forEach(example => example.addEventListener('click', () => {
     if (!editor.open || isBusy()) return;
     void openImage(example.dataset.exampleSrc!, ++loading, false, true);
-  });
+  }));
   fileInput.addEventListener('change', () => {
     const file = fileInput.files?.[0];
     fileInput.value = '';
