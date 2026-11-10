@@ -209,7 +209,7 @@ export function initBadgeEditor(): void {
       link.href = result ? result[face as keyof typeof result] : staticLink(originalLinks[index], face);
       link.download = `${character}-${locale}${versionSuffix()}-${face === 'zip' ? 'crew-pass.zip' : `${face}.png`}`;
     });
-    previews.forEach((image, index) => { image.src = result ? result[image.dataset.printPreview as 'front' | 'back'] : staticLink(originalPreviews[index], image.dataset.printPreview!); });
+    previews.forEach((image, index) => { image.src = result ? result[image.dataset.printPreview as 'front' | 'back'] : chibi && image.dataset.printPreview === 'front' ? originalPreviews[index].replace('-front.webp', '-chibi-front.webp') : originalPreviews[index]; });
     downloadTrigger.href = result?.zip || staticLink(originalLinks.find((_, index) => downloadLinks[index].hasAttribute('data-download-zip'))!, 'zip');
     const preview = document.querySelector<HTMLImageElement>('.badge-loading-preview img');
     if (preview) preview.src = result?.front || (chibi ? page.dataset.chibiFront! : originalPreviews[previews.findIndex(image => image.dataset.printPreview === 'front')]);

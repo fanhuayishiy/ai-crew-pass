@@ -7,12 +7,11 @@ export function initPageEnhancements(): void {
   const shareButton = document.querySelector<HTMLButtonElement>('[data-share]');
   const shareStatus = document.querySelector<HTMLElement>('[data-share-status]');
   let shareTimer = 0;
-  const frontPreview = document.querySelector<HTMLImageElement>('[data-print-preview="front"]');
   const frontDownload = document.querySelector<HTMLAnchorElement>('[data-download-face="front"]');
   let shareImage: File | null = null;
   let shareImageUrl = '';
   const prepareShareImage = () => {
-    const source = frontPreview?.src;
+    const source = frontDownload?.href;
     if (!source || source === shareImageUrl) return;
     shareImageUrl = source;
     shareImage = null;
@@ -26,8 +25,8 @@ export function initPageEnhancements(): void {
       shareImage = new File([blob], name, { type: 'image/png' });
     }).catch(() => { /* Text and link sharing remain available. */ });
   };
-  if (frontPreview) {
-    new MutationObserver(prepareShareImage).observe(frontPreview, { attributes: true, attributeFilter: ['src'] });
+  if (frontDownload) {
+    new MutationObserver(prepareShareImage).observe(frontDownload, { attributes: true, attributeFilter: ['href'] });
     prepareShareImage();
   }
   shareButton?.addEventListener('click', async () => {
@@ -39,7 +38,7 @@ export function initPageEnhancements(): void {
     else url.searchParams.set('version', 'original');
     url.hash = '';
     const text = `${shareButton.dataset.shareText}\n${url.href}`;
-    if (shareImage && shareImageUrl === frontPreview?.src && navigator.share && navigator.canShare) {
+    if (shareImage && shareImageUrl === frontDownload?.href && navigator.share && navigator.canShare) {
       const data = { files: [shareImage], text: shareButton.dataset.shareText || '', url: url.href };
       if (navigator.canShare(data)) {
         try { await navigator.share(data); return; }

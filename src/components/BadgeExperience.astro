@@ -27,7 +27,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     <span class="crew-loading__progress" aria-hidden="true"></span>
     <button type="button" data-loading-retry hidden>{locale === 'en' ? 'Try again' : '重新加载'}</button>
   </div>
-  <main class="home-experience" id="top" data-character-id={character.id} data-locale={locale} data-chibi-front={asset(`img/badges/${locale}/${character.id}-chibi-front.webp`)} data-original-back={asset(`img/badges/${locale}/${character.id}-back.webp`)} data-liangsheng-portrait={asset("img/examples/liangsheng.png")}>
+  <main class="home-experience" id="top" data-character-id={character.id} data-locale={locale} data-chibi-front={asset(`img/badges/${locale}/${character.id}-chibi-front.webp`)} data-original-back={asset(`img/badges/${locale}/${character.id}-back.webp`)} data-liangsheng-portrait={asset("img/examples/liangsheng.webp")}>
 
 
     <details class="crew-picker" data-crew-picker>
@@ -114,13 +114,13 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
             <button type="button" class="badge-editor__reset" data-portrait-reset hidden>{locale === 'en' ? 'Restore portrait' : '恢复原角色'}</button>
           </div>
           <div class="badge-editor__examples">
-            <button type="button" class="badge-editor__example" data-portrait-example data-example-src={asset('img/examples/tangbao.png')}>
-              <span class="badge-editor__example-image"><img src={asset('img/examples/tangbao.png')} width="56" height="56" loading="lazy" decoding="async" alt="" /></span>
+            <button type="button" class="badge-editor__example" data-portrait-example data-example-src={asset('img/examples/tangbao.webp')}>
+              <span class="badge-editor__example-image"><img src={asset('img/examples/tangbao.webp')} width="56" height="56" loading="lazy" decoding="async" alt="" /></span>
               <span class="badge-editor__example-copy"><b>{locale === 'en' ? 'Tangbao sample' : '糖包示例'}</b><small>{locale === 'en' ? 'Crop and use' : '点击裁剪使用'}</small></span>
               <span class="badge-editor__example-arrow" aria-hidden="true">↗</span>
             </button>
-            <button type="button" class="badge-editor__example" data-portrait-example data-example-src={asset('img/examples/nailong.png')}>
-              <span class="badge-editor__example-image"><img src={asset('img/examples/nailong.png')} width="56" height="56" loading="lazy" decoding="async" alt="" /></span>
+            <button type="button" class="badge-editor__example" data-portrait-example data-example-src={asset('img/examples/nailong.webp')}>
+              <span class="badge-editor__example-image"><img src={asset('img/examples/nailong.webp')} width="56" height="56" loading="lazy" decoding="async" alt="" /></span>
               <span class="badge-editor__example-copy"><b>{locale === 'en' ? 'Nailong sample' : '奶龙示例'}</b><small>{locale === 'en' ? 'Crop and use' : '点击裁剪使用'}</small></span>
               <span class="badge-editor__example-arrow" aria-hidden="true">↗</span>
             </button>
@@ -155,7 +155,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     <p class="download-eyebrow">{character.brand} · {character.code}—001</p><h2 id="download-title">{ui.download}</h2>
     <p class="download-status" data-download-status aria-live="polite">{ui.downloadHint}</p>
     <button type="button" class="download-customize" data-open-customize hidden aria-haspopup="dialog" aria-controls="badge-editor"><span aria-hidden="true">✦</span><span>{locale === 'en' ? 'Customize your pass' : '自定义工牌'}</span><small>{locale === 'en' ? 'Change portrait or text' : '更换形象或文字'}</small><span aria-hidden="true">↗</span></button>
-    <div class="download-previews">{(['front','back'] as const).map(face => <figure><div class="transparency-grid"><img src={asset(`downloads/${locale}/${character.id}-${face}.png`)} loading="lazy" data-print-preview={face} alt={`${character.brand} · ${face === 'front' ? ui.front : ui.backImage}`} /></div><a data-download-face={face} href={asset(`downloads/${locale}/${character.id}-${face}.png`)} target="_blank" rel="noreferrer" download={`${character.id}-${locale}-${face}.png`}>{face === 'front' ? ui.front : ui.backImage} ↓</a></figure>)}</div>
+    <div class="download-previews">{(['front','back'] as const).map(face => <figure><div class="transparency-grid"><img src={asset(`img/previews/${locale}/${character.id}-${face}.webp`)} loading="lazy" data-print-preview={face} alt={`${character.brand} · ${face === 'front' ? ui.front : ui.backImage}`} /></div><a data-download-face={face} href={asset(`downloads/${locale}/${character.id}-${face}.png`)} target="_blank" rel="noreferrer" download={`${character.id}-${locale}-${face}.png`}>{face === 'front' ? ui.front : ui.backImage} ↓</a></figure>)}</div>
     <a class="download-both" href={asset(`downloads/${locale}/${character.id}-crew-pass.zip`)} data-download-zip download={`${character.id}-${locale}-crew-pass.zip`}>{ui.downloadBoth} ↓</a>
     <aside class="download-support" aria-label={ui.downloadSupportTitle}>
       <div><strong>{ui.downloadSupportTitle}</strong><p>{ui.downloadSupportText}</p></div>

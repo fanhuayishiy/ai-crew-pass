@@ -7,11 +7,19 @@ import artwork from '../src/data/badge-artwork.json' with { type: 'json' };
 const project = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = resolve(project, 'dist');
 const editorImages = new Set(Object.values(artwork).flatMap(({ front, back, portrait }) => [front, back, portrait]));
-editorImages.add('img/examples/tangbao.png');
-editorImages.add('img/examples/nailong.png');
-editorImages.add('img/examples/liangsheng.png');
+editorImages.add('img/examples/tangbao.webp');
+editorImages.add('img/examples/nailong.webp');
+editorImages.add('img/examples/liangsheng.webp');
 for (const image of editorImages) {
   if (!existsSync(resolve(dist, image))) throw new Error(`Missing editor artwork: ${image}`);
+}
+// Every downloadable PNG has a smaller, transparent WebP preview.
+for (const locale of ['zh', 'en']) {
+  const downloads = resolve(dist, 'downloads', locale);
+  for (const name of readdirSync(downloads).filter(name => name.endsWith('.png'))) {
+    const preview = resolve(dist, 'img', 'previews', locale, name.replace(/\.png$/, '.webp'));
+    if (!existsSync(preview)) throw new Error(`Missing download preview: ${locale}/${name}`);
+  }
 }
 if (process.env.GITHUB_PAGES_URL) {
   const hostname = new URL(process.env.GITHUB_PAGES_URL).hostname;

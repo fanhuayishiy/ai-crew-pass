@@ -26,10 +26,10 @@ with sync_playwright() as p:
     page.goto(BASE + '/characters/doubao/', wait_until='networkidle')
     ready(page)
     assert page.locator('[data-portrait-example]').count() == 2, 'Editor should offer both Tangbao and Nailong examples'
-    assert not any('/img/examples/tangbao.png' in url or '/img/examples/nailong.png' in url for url in requests), 'Example loaded before opening the editor'
+    assert not any('/img/examples/tangbao.webp' in url or '/img/examples/nailong.webp' in url for url in requests), 'Example loaded before opening the editor'
     page.locator('[data-edit-pass]').click()
-    example = page.locator('[data-portrait-example][data-example-src$="/tangbao.png"]')
-    nailong = page.locator('[data-portrait-example][data-example-src$="/nailong.png"]')
+    example = page.locator('[data-portrait-example][data-example-src$="/tangbao.webp"]')
+    nailong = page.locator('[data-portrait-example][data-example-src$="/nailong.webp"]')
     assert example.is_visible()
     assert '糖包' in example.inner_text()
     assert nailong.is_visible() and '奶龙' in nailong.inner_text()
@@ -44,7 +44,7 @@ with sync_playwright() as p:
     canvas = page.locator('[data-crop-canvas]')
     assert canvas.evaluate('''async canvas => {
       const img = new Image();
-      img.src = document.querySelector('[data-portrait-example][data-example-src$="/nailong.png"]').dataset.exampleSrc;
+      img.src = document.querySelector('[data-portrait-example][data-example-src$="/nailong.webp"]').dataset.exampleSrc;
       await img.decode();
       const expected = document.createElement('canvas');
       expected.width = canvas.width; expected.height = canvas.height;
@@ -80,7 +80,7 @@ with sync_playwright() as p:
     assert canvas.evaluate('canvas => canvas.getContext("2d").getImageData(0, 0, 1, 1).data[3]') == 0
     assert canvas.evaluate('''async canvas => {
       const img = new Image();
-      img.src = document.querySelector('[data-portrait-example][data-example-src$="/tangbao.png"]').dataset.exampleSrc;
+      img.src = document.querySelector('[data-portrait-example][data-example-src$="/tangbao.webp"]').dataset.exampleSrc;
       await img.decode();
       const expected = document.createElement('canvas');
       expected.width = canvas.width; expected.height = canvas.height;
@@ -136,12 +136,12 @@ with sync_playwright() as p:
     ready(touch)
     touch.locator('[data-edit-pass]').tap()
     assert touch.locator('[data-badge-editor]').evaluate('e => e.scrollWidth <= e.clientWidth')
-    assert 'Tangbao' in touch.locator('[data-portrait-example][data-example-src$="/tangbao.png"]').inner_text()
-    assert 'Nailong' in touch.locator('[data-portrait-example][data-example-src$="/nailong.png"]').inner_text()
-    touch.locator('[data-portrait-example][data-example-src$="/nailong.png"]').tap()
+    assert 'Tangbao' in touch.locator('[data-portrait-example][data-example-src$="/tangbao.webp"]').inner_text()
+    assert 'Nailong' in touch.locator('[data-portrait-example][data-example-src$="/nailong.webp"]').inner_text()
+    touch.locator('[data-portrait-example][data-example-src$="/nailong.webp"]').tap()
     touch.locator('[data-portrait-crop][open]').wait_for()
     touch.locator('[data-crop-cancel]').tap()
-    touch.locator('[data-portrait-example][data-example-src$="/tangbao.png"]').tap()
+    touch.locator('[data-portrait-example][data-example-src$="/tangbao.webp"]').tap()
     touch.locator('[data-portrait-crop][open]').wait_for()
     touch.locator('[data-crop-cancel]').tap()
     mobile.close()
@@ -150,7 +150,7 @@ with sync_playwright() as p:
     pending = context.new_page()
     pending.add_init_script("""const decode = HTMLImageElement.prototype.decode;
       HTMLImageElement.prototype.decode = function() {
-        if (!this.src.includes('/img/examples/tangbao.png')) return decode.call(this);
+        if (!this.src.includes('/img/examples/tangbao.webp')) return decode.call(this);
         const image = this;
         return new Promise((resolve, reject) => {
           window.releaseExampleDecode = () => decode.call(image).then(resolve, reject);
@@ -159,7 +159,7 @@ with sync_playwright() as p:
     pending.goto(BASE + '/characters/glm/', wait_until='networkidle')
     ready(pending)
     pending.locator('[data-edit-pass]').click()
-    pending.locator('[data-portrait-example][data-example-src$="/tangbao.png"]').click()
+    pending.locator('[data-portrait-example][data-example-src$="/tangbao.webp"]').click()
     pending.wait_for_function("typeof window.releaseExampleDecode === 'function'")
     pending.locator('[data-edit-done]').click()
     assert pending.locator('[data-badge-editor]').evaluate('dialog => dialog.open')
@@ -173,11 +173,11 @@ with sync_playwright() as p:
 
     # A failed sample request gives feedback and local upload remains available.
     unavailable = context.new_page()
-    unavailable.route('**/img/examples/tangbao.png', lambda route: route.abort())
+    unavailable.route('**/img/examples/tangbao.webp', lambda route: route.abort())
     unavailable.goto(BASE + '/characters/qwen/', wait_until='networkidle')
     ready(unavailable)
     unavailable.locator('[data-edit-pass]').click()
-    unavailable.locator('[data-portrait-example][data-example-src$="/tangbao.png"]').click()
+    unavailable.locator('[data-portrait-example][data-example-src$="/tangbao.webp"]').click()
     unavailable.wait_for_function("document.querySelector('[data-edit-status]').textContent.includes('示例图片加载失败')")
     assert not unavailable.locator('[data-portrait-crop]').evaluate('dialog => dialog.open')
     data = BytesIO()
