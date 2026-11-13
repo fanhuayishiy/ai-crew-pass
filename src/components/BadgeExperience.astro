@@ -28,7 +28,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
 ---
 
 <Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={pageTitle} description={pageDescription} theme={characterStyle(character)} themeColor={character.color} socialImage={isJensen ? asset('social/jensen-cover.png') : undefined}>
-  <div class="crew-loading" data-crew-loading role="status" aria-live="polite">
+  <div class:list={['crew-loading', { 'crew-loading--jensen': isJensen }]} data-crew-loading role="status" aria-live="polite">
     <div class="crew-loading__mark" aria-hidden="true"><span>✦</span></div>
     <p class="crew-loading__eyebrow">ANYTHING PASS · CREATIVE COLLECTION</p>
     <p class="crew-loading__title" data-loading-title>{locale === 'en' ? 'Preparing your crew pass' : '正在准备你的工牌'}</p>
@@ -58,7 +58,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
       </nav>
     </header>
 
-    <p class="home-watermark" aria-hidden="true"><ShinyText client:load text={character.brand} color={mix(character.color,.80)} shineColor={mix(character.color,.57)} speed={4.5} delay={3.5} shineWidth={22} /></p>
+    <p class="home-watermark" aria-hidden="true"><ShinyText client:load text={character.brand} color={isJensen ? '#bd5960' : mix(character.color,.80)} shineColor={isJensen ? '#f1a19a' : mix(character.color,.57)} speed={4.5} delay={3.5} shineWidth={22} /></p>
 
 
     

@@ -1,8 +1,10 @@
 """Exercise the fictional Jensen pass at the supplied local or deployed base URL."""
 from pathlib import Path
+from io import BytesIO
 import sys
 from zipfile import ZipFile
 
+from PIL import Image
 from playwright.sync_api import sync_playwright
 
 
@@ -29,6 +31,10 @@ with sync_playwright() as playwright:
         assert page.locator('.station-brand').inner_text() == site_name, 'Project name is out of date'
         assert page.locator('.contact-link').get_attribute('href') == 'https://mp.weixin.qq.com/s/TpxEZ5w_2Y_s24RlxZrL0g', 'Background link is incorrect'
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'Page overflows on mobile'
+        page.wait_for_function("!document.documentElement.classList.contains('crew-first-loading')", timeout=60000)
+        image = Image.open(BytesIO(page.screenshot())).convert('RGB')
+        red, green, blue = image.getpixel((5, 5))
+        assert red < 150 and red > green * 1.3 and red > blue * 1.2, f'Background is too pale: {(red, green, blue)}'
         page.locator('[data-download-pass]').tap()
         with page.expect_download() as download:
             page.locator('[data-download-zip]').tap()

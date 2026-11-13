@@ -593,3 +593,33 @@ html[lang] .station-heading .collection-heading { position: static; inset: auto;
   .badge-controls .hero-role-control { width: 35px; height: 44px; }
   .customize-pass, .badge-controls .download-pass, .badge-controls .share-pass { padding-left: 6px; padding-right: 6px; font-size: 10px; gap: 3px; }
 }
+
+/* The fictional AMD edition has a red stage so the pale pass remains distinct. */
+html[lang] .home-experience[data-character-id="jensen"] .home-stage::before {
+  background:
+    linear-gradient(148deg, transparent 0 76%, #ffb3a50c 76.1% 86%, transparent 86.1%),
+    radial-gradient(ellipse 55% 55% at 50% 44%, #bb414d8c, transparent 78%),
+    linear-gradient(0deg, #ffd5cf0e 1px, transparent 1px),
+    linear-gradient(90deg, #ffd5cf0e 1px, transparent 1px),
+    linear-gradient(135deg, #290d16 0%, #691c2c 55%, #260b13 100%);
+  background-size: auto, auto, 80px 80px, 80px 80px, auto;
+}
+.home-experience[data-character-id="jensen"] .home-masthead__identity,
+.home-experience[data-character-id="jensen"] .ocean-note__title { color: #fff3ef; }
+html[lang] .home-experience[data-character-id="jensen"] .station-heading .collection-heading { color: #f5c7c3; border-color: #f39691; }
+.home-experience[data-character-id="jensen"] .ocean-note__eyebrow,
+.home-experience[data-character-id="jensen"] .ocean-note__caption,
+.home-experience[data-character-id="jensen"] .collection-stamp,
+.home-experience[data-character-id="jensen"] .employee-note,
+.home-experience[data-character-id="jensen"] .community-trigger,
+.home-experience[data-character-id="jensen"] .credits-trigger,
+.home-experience[data-character-id="jensen"] .site-visits,
+.home-experience[data-character-id="jensen"] .interaction-hint { color: #f2c6c4; }
+.home-experience[data-character-id="jensen"] .language-switch,
+.home-experience[data-character-id="jensen"] .language-switch a,
+.home-experience[data-character-id="jensen"] .language-switch a[aria-current="true"],
+.home-experience[data-character-id="jensen"] .sound-toggle { color: #fff1ed; }
+.home-experience[data-character-id="jensen"] .sound-toggle { border-color: #e89d9d; }
+.home-experience[data-character-id="jensen"] .home-watermark { opacity: .36; }
+.crew-first-loading .crew-loading--jensen { background: radial-gradient(ellipse at center, #81303b, #2b0b14 80%); color: #fff3ef; }
+.crew-loading--jensen .crew-loading__eyebrow, .crew-loading--jensen .crew-loading__hint { color: #f3c9c5; }
