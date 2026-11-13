@@ -18,7 +18,7 @@ with sync_playwright() as playwright:
     page.goto(base + '/', wait_until='domcontentloaded')
     page.evaluate("localStorage.setItem('crew-pass-version-v1', 'chibi')")
 
-    for locale, disclosure in [('', '虚构'), ('en/', 'fiction')]:
+    for locale, disclosure, site_name in [('', '虚构', '万物工牌'), ('en/', 'fiction', 'Anything Pass')]:
         response = page.goto(f'{base}/{locale}characters/jensen/', wait_until='domcontentloaded')
         assert response and response.ok, f'{locale}Jensen route missing: {response.status if response else "no response"}'
         page.locator('[data-edit-pass]:not([disabled])').wait_for(timeout=60000)
@@ -26,6 +26,8 @@ with sync_playwright() as playwright:
         assert page.locator('[data-badge-version=original]').get_attribute('aria-pressed') == 'true', 'A previous Q-version setting changed this pass'
         assert disclosure.lower() in page.locator('.fiction-notice').inner_text().lower(), 'Fictional status missing from page'
         assert page.locator('.fiction-notice').is_visible(), 'Fictional status is not visible'
+        assert page.locator('.station-brand').inner_text() == site_name, 'Project name is out of date'
+        assert page.locator('.contact-link').get_attribute('href') == 'https://mp.weixin.qq.com/s/TpxEZ5w_2Y_s24RlxZrL0g', 'Background link is incorrect'
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'Page overflows on mobile'
         page.locator('[data-download-pass]').tap()
         with page.expect_download() as download:

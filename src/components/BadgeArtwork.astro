@@ -46,7 +46,7 @@ const mottoLines = locale === 'en' ? englishMottos[character.id] : character.mot
 
               <p class="badge-face__desc">{mottoLines.map((line, index) => <span data-edit-field={`motto-${index}`}>{line}</span>)}</p>
 
-              <p class="badge-face__motto"><span class="badge-barcode" aria-hidden="true"></span><span><b data-edit-field="code">{isJensen ? 'AMD · RETURN TO WORK · 001' : `CREW PASS · ${ui.siteName} · ${character.code}—001`}</b><small data-edit-field="unofficial">{isJensen ? (locale === 'en' ? 'Fictional · unofficial fan pass' : '虚构玩梗 · 非官方工牌') : ui.unofficial}</small></span></p>
+              <p class="badge-face__motto"><span class="badge-barcode" aria-hidden="true"></span><span><b data-edit-field="code">{isJensen ? 'AMD · RETURN TO WORK · 001' : `CREW PASS · ${locale === 'en' ? 'Nonhuman Employees' : '非人类员工'} · ${character.code}—001`}</b><small data-edit-field="unofficial">{isJensen ? (locale === 'en' ? 'Fictional · unofficial fan pass' : '虚构玩梗 · 非官方工牌') : ui.unofficial}</small></span></p>
             </div>
 
             <div class:list={['badge-face', 'badge-face--back', { 'badge-face--ocean-back': !!cardArt, 'badge-face--dragon-back': character.id === 'gpt', 'badge-face--crew-back': !['deepseek', 'gpt'].includes(character.id) }]} data-badge-face="back" hidden>

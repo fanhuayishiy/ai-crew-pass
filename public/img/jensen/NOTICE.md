@@ -6,3 +6,4 @@
 
 - 访谈：https://www.hoover.org/plus/research/jensen-huang-vision-risk-and-gpu
 - 公告：https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition/
+- 项目介绍与创作背景：https://mp.weixin.qq.com/s/TpxEZ5w_2Y_s24RlxZrL0g

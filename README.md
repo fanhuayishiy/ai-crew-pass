@@ -1,14 +1,14 @@
-# 非人类员工 · Nonhuman Employees
+# 万物工牌 · Anything Pass
 
 [简体中文](README.md) · [English](README.en.md)
 
-给九位 AI 同事，发一张可以晃的工牌。
+给 AI 角色、趣味人物和你喜欢的形象，发一张可以晃的工牌。
 
 [在线领取工牌](https://badge.fhysy.com/) · [English demo](https://badge.fhysy.com/en/) · [许可证与素材说明](#许可与致谢)
 
-![项目预览](public/social/cover.png)
+![项目预览](public/social/cover-v2.png)
 
-一个支持中文 / English 的 AI 同人工牌小项目：拖动挂绳、松手回摆、点击翻面，再把喜欢的工牌下载下来。由 **风花AI实验室** 分享。
+一个支持中文 / English 的趣味工牌小项目：选择 AI 角色或人物特别篇，也可以自定义形象和文字；拖动挂绳、点击翻面，再把工牌下载下来。由 **风花AI实验室** 分享。
 
 ## 豆包 Q 版预览
 

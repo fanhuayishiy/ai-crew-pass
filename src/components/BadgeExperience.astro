@@ -12,6 +12,14 @@ const character = localizedCharacter(originalCharacter, locale);
 const isJensen = character.id === 'jensen';
 const characters = localizedCharacters(locale);
 const ui = copy(locale);
+const pageTitle = isJensen
+  ? (locale === 'en' ? 'Jensen Huang AMD pass · fictional fan art | Anything Pass' : '黄仁勋 AMD 返厂工牌 · 虚构玩梗 | 万物工牌')
+  : character.id === 'deepseek'
+    ? (locale === 'en' ? 'Anything Pass · Creative 3D crew passes' : '万物工牌 · 会晃会翻面的趣味工牌')
+    : `${ui.siteName} · ${character.brand} · ${ui.badge}`;
+const pageDescription = character.id === 'deepseek'
+  ? (locale === 'en' ? 'Explore AI characters, fictional specials and custom 3D passes. Drag, flip and download your favorite.' : '给 AI 角色、趣味人物和你喜欢的形象制作工牌：拖动挂绳、翻面，并下载正反面。')
+  : character.summary;
 const characterIndex = characters.findIndex(c => c.id === character.id);
 const previousCharacter = characters[(characterIndex + characters.length - 1) % characters.length];
 const nextCharacter = characters[(characterIndex + 1) % characters.length];
@@ -19,10 +27,10 @@ const nextCharacter = characters[(characterIndex + 1) % characters.length];
 const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path}`;
 ---
 
-<Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={isJensen ? (locale === 'en' ? 'Jensen Huang AMD pass · fictional fan art' : '黄仁勋 AMD 返厂工牌 · 虚构玩梗') : `${ui.siteName} · ${character.brand} · ${ui.badge}`} description={character.summary} theme={characterStyle(character)} themeColor={character.color} socialImage={isJensen ? asset('social/jensen-cover.png') : undefined}>
+<Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={pageTitle} description={pageDescription} theme={characterStyle(character)} themeColor={character.color} socialImage={isJensen ? asset('social/jensen-cover.png') : undefined}>
   <div class="crew-loading" data-crew-loading role="status" aria-live="polite">
     <div class="crew-loading__mark" aria-hidden="true"><span>✦</span></div>
-    <p class="crew-loading__eyebrow">NONHUMAN EMPLOYEES · CREW PASS</p>
+    <p class="crew-loading__eyebrow">ANYTHING PASS · CREATIVE COLLECTION</p>
     <p class="crew-loading__title" data-loading-title>{locale === 'en' ? 'Preparing your crew pass' : '正在准备你的工牌'}</p>
     <p class="crew-loading__hint" data-loading-hint>{locale === 'en' ? 'Getting your first pass ready…' : '第一张工牌马上就好…'}</p>
     <span class="crew-loading__progress" aria-hidden="true"></span>
@@ -54,7 +62,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
 
 
     
-    <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">AI CREW COLLECTION <i>·</i> {String(characters.length).padStart(2, '0')} CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {isJensen ? (locale === 'en' ? 'Fictional pass' : '虚构工牌') : `${character.name} ${ui.arrived}`} <span>NO. {character.code}—001</span></div>
+    <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">CREATIVE PASS COLLECTION <i>·</i> {String(characters.length).padStart(2, '0')} CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {isJensen ? (locale === 'en' ? 'Fictional pass' : '虚构工牌') : `${character.name} ${ui.arrived}`} <span>NO. {character.code}—001</span></div>
     {isJensen && <p class="fiction-notice">{locale === 'en' ? 'Fictional fan art · Not a job announcement' : '虚构玩梗 · 非真实入职消息'}</p>}
     <div class="react-bits-stage" aria-label={`${character.name} · ${ui.badge}`}>
       <div class="badge-stage-loading" role="status" aria-live="polite"><span class="badge-stage-loading__spinner" aria-hidden="true"></span><span data-stage-loading-label>{locale === 'en' ? 'Loading pass…' : '工牌加载中…'}</span><button type="button" data-stage-retry hidden>{locale === 'en' ? 'Retry' : '重试'}</button></div>

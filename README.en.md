@@ -1,14 +1,14 @@
-# Nonhuman Employees · 非人类员工
+# Anything Pass · 万物工牌
 
 [简体中文](README.md) · [English](README.en.md)
 
-Nine AI coworkers. Nine crew passes that swing.
+Swinging passes for AI characters, fictional specials, and your own creations.
 
 [Get your crew pass](https://badge.fhysy.com/en/) · [中文体验](https://badge.fhysy.com/) · [Licensing and credits](#licensing-and-credits)
 
-![Project preview](public/social/cover.png)
+![Project preview](public/social/cover-v2.png)
 
-A bilingual fan-made crew pass playground: drag the lanyard, let it swing, flip the card, and download your favorite pass. Built and shared by **风花AI实验室 / Fenghua AI Lab**.
+A bilingual creative pass playground: choose an AI character or fictional special, customize a portrait and text, drag the lanyard, flip the card, and download it. Built and shared by **风花AI实验室 / Fenghua AI Lab**.
 
 ## Doubao chibi preview
 
