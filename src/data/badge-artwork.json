@@ -55,6 +55,13 @@
     "width": 1283,
     "height": 1226
   },
+  "jensen": {
+    "front": "img/doubao/front-background-v1.webp",
+    "back": "img/doubao/back-background-v1.webp",
+    "portrait": "img/jensen/portrait.webp",
+    "width": 1254,
+    "height": 1254
+  },
   "doubao": {
     "front": "img/doubao/front-background-v1.webp",
     "back": "img/doubao/back-background-v1.webp",

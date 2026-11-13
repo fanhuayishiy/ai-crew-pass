@@ -29,6 +29,9 @@ export const CHARACTERS: Character[] = [
     role:'奇想观察站 / 直率聊天搭子',title:['跳出常规，','聊点新鲜的。'],caption:'给每一次对话，留一点意外。',motto:'敢想一点，直说一点。给平常的日子，加一点新鲜。',summary:'金色长发、黑色礼服和酒红裙饰。金、黑、红的对比鲜明，带着一点俏皮的反差。',features:['金色长发 · 黑色礼服','酒红色裙饰 · 蝴蝶结','采用 ZipZipPipe Grok 娘版本'],url:'https://grok.com/',chat:'https://grok.com/',credit:'角色设计：ZipZipPipe' },
   { id:'doubao',brand:'豆包',name:'豆包',alias:'Doubao',code:'DB',color:'#b9343c',ink:'#4d3034',image:'doubao-anime-v4.png',imageWidth:941,imageHeight:1672,portraitTransparent:true,
     role:'日常陪伴部 / 生活灵感搭子',title:['接住日常，','聊聊小美好。'],caption:'围上一条红围巾，今天也温暖一点。',motto:'生活里的小问题，也值得认真回答。今天想聊点什么？',summary:'棕色短发、红色长围巾、黑色西装短裙与长靴。与其他 AI 同事统一的动漫立绘，直接融入同色工牌。',features:['棕色短发 · 红色针织长围巾','黑色西装短裙 · 长靴 · 银色腰链','本项目 AI 生成的非官方动漫形象'],url:'https://www.doubao.com/',chat:'https://www.doubao.com/',credit:'本项目 AI 生成同人形象 / 外观参考用户截图，画风参考现有角色' },
+  { id:'jensen',brand:'AMD',name:'黄仁勋',alias:'Jensen Huang',code:'JH',color:'#b9343c',ink:'#4d3034',image:'jensen.webp',imageWidth:1254,imageHeight:1254,portraitImage:'img/jensen/portrait.webp',portraitTransparent:true,
+    role:'返厂体验官 / 黑皮衣事业部',title:['出走半生，','归来仍是打工人。'],caption:'虚构玩梗：不代表黄仁勋已加入 AMD。',motto:'出走半生，归来仍是打工人。这次，换张红卡继续上班。',
+    summary:'黄仁勋 AMD 返厂工牌是虚构玩梗，不代表真实入职。人物形象由 AI 生成。',features:['老东家：AMD','黑皮衣不换 · 阵营换红','虚构入职 · 非官方玩梗'],url:'https://www.hoover.org/plus/research/jensen-huang-vision-risk-and-gpu',chat:'https://www.hoover.org/plus/research/jensen-huang-vision-risk-and-gpu',credit:'人物形象由 AI 生成 · 虚构玩梗' },
 ];
 
 export function mix(hex: string, white: number): string {

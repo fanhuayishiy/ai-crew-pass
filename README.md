@@ -25,6 +25,7 @@
 ## 可以做什么
 
 - 九位 AI 同事：DeepSeek、ChatGPT、GLM、Qwen、Gemini、Claude、Kimi、Grok、豆包。
+- 特别篇：[黄仁勋 AMD 返厂工牌](https://badge.fhysy.com/characters/jensen/)为虚构玩梗，不代表真实入职；人物形象由 AI 生成。
 - 九位角色均可在原版和 Q 版形象之间切换，展示与下载同步更新；选择保存在当前浏览器。
 - React Bits 官方 Lanyard 的 3D 挂绳、拖拽回摆与翻面；同色系 ShinyText 背景扫光。
 - 正面贴图在 HTML 阶段高优先级预加载，正反面与挂绳独立显示；展示纹理采用同分辨率 WebP（背面无损），PNG 下载保留原画质。当前正面显示后空闲预取相邻角色，悬停或触摸菜单时预取目标角色；省流量模式及 2G 网络跳过预取。

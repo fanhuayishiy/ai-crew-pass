@@ -26,9 +26,9 @@ export function initBadgeEditor(): void {
   type Version = 'original' | 'chibi' | 'tangbao' | 'liangsheng';
   const specialVersion = character === 'deepseek' ? 'liangsheng' : 'tangbao';
   const requestedParam = new URL(location.href).searchParams.get('version');
-  const requestedVersion: Version | null = requestedParam === 'original' || requestedParam === 'chibi' || (requestedParam === 'tangbao' && character === 'doubao') || (requestedParam === 'liangsheng' && character === 'deepseek') ? requestedParam as Version : null;
+  const requestedVersion: Version | null = requestedParam === 'original' || (requestedParam === 'chibi' && character !== 'jensen') || (requestedParam === 'tangbao' && character === 'doubao') || (requestedParam === 'liangsheng' && character === 'deepseek') ? requestedParam as Version : null;
   let version: Version = 'original';
-  try { if (!requestedVersion && localStorage.getItem(versionStorageKey) === 'chibi') version = 'chibi'; } catch { /* Use the original when storage is unavailable. */ }
+  try { if (character !== 'jensen' && !requestedVersion && localStorage.getItem(versionStorageKey) === 'chibi') version = 'chibi'; } catch { /* Use the original when storage is unavailable. */ }
   let appliedVersion: Version = version;
   const versionButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-badge-version]'));
   const versionStatus = document.querySelector<HTMLElement>('[data-version-status]');

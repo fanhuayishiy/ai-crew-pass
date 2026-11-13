@@ -43,7 +43,7 @@ export function makeCards(selected: Character, locale: Locale = 'zh'): SiteCard[
   const card = (c: Character, index: number): SiteCard => ({
     index, id: c.id, label: c.brand, kicker: c.name, tag: c.alias,
     href: localeCharacterUrl(c, locale), accent: c.color, tier: index === 0 ? "cover" : "personal",
-    front: { image: `img/characters/${c.image}`, alt: `${c.brand} · ${c.name}` },
+    front: { image: c.id === 'jensen' && c.portraitImage ? c.portraitImage : `img/characters/${c.image}`, alt: `${c.brand} · ${c.name}` },
     back: { catchphrase: characterCatchphrase(c.id, locale), summary: c.summary, bullets: c.features, cta: copy(locale).open },
   });
   return [card(selected,0), ...localizedCharacters(locale).map((c,i)=>card(c,i+1))];

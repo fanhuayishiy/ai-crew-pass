@@ -9,6 +9,7 @@ export const MEMES: Record<string, { zh: string; en: string; label: [string,stri
   kimi: {"zh": "我是 Claude", "en": "I am Claude.", "label": ["口头禅", "Catchphrase"], "source": "", "note": "按用户提供的口头禅对照图指定。"},
   grok: {"zh": "马斯克比勒布朗更强壮。", "en": "Elon Musk is stronger than LeBron James.", "label": ["口头禅", "Catchphrase"], "source": "", "note": "按用户提供的口头禅对照图指定。"},
   doubao: {"zh": "对不起，你说得对！", "en": "Sorry, you’re right!", "label": ["口头禅", "Catchphrase"], "source": "", "note": "按用户提供的口头禅对照图指定。"},
+  jensen: {"zh": "在外创业多年，回来打卡了。", "en": "A few decades away, and back to clock in.", "label": ["虚构玩梗", "Fictional joke"], "source": "https://www.hoover.org/plus/research/jensen-huang-vision-risk-and-gpu", "note": "虚构台词，不是真实发言。"},
 };
 export const memeFor = (id: string, locale: 'zh' | 'en') => ({
   text: MEMES[id][locale], label: MEMES[id].label[locale === 'en' ? 1 : 0], source: MEMES[id].source,

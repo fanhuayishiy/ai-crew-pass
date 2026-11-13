@@ -25,6 +25,7 @@ Scan with WeChat, or save the QR code and open it in WeChat to follow.
 ## Features
 
 - Nine AI coworkers: DeepSeek, ChatGPT, GLM, Qwen, Gemini, Claude, Kimi, Grok, and Doubao.
+- Special edition: the [Jensen Huang AMD reunion pass](https://badge.fhysy.com/en/characters/jensen/) is fictional fan art, not a real job announcement. The portrait is AI-generated.
 - Switch all nine characters between their original and chibi portraits. The display and downloads update together, and the selection is saved in this browser.
 - 3D lanyard physics, dragging, swinging, and card flipping based on the official React Bits Lanyard component, with matching ShinyText background accents.
 - High-priority front texture preload in HTML. Front, back, and lanyard textures render independently. Display textures use WebP at the original resolution, with lossless backs; PNG downloads retain their original quality. Adjacent characters are prefetched during idle time after the current front appears, and menu targets are prefetched on hover or touch. Prefetching is skipped on data-saving and 2G connections.

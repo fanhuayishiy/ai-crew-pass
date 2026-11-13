@@ -9,6 +9,7 @@ import { copy, localizedCharacter, localizedCharacters, localeCharacterUrl, type
 interface Props { character: Character; locale?: Locale }
 const { character: originalCharacter, locale = 'zh' } = Astro.props;
 const character = localizedCharacter(originalCharacter, locale);
+const isJensen = character.id === 'jensen';
 const characters = localizedCharacters(locale);
 const ui = copy(locale);
 const characterIndex = characters.findIndex(c => c.id === character.id);
@@ -18,7 +19,7 @@ const nextCharacter = characters[(characterIndex + 1) % characters.length];
 const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path}`;
 ---
 
-<Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={`${ui.siteName} · ${character.brand} · ${ui.badge}`} description={character.summary} theme={characterStyle(character)} themeColor={character.color}>
+<Base locale={locale} frontTexture={asset(`img/badges/${locale}/${character.id}-front.webp`)} title={isJensen ? (locale === 'en' ? 'Jensen Huang AMD pass · fictional fan art' : '黄仁勋 AMD 返厂工牌 · 虚构玩梗') : `${ui.siteName} · ${character.brand} · ${ui.badge}`} description={character.summary} theme={characterStyle(character)} themeColor={character.color} socialImage={isJensen ? asset('social/jensen-cover.png') : undefined}>
   <div class="crew-loading" data-crew-loading role="status" aria-live="polite">
     <div class="crew-loading__mark" aria-hidden="true"><span>✦</span></div>
     <p class="crew-loading__eyebrow">NONHUMAN EMPLOYEES · CREW PASS</p>
@@ -31,7 +32,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
 
 
     <details class="crew-picker" data-crew-picker>
-      <summary aria-label={ui.switchEmployee}><span class="crew-picker__dot" aria-hidden="true"></span><span class="crew-picker__caption">{ui.switchEmployee}</span><b>{character.brand}</b><span class="crew-picker__count">09</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></summary>
+      <summary aria-label={ui.switchEmployee}><span class="crew-picker__dot" aria-hidden="true"></span><span class="crew-picker__caption">{ui.switchEmployee}</span><b>{character.brand}</b><span class="crew-picker__count">{String(characters.length).padStart(2, '0')}</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></summary>
       <nav class="character-switch crew-roster" aria-label={ui.choose}>{characters.map(c => <a href={localeCharacterUrl(c, locale)} data-texture-base={asset(`img/badges/${locale}/${c.id}`)} aria-current={c.id === character.id ? "page" : undefined} style={`--swatch:${c.color}`}><img src={asset(`img/avatars/${c.id}.webp`)} width="36" height="36" alt="" loading="lazy" decoding="async" fetchpriority="low" /><b>{c.brand}</b></a>)}</nav>
     </details>
     <section class="home-stage" id="screen1">
@@ -53,7 +54,8 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
 
 
     
-    <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">AI CREW COLLECTION <i>·</i> 09 CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {character.name} {ui.arrived} <span>NO. {character.code}—001</span></div>
+    <div class="ocean-note"><p class="ocean-note__eyebrow">{character.brand.toUpperCase()} / COMMUNITY EDITION</p><p class="ocean-note__title">{character.title[0]}<br />{character.title[1]}</p><p class="ocean-note__caption">{character.caption}</p><span class="collection-stamp">AI CREW COLLECTION <i>·</i> {String(characters.length).padStart(2, '0')} CHARACTERS</span></div><div class="employee-note"><span class="status-dot"></span> {isJensen ? (locale === 'en' ? 'Fictional pass' : '虚构工牌') : `${character.name} ${ui.arrived}`} <span>NO. {character.code}—001</span></div>
+    {isJensen && <p class="fiction-notice">{locale === 'en' ? 'Fictional fan art · Not a job announcement' : '虚构玩梗 · 非真实入职消息'}</p>}
     <div class="react-bits-stage" aria-label={`${character.name} · ${ui.badge}`}>
       <div class="badge-stage-loading" role="status" aria-live="polite"><span class="badge-stage-loading__spinner" aria-hidden="true"></span><span data-stage-loading-label>{locale === 'en' ? 'Loading pass…' : '工牌加载中…'}</span><button type="button" data-stage-retry hidden>{locale === 'en' ? 'Retry' : '重试'}</button></div>
       <div class="badge-loading-preview" aria-hidden="true"><img src={asset(`img/badges/${locale}/${character.id}-front.webp`)} crossorigin="anonymous" alt="" decoding="async" fetchpriority="high" width="1296" height="1824" /></div>
@@ -62,7 +64,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     </div>
     <div class="badge-version-switch" role="group" aria-label={locale === 'en' ? 'Pass style' : '工牌形象'}>
       <button type="button" data-badge-version="original" aria-pressed="true">{locale === 'en' ? 'Original' : '原版'}</button>
-      <button type="button" data-badge-version="chibi" aria-pressed="false">{locale === 'en' ? 'Chibi' : 'Q 版'} <span aria-hidden="true">✦</span></button>
+      {!isJensen && <button type="button" data-badge-version="chibi" aria-pressed="false">{locale === 'en' ? 'Chibi' : 'Q 版'} <span aria-hidden="true">✦</span></button>}
       {character.id === 'deepseek' && <button type="button" data-badge-version="liangsheng" aria-pressed="false">{locale === 'en' ? 'Liang Sheng' : '梁圣'}</button>}
       {character.id === 'doubao' && <button type="button" data-badge-version="tangbao" aria-pressed="false">{locale === 'en' ? 'Tangbao' : '糖包'}</button>}
       <button type="button" data-badge-version="custom" aria-pressed="false" hidden>{locale === 'en' ? 'Custom' : '自定义'}</button>
@@ -72,7 +74,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
     <a class="hero-role-control hero-role-control--previous" data-role-previous data-texture-base={asset(`img/badges/${locale}/${previousCharacter.id}`)} href={localeCharacterUrl(previousCharacter, locale)} aria-label={`${ui.previous} · ${previousCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{previousCharacter.brand}</span></a>
     <button type="button" class="customize-pass" data-edit-pass hidden aria-haspopup="dialog" aria-controls="badge-editor"><span aria-hidden="true">✦</span>{locale === 'en' ? 'Customize' : '自定义工牌'}</button>
     <a class="download-pass" href={asset(`downloads/${locale}/${character.id}-crew-pass.zip`)} download={`${character.id}-${locale}-crew-pass.zip`} data-download-pass><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{ui.download}</a>
-    <button type="button" class="share-pass" data-share data-share-text="以大肥鱼的工牌做好了，快来领取！！！"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 13v7h14v-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{locale === 'en' ? 'Share' : '分享'}</button>
+    <button type="button" class="share-pass" data-share data-share-text={isJensen ? (locale === 'en' ? 'Jensen’s fictional AMD reunion pass — made for fun.' : '老黄返厂工牌：出走半生，归来仍是打工人！虚构玩梗，非真实入职。') : '以大肥鱼的工牌做好了，快来领取！！！'}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 13v7h14v-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{locale === 'en' ? 'Share' : '分享'}</button>
     <span class="share-status" data-share-status role="status" aria-live="polite"></span>
     <a class="hero-role-control hero-role-control--next" data-role-next data-texture-base={asset(`img/badges/${locale}/${nextCharacter.id}`)} href={localeCharacterUrl(nextCharacter, locale)} aria-label={`${ui.next} · ${nextCharacter.brand}`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>{nextCharacter.brand}</span></a>
     </nav>
@@ -83,7 +85,7 @@ const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/
 
     <footer class="home-footer">
       <div class="community-links"><button type="button" class="community-trigger" data-open-community><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M21 11c0 4.4-4 8-9 8a10 10 0 0 1-4-.8L3 20l1.4-4.1A7.1 7.1 0 0 1 3 11c0-4.4 4-8 9-8s9 3.6 9 8Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>{ui.community}</button><button type="button" class="more-about-link credits-trigger" data-open-credits>{ui.credits} <span aria-hidden="true">↗</span></button><span class="site-visits" data-visit-counter hidden title={ui.viewsHint}><span id="busuanzi_container_site_pv" style="display:none">{ui.totalViews} <span id="busuanzi_value_site_pv"></span></span></span></div>
-      <a class="contact-link" href={character.chat} target="_blank" rel="noreferrer">{locale === "en" ? `${ui.chat} ${character.brand}` : `和 ${character.brand} ${ui.chat}`} <span aria-hidden="true">↗</span></a>
+      <a class="contact-link" href={character.chat} target="_blank" rel="noreferrer">{isJensen ? (locale === 'en' ? 'Story behind the joke' : '了解创作背景') : (locale === "en" ? `${ui.chat} ${character.brand}` : `和 ${character.brand} ${ui.chat}`)} <span aria-hidden="true">↗</span></a>
     <p class="interaction-hint"><span>↔</span> {ui.drag} <i>·</i> {ui.flip}</p>
     </footer>
 
