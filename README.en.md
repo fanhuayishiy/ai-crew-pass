@@ -59,7 +59,7 @@ npm run build
 
 ## Visit counter
 
-The footer displays site-wide page views (PV) via [Busuanzi](https://busuanzi.ibruce.info/), loaded only on `badge.fhysy.com`. Local development and preview hosts do not send counter requests. Refreshes and character/language navigation count as page views, not unique visitors. Visits before integration are not backfilled. The counter stays hidden if the third-party service is blocked or unavailable; the site and downloads remain usable.
+The footer displays site-wide page views (PV) via [Busuanzi](https://busuanzi.ibruce.info/), loaded only on `badge.fhysy.com`. Local development and preview hosts do not send counter requests. Refreshes and character/language navigation count as page views, not unique visitors. Visits before integration are not backfilled. If the third-party service is blocked or unavailable, the footer shows that views are temporarily unavailable; a late response from the current request still reveals the actual number. The site and downloads remain usable.
 
 ## Verification
 

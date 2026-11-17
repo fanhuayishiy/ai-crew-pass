@@ -35,6 +35,7 @@ export function copy(locale: Locale) {
     downloadSupportText: en?'Star the project on GitHub to support the creator and more little experiments.':'去 GitHub 点个 Star，支持作者继续做有趣的小东西。',
     downloadSupportAction: en?'Star on GitHub':'给项目点个 Star',
     totalViews: en?'Total views':'总浏览量',
+    viewsUnavailable: en?'Views temporarily unavailable':'总浏览量暂不可用',
     viewsHint: en?'Site-wide page views via Busuanzi. Refreshes and character switches count as views.':'不蒜子统计的全站页面浏览量，刷新和切换角色也会计数。',
     previous: en?'Previous character':'上一位员工', next:en?'Next character':'下一位员工',
     download: en?'Download pass':'下载工牌', downloadBoth:en?'Download both · ZIP':'下载正反面 · ZIP', front:en?'Front · PNG':'正面 · PNG', backImage:en?'Back · PNG':'背面 · PNG', preparing:en?'Preparing…':'正在生成…', downloadHint:en?'Save either PNG or download both as ZIP. On mobile, you can also save the preview image.':'可单独保存透明 PNG 或打包下载；手机也可长按预览图保存。', downloadError:en?'Could not prepare the images. Please try again.':'图片生成失败，请重试。',
